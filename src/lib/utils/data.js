@@ -1,0 +1,90 @@
+export const mainProduct = {
+  id: 1,
+  name: "Handmade Golden Necklace Full Family Package",
+  brand: "HasTech",
+  reviewCount: 1,
+  price: 70.0,
+  originalPrice: 90.0,
+  stock: 200,
+  offerEnds: "2025/12/20",
+  description:
+    "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. Phasellus id nisi quis justo tempus mollis sed et dui. In hac habitasse platea dictumst.",
+  longDescription:
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam fringilla augue nec est tristique auctor. Ipsum metus feugiat sem, quis fermentum turpis eros eget velit. Donec ac tempus ante. Fusce ultricies massa massa. Fusce aliquam, purus eget sagittis vulputate, sapien libero hendrerit est, sed commodo augue nisi non neque. Cras neque metus, consequat et blandit et, luctus a nunc. Etiam gravida vehicula tellus, in imperdiet ligula euismod eget. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nam erat mi, rutrum at sollicitudin rhoncus.",
+  images: [
+    "https://placehold.co/600x600/f5f0e8/c8a96e?text=Necklace+1",
+    "https://placehold.co/600x600/f0ebe0/c8a96e?text=Necklace+2",
+    "https://placehold.co/600x600/ebe5d8/c8a96e?text=Necklace+3",
+    "https://placehold.co/600x600/e8e0d0/c8a96e?text=Necklace+4",
+    "https://placehold.co/600x600/e5dcc8/c8a96e?text=Necklace+5",
+  ],
+  sizes: ["S", "M", "L", "XL"],
+  colors: [
+    { name: "LightSteelblue", hex: "#B0C4DE" },
+    { name: "Darktan", hex: "#C68642" },
+    { name: "Grey", hex: "#808080" },
+    { name: "Brown", hex: "#8B4513" },
+  ],
+  information: {
+    colors: ["black", "blue", "red"],
+    sizes: ["L", "M", "S"],
+  },
+  reviews: [
+    {
+      id: 1,
+      author: "admin",
+      date: "30 Mar, 2019",
+      rating: 4,
+      avatar: "https://placehold.co/48x48/c8a96e/fff?text=A",
+      comment:
+        "Aliquam fringilla euismod risus ac bibendum. Sed sit amet sem varius ante feugiat lacinia. Nunc ipsum nulla, vulputate ut venenatis vitae, malesuada ut mi. Quisque iaculis, dui congue placerat pretium, augue erat accumsan lacus.",
+    },
+  ],
+};
+
+export const relatedProducts = [
+  {
+    id: 2,
+    name: "Perfect Diamond Jewelry",
+    brand: "Gold",
+    price: 60.0,
+    originalPrice: 70.0,
+    badges: ["new", "10%"],
+    primaryImage: "https://placehold.co/400x400/f5f0e8/c8a96e?text=Product+1",
+    secondaryImage: "https://placehold.co/400x400/ebe5d8/c8a96e?text=Hover+1",
+    colors: ["#B0C4DE", "#C68642", "#808080", "#8B4513"],
+  },
+  {
+    id: 3,
+    name: "Handmade Golden Necklace",
+    brand: "mony",
+    price: 50.0,
+    originalPrice: 80.0,
+    badges: ["sale", "new"],
+    primaryImage: "https://placehold.co/400x400/f0ebe0/c8a96e?text=Product+2",
+    secondaryImage: "https://placehold.co/400x400/e8e0d0/c8a96e?text=Hover+2",
+    colors: ["#B0C4DE", "#C68642", "#808080", "#8B4513"],
+  },
+  {
+    id: 4,
+    name: "Perfect Diamond Jewelry",
+    brand: "Diamond",
+    price: 99.0,
+    originalPrice: null,
+    badges: ["new"],
+    primaryImage: "https://placehold.co/400x400/ebe5d8/c8a96e?text=Product+3",
+    secondaryImage: "https://placehold.co/400x400/f5f0e8/c8a96e?text=Hover+3",
+    colors: ["#B0C4DE", "#C68642", "#808080", "#8B4513"],
+  },
+  {
+    id: 5,
+    name: "Diamond Exclusive Ornament",
+    brand: "silver",
+    price: 55.0,
+    originalPrice: 75.0,
+    badges: ["sale", "15%"],
+    primaryImage: "https://placehold.co/400x400/e8e0d0/c8a96e?text=Product+4",
+    secondaryImage: "https://placehold.co/400x400/f0ebe0/c8a96e?text=Hover+4",
+    colors: ["#B0C4DE", "#C68642", "#808080", "#8B4513"],
+  },
+];
