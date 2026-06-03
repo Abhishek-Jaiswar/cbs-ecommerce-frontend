@@ -4,7 +4,7 @@ import * as React from "react";
 
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
-import { CompanyLogo } from "@/components/team-switcher";
+import { CompanyLogo } from "@/components/company-logo";
 import {
   Sidebar,
   SidebarContent,
