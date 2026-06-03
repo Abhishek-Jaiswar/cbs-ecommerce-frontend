@@ -2,8 +2,8 @@
 
 import * as React from "react";
 import { useGetProductListingQuery } from "@/services/api/products/products-api";
-import { DataTable } from "./all-products/data-table";
-import { columns } from "./all-products/columns";
+import { DataTable } from "./_components/data-table";
+import { columns } from "./_components/columns";
 import { Button } from "@/components/ui/button";
 import { Plus, AlertCircle, RefreshCw } from "lucide-react";
 import Link from "next/link";
