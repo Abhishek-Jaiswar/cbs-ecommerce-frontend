@@ -10,7 +10,7 @@ export default function LoginForm() {
   return (
     <section className="flex min-h-screen items-center justify-center bg-[#fafafa] px-4">
       <div className="w-full max-w-md rounded-3xl bg-white p-8 shadow-lg">
-        {/* HEADER */}
+      
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-semibold">Welcome Back</h1>
 
