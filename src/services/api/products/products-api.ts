@@ -138,16 +138,115 @@ export const productApi = baseApi.injectEndpoints({
       invalidatesTags: ["ProductDetails"],
     }),
 
-    getCategories: builder.query<ICategoriesApiResponse, void>({
-      query: () => "/categories",
+    getCategories: builder.query<ICategoriesApiResponse, { page?: number; limit?: number } | void>({
+      query: (params) => {
+        if (params) {
+          const { page = 1, limit = 10 } = params;
+          return `/categories?page=${page}&limit=${limit}`;
+        }
+        return "/categories?limit=1000";
+      },
+      providesTags: ["Categories"],
     }),
 
-    getBrands: builder.query<IBrandsApiResponse, void>({
-      query: () => "/brands",
+    createCategory: builder.mutation<unknown, FormData>({
+      query: (formData) => ({
+        url: "/categories",
+        method: "POST",
+        body: formData,
+      }),
+      invalidatesTags: ["Categories"],
     }),
 
-    getProductTags: builder.query<ITagsApiResponse, void>({
-      query: () => "/product-tags",
+    updateCategory: builder.mutation<unknown, { id: string; formData: FormData }>({
+      query: ({ id, formData }) => ({
+        url: `/categories/${id}`,
+        method: "PUT",
+        body: formData,
+      }),
+      invalidatesTags: ["Categories"],
+    }),
+
+    deleteCategory: builder.mutation<unknown, string>({
+      query: (id) => ({
+        url: `/categories/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Categories"],
+    }),
+
+    getBrands: builder.query<IBrandsApiResponse, { page?: number; limit?: number } | void>({
+      query: (params) => {
+        if (params) {
+          const { page = 1, limit = 10 } = params;
+          return `/brands?page=${page}&limit=${limit}`;
+        }
+        return "/brands?limit=1000";
+      },
+      providesTags: ["Brands"],
+    }),
+
+    createBrand: builder.mutation<unknown, FormData>({
+      query: (formData) => ({
+        url: "/brands",
+        method: "POST",
+        body: formData,
+      }),
+      invalidatesTags: ["Brands"],
+    }),
+
+    updateBrand: builder.mutation<unknown, { id: string; formData: FormData }>({
+      query: ({ id, formData }) => ({
+        url: `/brands/${id}`,
+        method: "PUT",
+        body: formData,
+      }),
+      invalidatesTags: ["Brands"],
+    }),
+
+    deleteBrand: builder.mutation<unknown, string>({
+      query: (id) => ({
+        url: `/brands/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Brands"],
+    }),
+
+    getProductTags: builder.query<ITagsApiResponse, { page?: number; limit?: number } | void>({
+      query: (params) => {
+        if (params) {
+          const { page = 1, limit = 10 } = params;
+          return `/product-tags?page=${page}&limit=${limit}`;
+        }
+        return "/product-tags?limit=1000";
+      },
+      providesTags: ["Tags"],
+    }),
+
+    createProductTag: builder.mutation<unknown, { name: string; slug: string }>({
+      query: (body) => ({
+        url: "/product-tags",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Tags"],
+    }),
+
+    updateProductTag: builder.mutation<unknown, { id: string; body: { name?: string; slug?: string } }>({
+      query: ({ id, body }) => ({
+        url: `/product-tags/${id}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: ["Tags"],
+    }),
+
+    deleteProductTag: builder.mutation<unknown, string>({
+      query: (id) => ({
+        url: `/product-tags/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Tags"],
     }),
   }),
 });
@@ -170,8 +269,17 @@ export const {
   useCreateSizeMutation,
   useDeleteSizeMutation,
   useGetCategoriesQuery,
+  useCreateCategoryMutation,
+  useUpdateCategoryMutation,
+  useDeleteCategoryMutation,
   useGetBrandsQuery,
+  useCreateBrandMutation,
+  useUpdateBrandMutation,
+  useDeleteBrandMutation,
   useGetProductTagsQuery,
+  useCreateProductTagMutation,
+  useUpdateProductTagMutation,
+  useDeleteProductTagMutation,
 } = productApi;
 
 

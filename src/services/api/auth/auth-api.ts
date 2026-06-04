@@ -109,6 +109,38 @@ export const authApi = baseApi.injectEndpoints({
         body: payload,
       }),
     }),
+
+    getUsers: builder.query<BaseResponse<{ items: User[]; total: number; page: number; limit: number; totalPages: number }>, { page?: number; limit?: number } | void>({
+      query: (params) => {
+        if (params) {
+          const { page = 1, limit = 10 } = params;
+          return `/auth/get-all?page=${page}&limit=${limit}`;
+        }
+        return "/auth/get-all?limit=1000";
+      },
+      providesTags: ["Users"],
+    }),
+
+    getUserById: builder.query<BaseResponse<User & { addresses: any[] }>, string>({
+      query: (id) => `/auth/${id}`,
+    }),
+
+    updateUserRole: builder.mutation<BaseResponse<User>, { id: string; role: "USER" | "ADMIN" }>({
+      query: ({ id, role }) => ({
+        url: `/auth/${id}/role`,
+        method: "PATCH",
+        body: { role },
+      }),
+      invalidatesTags: ["Users"],
+    }),
+
+    deleteUser: builder.mutation<BaseResponse<void>, string>({
+      query: (id) => ({
+        url: `/auth/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Users"],
+    }),
   }),
 });
 
@@ -122,4 +154,8 @@ export const {
   useRequestPasswordResetOtpMutation,
   useVerifyPasswordResetOtpMutation,
   useResetPasswordMutation,
+  useGetUsersQuery,
+  useGetUserByIdQuery,
+  useUpdateUserRoleMutation,
+  useDeleteUserMutation,
 } = authApi;

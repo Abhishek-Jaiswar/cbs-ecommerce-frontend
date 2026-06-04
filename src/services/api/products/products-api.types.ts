@@ -56,6 +56,7 @@ export interface ICategories {
   isActive: boolean;
   image: string;
   altText?: string;
+  parentId?: string | null;
 }
 
 export interface IMedia {
