@@ -1,14 +1,15 @@
 import "./globals.css";
 import { Geist } from "next/font/google";
-import { cn } from "@/lib/utils";
+import HeaderFooterWrapper from "@/components/layout/header-footer-wrapper";
+import { Metadata } from "next";
+
+const geistSans = Geist({
+  subsets: ["latin"],
+  variable: "--font-sans",
+});
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { StoreProvider } from "@/store/store-provider";
-
-const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
-
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
-import { Metadata } from "next";
+import { AuthProvider } from "@/components/auth/auth-provider";
 
 export const metadata: Metadata = {
   title: {
@@ -38,15 +39,17 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={cn("h-full antialiased", "font-sans", geist.variable)}
+      className={`h-full antialiased font-sans ${geistSans.variable}`}
     >
       <body className="min-h-full flex flex-col">
         <StoreProvider>
-          <TooltipProvider>
-            <Navbar />
-            {children}
-            <Footer />
-          </TooltipProvider>
+          <AuthProvider>
+            <TooltipProvider>
+              <HeaderFooterWrapper>
+                {children}
+              </HeaderFooterWrapper>
+            </TooltipProvider>
+          </AuthProvider>
         </StoreProvider>
       </body>
     </html>

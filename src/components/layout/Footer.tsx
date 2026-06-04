@@ -22,13 +22,7 @@ const Footer = () => {
         <div className="grid gap-12 lg:grid-cols-4">
           
           <div>
-            <Image
-              src="/logo.png"
-              alt="Corano"
-              width={180}
-              height={60}
-              className="mb-8"
-            />
+            <h1 className="text-lg font-bold text-orange-500">ZenVoraa</h1>
 
             <p className="leading-8 text-gray-600">
               We are a team of designers and developers that create
@@ -173,16 +167,7 @@ const Footer = () => {
               </button>
             </div>
 
-            
-            <div className="mt-16">
-              <Image
-                src="/payment.png"
-                alt="Payment Methods"
-                width={320}
-                height={40}
-                className="object-contain"
-              />
-            </div>
+          
           </div>
         </div>
       </div>
@@ -190,9 +175,9 @@ const Footer = () => {
       
       <div className="border-t border-gray-200 py-6">
         <p className="text-center text-gray-600">
-          © {new Date().getFullYear()} Corano Made with ❤️ by{" "}
+          © {new Date().getFullYear()} ZenVoraa Made with ❤️ by{" "}
           <span className="font-medium text-[#c29958]">
-            HasThemes
+            CBS TEAM
           </span>
         </p>
       </div>
