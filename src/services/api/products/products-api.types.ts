@@ -14,6 +14,7 @@ export interface ProductListing {
   isSale: boolean;
   offerEnds: string | null;
   forListing: boolean;
+  categoryId: string;
 }
 
 export interface ProductListingParams {
