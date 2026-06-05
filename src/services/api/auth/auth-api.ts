@@ -1,8 +1,49 @@
 import { baseApi } from "../base-api";
 
+export interface BaseResponse<T = undefined> {
+  success: boolean;
+  message: string;
+  data?: T;
+}
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  emailVerified: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface RegisterPayload {
+  name: string;
+  email: string;
+  password?: string;
+}
+
+export interface LoginPayload {
+  email: string;
+  password?: string;
+}
+
+export interface OtpRequestPayload {
+  email: string;
+}
+
+export interface OtpVerifyPayload {
+  email: string;
+  otp: string;
+}
+
+export interface ResetPasswordPayload {
+  email: string;
+  newPassword?: string;
+}
+
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    register: builder.mutation({
+    register: builder.mutation<BaseResponse<User>, RegisterPayload>({
       query: (payload) => ({
         url: "/auth/register",
         method: "POST",
@@ -10,7 +51,7 @@ export const authApi = baseApi.injectEndpoints({
       }),
     }),
 
-    login: builder.mutation({
+    login: builder.mutation<BaseResponse<User>, LoginPayload>({
       query: (payload) => ({
         url: "/auth/login",
         method: "POST",
@@ -18,8 +59,103 @@ export const authApi = baseApi.injectEndpoints({
       }),
     }),
 
-    me: builder.query({
-      query: () => "/auth/me",
+    logout: builder.mutation<BaseResponse, void>({
+      query: () => ({
+        url: "/auth/logout",
+        method: "POST",
+      }),
+    }),
+
+    me: builder.query<BaseResponse<User>, void>({
+      query: () => "/auth/get-me",
+    }),
+
+    requestEmailOtp: builder.mutation<BaseResponse, OtpRequestPayload>({
+      query: (payload) => ({
+        url: "/auth/email-verification/request-otp",
+        method: "POST",
+        body: payload,
+      }),
+    }),
+
+    verifyEmailOtp: builder.mutation<BaseResponse<{ email: string; verified: boolean }>, OtpVerifyPayload>({
+      query: (payload) => ({
+        url: "/auth/email-verification/verify-otp",
+        method: "POST",
+        body: payload,
+      }),
+    }),
+
+    requestPasswordResetOtp: builder.mutation<BaseResponse, OtpRequestPayload>({
+      query: (payload) => ({
+        url: "/auth/forgot-password/request-otp",
+        method: "POST",
+        body: payload,
+      }),
+    }),
+
+    verifyPasswordResetOtp: builder.mutation<BaseResponse<{ email: string; verified: boolean }>, OtpVerifyPayload>({
+      query: (payload) => ({
+        url: "/auth/forgot-password/verify-otp",
+        method: "POST",
+        body: payload,
+      }),
+    }),
+
+    resetPassword: builder.mutation<BaseResponse<User>, ResetPasswordPayload>({
+      query: (payload) => ({
+        url: "/auth/forgot-password/reset-password",
+        method: "PUT",
+        body: payload,
+      }),
+    }),
+
+    getUsers: builder.query<BaseResponse<{ items: User[]; total: number; page: number; limit: number; totalPages: number }>, { page?: number; limit?: number } | void>({
+      query: (params) => {
+        if (params) {
+          const { page = 1, limit = 10 } = params;
+          return `/auth/get-all?page=${page}&limit=${limit}`;
+        }
+        return "/auth/get-all?limit=1000";
+      },
+      providesTags: ["Users"],
+    }),
+
+    getUserById: builder.query<BaseResponse<User & { addresses: any[] }>, string>({
+      query: (id) => `/auth/${id}`,
+    }),
+
+    updateUserRole: builder.mutation<BaseResponse<User>, { id: string; role: "USER" | "ADMIN" }>({
+      query: ({ id, role }) => ({
+        url: `/auth/${id}/role`,
+        method: "PATCH",
+        body: { role },
+      }),
+      invalidatesTags: ["Users"],
+    }),
+
+    deleteUser: builder.mutation<BaseResponse<void>, string>({
+      query: (id) => ({
+        url: `/auth/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Users"],
     }),
   }),
 });
+
+export const {
+  useLoginMutation,
+  useLogoutMutation,
+  useMeQuery,
+  useRegisterMutation,
+  useRequestEmailOtpMutation,
+  useVerifyEmailOtpMutation,
+  useRequestPasswordResetOtpMutation,
+  useVerifyPasswordResetOtpMutation,
+  useResetPasswordMutation,
+  useGetUsersQuery,
+  useGetUserByIdQuery,
+  useUpdateUserRoleMutation,
+  useDeleteUserMutation,
+} = authApi;

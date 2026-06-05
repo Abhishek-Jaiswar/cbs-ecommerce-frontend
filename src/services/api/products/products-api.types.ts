@@ -51,9 +51,12 @@ export interface IBrands {
 export interface ICategories {
   id: string;
   name: string;
+  slug: string;
   excerpt: string;
   isActive: boolean;
   image: string;
+  altText?: string;
+  parentId?: string | null;
 }
 
 export interface IMedia {
@@ -73,10 +76,10 @@ export interface IImages {
 export interface IVariants {
   id: string;
   sku: string;
-  price: number;
+  price: string;
   stock: number;
-  color: IProductColors[];
-  size: IProductSizes[];
+  color: IProductColors | null;
+  size: IProductSizes | null;
   colorId?: string;
   sizeId?: string;
   createdAt: Date;
@@ -126,8 +129,8 @@ export interface IProductDetails {
   categoryId: string;
   excerpt: string;
   description: string;
-  price: number;
-  originalPrice: number;
+  price: string;
+  originalPrice: string;
   offerEnds: Date | null;
   isSale: boolean;
   isFeatured: boolean;
@@ -137,11 +140,11 @@ export interface IProductDetails {
 
   colors: IProductColors[];
   sizes: IProductSizes[];
-  brand: IBrands[];
-  category: ICategories[];
+  brand: IBrands | null;
+  category: ICategories | null;
   images: IImages[];
   variants: IVariants[];
-  productTags: IProductTags[];
+  productTags: { createdAt: Date; tag: ITag }[];
   specification: ISpecifications[];
 
   createdAt: Date;
@@ -149,7 +152,7 @@ export interface IProductDetails {
 }
 
 export interface IProductDetailsResponse {
-  success: string;
+  success: boolean;
   message: string;
   data: IProductDetails;
 }
