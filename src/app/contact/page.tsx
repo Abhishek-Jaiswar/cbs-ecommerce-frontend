@@ -1,6 +1,17 @@
-'use client'
+"use client";
+
+import { useState } from "react";
 
 export default function ContactPage() {
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // later connect API here
+    setSubmitted(true);
+  };
+
   return (
     <main className="bg-[#faf8f4] min-h-screen">
 
@@ -23,110 +34,93 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* Contact Section */}
       <section className="max-w-7xl mx-auto px-6 py-20">
 
         <div className="grid lg:grid-cols-2 gap-12">
 
-          {/* Left */}
+          {/* LEFT */}
           <div>
-
             <h2 className="text-4xl font-bold mb-4">
               Let's Start A Conversation
             </h2>
 
             <p className="text-gray-600 mb-10">
-              Have questions about collections, custom orders,
-              or support? Send us a message.
+              Have questions about collections,
+              custom orders, or support?
             </p>
-
-            <div className="space-y-8">
-
-              <div>
-                <p className="text-[#d4a24c] font-semibold">
-                  Email
-                </p>
-
-                <p className="text-gray-700">
-                  support@zenvora.com
-                </p>
-              </div>
-
-              <div>
-                <p className="text-[#d4a24c] font-semibold">
-                  Phone
-                </p>
-
-                <p className="text-gray-700">
-                  +91 98765 43210
-                </p>
-              </div>
-
-              <div>
-                <p className="text-[#d4a24c] font-semibold">
-                  Address
-                </p>
-
-                <p className="text-gray-700">
-                  Mumbai, Maharashtra
-                </p>
-              </div>
-
-            </div>
           </div>
 
-          {/* Right */}
+          {/* RIGHT */}
           <div className="bg-white rounded-3xl shadow-lg p-8">
 
-            <form className="space-y-5">
+            {submitted ? (
 
-              <div>
-                <label>Name</label>
+              <div className="text-center py-20">
 
-                <input
-                  type="text"
-                  placeholder="Enter your name"
-                  className="w-full mt-2 border p-4 rounded-xl"
-                />
+                <div className="text-6xl mb-4">
+                  ✨
+                </div>
+
+                <h2 className="text-3xl font-bold">
+                  Thank You!
+                </h2>
+
+                <p className="mt-4 text-gray-600">
+                  Thank you for reaching out.
+                  We’ll get back to you soon.
+                </p>
+
+                <button
+                  onClick={() => setSubmitted(false)}
+                  className="mt-8 bg-[#d4a24c] px-6 py-3 rounded-xl text-white"
+                >
+                  Send Another Message
+                </button>
+
               </div>
 
-              <div>
-                <label>Email</label>
+            ) : (
+
+              <form
+                onSubmit={handleSubmit}
+                className="space-y-5"
+              >
 
                 <input
+                  required
+                  placeholder="Name"
+                  className="w-full border p-4 rounded-xl"
+                />
+
+                <input
+                  required
                   type="email"
-                  placeholder="Enter email"
-                  className="w-full mt-2 border p-4 rounded-xl"
+                  placeholder="Email"
+                  className="w-full border p-4 rounded-xl"
                 />
-              </div>
-
-              <div>
-                <label>Subject</label>
 
                 <input
-                  type="text"
-                  placeholder="Order inquiry"
-                  className="w-full mt-2 border p-4 rounded-xl"
+                  placeholder="Subject"
+                  className="w-full border p-4 rounded-xl"
                 />
-              </div>
-
-              <div>
-                <label>Message</label>
 
                 <textarea
+                  required
                   rows={5}
-                  placeholder="Write your message..."
-                  className="w-full mt-2 border p-4 rounded-xl"
+                  placeholder="Message"
+                  className="w-full border p-4 rounded-xl"
                 />
-              </div>
 
-              <button
-                className="w-full bg-[#d4a24c] text-white py-4 rounded-xl hover:opacity-90"
-              >
-                Send Message
-              </button>
+                <button
+                  type="submit"
+                  className="w-full bg-[#d4a24c] text-white py-4 rounded-xl hover:opacity-90"
+                >
+                  Send Message
+                </button>
 
-            </form>
+              </form>
+
+            )}
 
           </div>
 
