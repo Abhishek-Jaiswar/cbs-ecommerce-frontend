@@ -29,11 +29,17 @@ export default function CartPage() {
   const { isAuthenticated } = useAppSelector((state) => state.auth);
 
   // Cart API hooks
-  const { data: cartRes, isLoading, isError, refetch } = useGetCartQuery(undefined, {
+  const {
+    data: cartRes,
+    isLoading,
+    isError,
+    refetch,
+  } = useGetCartQuery(undefined, {
     skip: !isAuthenticated,
   });
 
-  const [updateQuantity, { isLoading: isUpdating }] = useUpdateCartItemQuantityMutation();
+  const [updateQuantity, { isLoading: isUpdating }] =
+    useUpdateCartItemQuantityMutation();
   const [removeItem, { isLoading: isRemoving }] = useRemoveCartItemMutation();
   const [clearCart, { isLoading: isClearing }] = useClearCartMutation();
 
@@ -46,18 +52,22 @@ export default function CartPage() {
     return acc + price * item.quantity;
   }, 0);
 
-  // Shipping Calculation (Free over $500, otherwise $25)
-  const shippingThreshold = 500;
+  // Shipping Calculation (Free over ₹2000, otherwise ₹25)
+  const shippingThreshold = 2000;
   const shippingCost = subtotal >= shippingThreshold || subtotal === 0 ? 0 : 25;
 
-  // Tax Calculation (Estimated 8%)
-  const taxRate = 0.08;
+  // Tax Calculation (Estimated 0%)
+  const taxRate = 0.0;
   const taxCost = subtotal * taxRate;
 
   // Grand Total
   const total = subtotal + shippingCost + taxCost;
 
-  const handleQuantityChange = async (itemId: string, currentQty: number, change: number) => {
+  const handleQuantityChange = async (
+    itemId: string,
+    currentQty: number,
+    change: number,
+  ) => {
     const newQty = currentQty + change;
     try {
       await updateQuantity({ cartItemId: itemId, quantity: newQty }).unwrap();
@@ -94,7 +104,9 @@ export default function CartPage() {
       <div className="min-h-screen bg-stone-50/50 py-16 flex justify-center items-center">
         <div className="text-center space-y-4">
           <Loader2 className="h-10 w-10 animate-spin text-amber-500 mx-auto" />
-          <p className="text-sm text-stone-500 italic">Preparing your shopping bag...</p>
+          <p className="text-sm text-stone-500 italic">
+            Preparing your shopping bag...
+          </p>
         </div>
       </div>
     );
@@ -107,11 +119,18 @@ export default function CartPage() {
           <div className="bg-rose-50 h-16 w-16 rounded-full flex items-center justify-center text-rose-500 mx-auto">
             <ShoppingBag className="h-8 w-8" />
           </div>
-          <h2 className="text-2xl font-serif text-stone-900 font-bold">Failed to load bag</h2>
+          <h2 className="text-2xl font-serif text-stone-900 font-bold">
+            Failed to load bag
+          </h2>
           <p className="text-sm text-stone-500 leading-relaxed">
-            There was an issue fetching your shopping cart details. Make sure your local servers are running.
+            There was an issue fetching your shopping cart details. Make sure
+            your local servers are running.
           </p>
-          <Button onClick={refetch} variant="outline" className="border-stone-300 hover:border-stone-950 font-bold">
+          <Button
+            onClick={refetch}
+            variant="outline"
+            className="border-stone-300 hover:border-stone-950 font-bold"
+          >
             Retry Connection
           </Button>
         </div>
@@ -126,11 +145,17 @@ export default function CartPage() {
           <div className="h-16 w-16 bg-stone-50 flex items-center justify-center text-stone-400 mx-auto border border-stone-100">
             <ShoppingBag className="h-8 w-8" />
           </div>
-          <h2 className="text-2xl font-serif text-stone-900 font-medium">Your shopping bag is empty</h2>
+          <h2 className="text-2xl font-serif text-stone-900 font-medium">
+            Your shopping bag is empty
+          </h2>
           <p className="text-sm text-stone-400 font-light leading-relaxed">
-            Explore our curated catalog of masterfully crafted jewelry and add items to your collection.
+            Explore our curated catalog of masterfully crafted jewelry and add
+            items to your collection.
           </p>
-          <Button asChild className="bg-stone-950 text-white rounded-none hover:bg-amber-500 hover:text-stone-950 w-full py-6 font-bold uppercase tracking-wider text-xs transition-colors duration-200">
+          <Button
+            asChild
+            className="bg-stone-950 text-white rounded-none hover:bg-amber-500 hover:text-stone-950 w-full py-6 font-bold uppercase tracking-wider text-xs transition-colors duration-200"
+          >
             <Link href="/shop">Start Shopping</Link>
           </Button>
         </div>
@@ -183,8 +208,14 @@ export default function CartPage() {
                         </p>
                         <div className="flex flex-wrap gap-2 text-[10px] text-stone-500 font-semibold uppercase tracking-wider mt-1">
                           {item.variant.color && (
-                            <span className="flex items-center gap-1 bg-stone-50 px-2 py-0.5 border border-stone-100">
-                              Color: {item.variant.color.name}
+                            <span className="flex items-center gap-1.5 bg-stone-50 px-2 py-0.5 border border-stone-100">
+                              {item.variant.color.hex && (
+                                <span
+                                  className="w-3 h-3 rounded-full border border-stone-200 shrink-0"
+                                  style={{ backgroundColor: item.variant.color.hex }}
+                                />
+                              )}
+                              <span>Color: {item.variant.color.name}</span>
                             </span>
                           )}
                           {item.variant.size && (
@@ -202,18 +233,28 @@ export default function CartPage() {
                       <div className="flex items-center border border-stone-200 bg-stone-50 h-9 shrink-0">
                         <button
                           disabled={item.quantity <= 1 || isUpdating}
-                          onClick={() => handleQuantityChange(item.id, item.quantity, -1)}
+                          onClick={() =>
+                            handleQuantityChange(item.id, item.quantity, -1)
+                          }
                           className="w-8 h-full flex items-center justify-center text-stone-500 hover:bg-stone-150 transition-colors disabled:opacity-50"
                           aria-label="Decrease quantity"
                         >
                           <Minus size={12} />
                         </button>
-                        <span className="w-8 text-center text-xs font-semibold text-stone-800">
-                          {item.quantity}
+                        <span className="w-8 text-center text-xs font-semibold text-stone-800 flex items-center justify-center">
+                          {isUpdating ? (
+                            <Loader2 className="h-3.5 w-3.5 animate-spin text-stone-500" />
+                          ) : (
+                            item.quantity
+                          )}
                         </span>
                         <button
-                          disabled={item.quantity >= item.variant.stock || isUpdating}
-                          onClick={() => handleQuantityChange(item.id, item.quantity, 1)}
+                          disabled={
+                            item.quantity >= item.variant.stock || isUpdating
+                          }
+                          onClick={() =>
+                            handleQuantityChange(item.id, item.quantity, 1)
+                          }
                           className="w-8 h-full flex items-center justify-center text-stone-500 hover:bg-stone-150 transition-colors disabled:opacity-50"
                           aria-label="Increase quantity"
                         >
@@ -224,10 +265,13 @@ export default function CartPage() {
                       {/* Price total */}
                       <div className="text-right">
                         <span className="block font-medium text-stone-900 text-sm">
-                          ${(parseFloat(item.variant.price) * item.quantity).toFixed(2)}
+                          ₹
+                          {(
+                            parseFloat(item.variant.price) * item.quantity
+                          ).toFixed(2)}
                         </span>
                         <span className="text-[10px] text-stone-400">
-                          ${parseFloat(item.variant.price).toFixed(2)} each
+                          ₹{parseFloat(item.variant.price).toFixed(2)} each
                         </span>
                       </div>
 
@@ -270,7 +314,9 @@ export default function CartPage() {
               <div className="space-y-3 text-xs text-stone-600">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span className="font-semibold text-stone-900">${subtotal.toFixed(2)}</span>
+                  <span className="font-semibold text-stone-900">
+                    ₹{subtotal.toFixed(2)}
+                  </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span>Shipping</span>
@@ -279,31 +325,44 @@ export default function CartPage() {
                       Complimentary
                     </span>
                   ) : (
-                    <span className="font-semibold text-stone-900">${shippingCost.toFixed(2)}</span>
+                    <span className="font-semibold text-stone-900">
+                      ₹{shippingCost.toFixed(2)}
+                    </span>
                   )}
                 </div>
                 <div className="flex justify-between">
-                  <span>Estimated Tax (8%)</span>
-                  <span className="font-semibold text-stone-900">${taxCost.toFixed(2)}</span>
+                  <span>Estimated Tax</span>
+                  <span className="font-semibold text-stone-900">
+                    ₹{taxCost.toFixed(2)}
+                  </span>
                 </div>
 
                 {shippingCost > 0 && (
                   <p className="text-[10px] text-stone-400 italic pt-1">
-                    Add ${(shippingThreshold - subtotal).toFixed(2)} more to unlock complimentary delivery.
+                    Add ₹{(shippingThreshold - subtotal).toFixed(2)} more to
+                    unlock complimentary delivery.
                   </p>
                 )}
               </div>
 
               <div className="border-t border-stone-100 pt-4 flex justify-between items-baseline">
-                <span className="text-sm font-bold text-stone-900 uppercase">Estimated Total</span>
-                <span className="text-xl font-serif font-bold text-stone-900">
-                  ${total.toFixed(2)}
+                <span className="text-sm font-bold text-stone-900 uppercase">
+                  Estimated Total
+                </span>
+                <span className="text-xl font-bold text-stone-900">
+                  ₹{total.toFixed(2)}
                 </span>
               </div>
 
-              <Button className="w-full bg-stone-950 text-white rounded-none hover:bg-amber-500 hover:text-stone-950 py-6 font-bold uppercase tracking-widest text-xs gap-2 transition-colors duration-200 shadow-sm">
-                Proceed to Checkout
-                <ArrowRight size={14} />
+              <Button
+                asChild
+                disabled={isUpdating || isRemoving || isClearing}
+                className="w-full bg-stone-950 text-white rounded-none hover:bg-amber-500 hover:text-stone-950 py-6 font-bold uppercase tracking-widest text-xs gap-2 transition-colors duration-200 shadow-sm disabled:opacity-50"
+              >
+                <Link href="/checkout">
+                  Proceed to Checkout
+                  <ArrowRight size={14} />
+                </Link>
               </Button>
             </div>
 
@@ -311,7 +370,7 @@ export default function CartPage() {
             <div className="bg-stone-50 border border-stone-200 p-6 space-y-4 text-[10px] text-stone-500 uppercase tracking-widest">
               <div className="flex items-center gap-3">
                 <Truck className="h-4 w-4 text-stone-400 shrink-0" />
-                <span>Complimentary Shipping over $500</span>
+                <span>Complimentary Shipping over ₹2000</span>
               </div>
               <div className="flex items-center gap-3">
                 <RotateCcw className="h-4 w-4 text-stone-400 shrink-0" />

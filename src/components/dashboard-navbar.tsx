@@ -199,7 +199,7 @@ export function DashboardNavbar({ user, breadcrumbs }: DashboardNavbarProps) {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-8 w-8 rounded-full border border-border/40 p-0 hover:bg-transparent">
               <Avatar className="h-8 w-8 rounded-full">
-                <AvatarImage src={user.avatar} alt={user.name} />
+                {user.avatar && <AvatarImage src={user.avatar} alt={user.name} />}
                 <AvatarFallback className="rounded-full bg-gradient-to-br from-violet-500 to-indigo-500 text-white text-xs font-semibold">
                   {user.name.slice(0, 2).toUpperCase()}
                 </AvatarFallback>

@@ -61,6 +61,23 @@ export const productApi = baseApi.injectEndpoints({
       invalidatesTags: ["ProductDetails"],
     }),
 
+    getVariants: builder.query<any, { page: number; limit: number; search?: string; stockStatus?: string }>({
+      query: (params) => ({
+        url: "/products/variants",
+        params,
+      }),
+      providesTags: ["ProductDetails", "Products"],
+    }),
+
+    updateVariant: builder.mutation<unknown, { variantId: string; body: { price: number | null; stock: number } }>({
+      query: ({ variantId, body }) => ({
+        url: `/products/variants/${variantId}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: ["ProductDetails", "Products"],
+    }),
+
     createSpecification: builder.mutation<unknown, { productId: string; body: unknown }>({
       query: ({ productId, body }) => ({
         url: `/products/${productId}/specifications`,
@@ -259,6 +276,8 @@ export const {
   useUpdateStatusMutation,
   useCreateVariantMutation,
   useDeleteVariantMutation,
+  useGetVariantsQuery,
+  useUpdateVariantMutation,
   useCreateSpecificationMutation,
   useDeleteSpecificationMutation,
   useUploadImagesMutation,

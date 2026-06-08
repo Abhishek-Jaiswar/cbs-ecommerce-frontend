@@ -306,10 +306,10 @@ export default function ShopPage() {
 
                           {/* Pricing */}
                           <div className="flex items-baseline gap-2 mt-auto pt-3 border-t border-stone-100">
-                            <span className="text-base font-bold text-stone-900">${product.price}</span>
+                            <span className="text-base font-bold text-stone-900">₹{product.price}</span>
                             {product.originalPrice && (
                               <span className="text-xs text-stone-400 line-through">
-                                ${product.originalPrice}
+                                ₹{product.originalPrice}
                               </span>
                             )}
                           </div>

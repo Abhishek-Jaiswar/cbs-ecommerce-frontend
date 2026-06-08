@@ -322,12 +322,12 @@ export default function ProductDetails({ slug }: Params) {
             {/* Price section */}
             <div className="flex items-baseline gap-3 pb-6 border-b border-stone-200">
               <span className="text-3xl font-bold text-stone-900">
-                ${displayPrice}
+                ₹{displayPrice}
               </span>
               {displayOriginalPrice && parseFloat(displayOriginalPrice) > parseFloat(displayPrice) && (
                 <>
                   <span className="text-lg text-stone-400 line-through">
-                    ${displayOriginalPrice}
+                    ₹{displayOriginalPrice}
                   </span>
                   <Badge variant="outline" className="border-amber-500 text-amber-600 bg-amber-50 font-bold text-xs rounded-none px-2 py-0.5">
                     Save {discountPercent}%

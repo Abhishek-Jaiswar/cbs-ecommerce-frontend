@@ -113,7 +113,6 @@ const Navbar = () => {
                 <DropdownMenuTrigger asChild>
                   <button className="flex items-center gap-2.5 outline-none cursor-pointer focus:ring-0 select-none group text-left">
                     <Avatar className="h-9 w-9 border border-stone-200">
-                      <AvatarImage src="/avatars/admin.jpg" alt={user.name} />
                       <AvatarFallback className="bg-amber-100 text-amber-800 font-bold uppercase text-xs">
                         {user.name.substring(0, 2)}
                       </AvatarFallback>

@@ -55,7 +55,7 @@ export default function DashboardLayout({
   const userProfile = {
     name: user.name,
     email: user.email,
-    avatar: "/avatars/admin.jpg",
+    avatar: "",
   };
 
   return (

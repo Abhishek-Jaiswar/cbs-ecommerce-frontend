@@ -98,15 +98,15 @@ export const columns = (onDelete?: (id: string) => void): ColumnDef<ProductListi
         ? parseFloat(row.original.originalPrice)
         : null;
 
-      const formattedPrice = new Intl.NumberFormat("en-US", {
+      const formattedPrice = new Intl.NumberFormat("en-IN", {
         style: "currency",
-        currency: "USD",
+        currency: "INR",
       }).format(price);
 
       const formattedOriginalPrice = originalPrice
-        ? new Intl.NumberFormat("en-US", {
+        ? new Intl.NumberFormat("en-IN", {
             style: "currency",
-            currency: "USD",
+            currency: "INR",
           }).format(originalPrice)
         : null;
 

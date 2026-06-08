@@ -61,6 +61,10 @@ const data = {
           url: "/dashboard/products/create",
         },
         {
+          title: "Inventory",
+          url: "/dashboard/inventory",
+        },
+        {
           title: "Categories",
           url: "/dashboard/categories",
         },
