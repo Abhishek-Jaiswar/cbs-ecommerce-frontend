@@ -99,7 +99,11 @@ const data = {
       icon: <Percent className="size-4" />,
       items: [
         {
-          title: "Coupons & Offers",
+          title: "Coupons",
+          url: "/dashboard/coupons",
+        },
+        {
+          title: "Promotional Offers",
           url: "/dashboard/offers",
         },
         {

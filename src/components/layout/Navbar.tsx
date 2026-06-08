@@ -7,6 +7,8 @@ import { Button } from "../ui/button";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { useLogoutMutation } from "@/services/api/auth/auth-api";
 import { logout as logoutAction } from "@/store/features/auth/auth.slice";
+import { useGetCartQuery } from "@/services/api/cart/cart-api";
+import { useGetWishlistQuery } from "@/services/api/wishlist/wishlist-api";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -41,6 +43,13 @@ const Navbar = () => {
   const dispatch = useAppDispatch();
   const { user, isAuthenticated } = useAppSelector((state) => state.auth);
   const [logoutApi] = useLogoutMutation();
+
+  // RTK Query fetches for wishlist and cart sizes
+  const { data: cartRes } = useGetCartQuery(undefined, { skip: !isAuthenticated });
+  const { data: wishlistRes } = useGetWishlistQuery(undefined, { skip: !isAuthenticated });
+
+  const cartCount = cartRes?.data?.items?.length ?? 0;
+  const wishlistCount = wishlistRes?.data?.items?.length ?? 0;
 
   const handleLogout = async () => {
     try {
@@ -79,20 +88,24 @@ const Navbar = () => {
         {/* RIGHT SECTION */}
         <div className="flex items-center gap-5">
           {/* WISHLIST */}
-          <button className="relative transition-all duration-300 hover:-translate-y-1 hover:text-amber-500">
+          <Link href="/wishlist" className="relative text-gray-800 transition-all duration-300 hover:-translate-y-0.5 hover:text-amber-500">
             <Heart size={24} strokeWidth={1.8} />
-            <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-xs text-white">
-              0
-            </span>
-          </button>
+            {wishlistCount > 0 && (
+              <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-white">
+                {wishlistCount}
+              </span>
+            )}
+          </Link>
 
           {/* CART */}
-          <button className="relative transition-all duration-300 hover:-translate-y-1 hover:text-amber-500">
+          <Link href="/cart" className="relative text-gray-800 transition-all duration-300 hover:-translate-y-0.5 hover:text-amber-500">
             <ShoppingBag size={24} strokeWidth={1.8} />
-            <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-xs text-white">
-              0
-            </span>
-          </button>
+            {cartCount > 0 && (
+              <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-white">
+                {cartCount}
+              </span>
+            )}
+          </Link>
 
           {isAuthenticated && user ? (
             <div className="flex items-center gap-3">

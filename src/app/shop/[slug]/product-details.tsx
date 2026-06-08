@@ -19,14 +19,22 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useAddToCartMutation } from "@/services/api/cart/cart-api";
+import { useToggleWishlistItemMutation, useGetWishlistQuery } from "@/services/api/wishlist/wishlist-api";
+import { useGetProductReviewsQuery, useCreateReviewMutation } from "@/services/api/reviews/reviews-api";
+import { useAppSelector } from "@/store/hooks";
+import { useRouter } from "next/navigation";
 
 type Params = {
   slug: string;
 };
 
 export default function ProductDetails({ slug }: Params) {
+  const router = useRouter();
   const { data, isLoading, isError } = useGetProductDetailsQuery(slug);
   const product = data?.data;
+
+  const { isAuthenticated, user } = useAppSelector((state) => state.auth);
 
   // Selected state
   const [selectedColor, setSelectedColor] = useState<string>("");
@@ -35,14 +43,31 @@ export default function ProductDetails({ slug }: Params) {
   const [activeImgIndex, setActiveImgIndex] = useState(0);
   const [activeTab, setActiveTab] = useState("description");
 
+  // API mutations & queries
+  const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
+  const [toggleWishlist, { isLoading: isTogglingWishlist }] = useToggleWishlistItemMutation();
+  
+  const { data: wishlistRes } = useGetWishlistQuery(undefined, { skip: !isAuthenticated });
+  const isWishlisted = wishlistRes?.data?.items?.some((item) => item.product?.id === product?.id) ?? false;
+
+  const { data: reviewsRes, isLoading: isReviewsLoading } = useGetProductReviewsQuery(
+    { productId: product?.id ?? "" },
+    { skip: !product?.id }
+  );
+  const reviews = reviewsRes?.data?.items ?? [];
+  const reviewsCount = reviewsRes?.data?.total ?? 0;
+
+  const [createReview, { isLoading: isSubmittingReview }] = useCreateReviewMutation();
+
   // Review form state
   const [reviewName, setReviewName] = useState("");
   const [reviewEmail, setReviewEmail] = useState("");
   const [reviewRating, setReviewRating] = useState(5);
   const [reviewComment, setReviewComment] = useState("");
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
+  const [reviewError, setReviewError] = useState("");
 
-  // Initialize selected values
+  // Initialize selected values and review name/email
   useEffect(() => {
     if (product) {
       if (product.colors?.length > 0 && !selectedColor) {
@@ -52,7 +77,11 @@ export default function ProductDetails({ slug }: Params) {
         setSelectedSize(product.sizes[0].id);
       }
     }
-  }, [product, selectedColor, selectedSize]);
+    if (isAuthenticated && user) {
+      setReviewName(user.name);
+      setReviewEmail(user.email);
+    }
+  }, [product, selectedColor, selectedSize, isAuthenticated, user]);
 
   // Construct gallery images
   const galleryImages = useMemo(() => {
@@ -99,18 +128,55 @@ export default function ProductDetails({ slug }: Params) {
     return 0;
   }, [displayPrice, displayOriginalPrice]);
 
-  // Handle Review submission
-  const handleReviewSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!reviewName || !reviewEmail || !reviewComment) {
-      alert("Please fill in all fields.");
+  // Handle Add to Bag
+  const handleAddToBag = async () => {
+    if (!isAuthenticated) {
+      router.push("/login");
       return;
     }
-    setReviewSubmitted(true);
-    // Reset fields
-    setReviewName("");
-    setReviewEmail("");
-    setReviewComment("");
+    if (!activeVariant) return;
+    try {
+      await addToCart({ variantId: activeVariant.id, quantity }).unwrap();
+    } catch (err) {
+      console.error("Failed to add item to bag", err);
+    }
+  };
+
+  // Handle Toggle Wishlist
+  const handleToggleWishlist = async () => {
+    if (!isAuthenticated) {
+      router.push("/login");
+      return;
+    }
+    if (!product) return;
+    try {
+      await toggleWishlist({ productId: product.id }).unwrap();
+    } catch (err) {
+      console.error("Failed to toggle wishlist", err);
+    }
+  };
+
+  // Handle Review submission
+  const handleReviewSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isAuthenticated) {
+      router.push("/login");
+      return;
+    }
+    if (!product) return;
+    setReviewError("");
+    try {
+      await createReview({
+        productId: product.id,
+        rating: reviewRating,
+        comment: reviewComment,
+      }).unwrap();
+      setReviewSubmitted(true);
+      setReviewComment("");
+    } catch (err: any) {
+      console.error("Failed to submit review", err);
+      setReviewError(err?.data?.message || "Failed to submit review. You might have already reviewed this product.");
+    }
   };
 
   if (isLoading) {
@@ -146,7 +212,7 @@ export default function ProductDetails({ slug }: Params) {
           <AlertTriangle className="h-12 w-12 text-amber-500 mx-auto mb-4" />
           <h2 className="text-xl font-serif text-stone-800">Design Not Found</h2>
           <p className="text-sm text-stone-500 mt-2">
-            We couldn't retrieve the details for this item. It might have been cataloged under a different name or archived.
+            We couldn&apos;t retrieve the details for this item. It might have been cataloged under a different name or archived.
           </p>
           <Button className="bg-stone-900 text-white rounded-none hover:bg-amber-500 hover:text-stone-950 mt-6" asChild>
             <Link href="/shop">Back to Catalog</Link>
@@ -158,9 +224,6 @@ export default function ProductDetails({ slug }: Params) {
 
   const categoryName = product.category?.name ?? "Collection";
   const brandName = product.brand?.name ?? "ZenVora";
-  const brandLogo = product.brand?.image ?? "https://res.cloudinary.com/demo/image/upload/v12345678/zenvora-logo.png";
-
-  const reviewsCount = 1; // Default stub reviews count
 
   return (
     <div className="flex-1 bg-stone-50 py-10 min-h-screen">
@@ -383,11 +446,24 @@ export default function ProductDetails({ slug }: Params) {
               </div>
 
               <Button
-                disabled={!activeVariant || activeVariant.stock <= 0}
-                onClick={() => alert(`Added ${quantity} units of SKU ${activeVariant?.sku} to cart`)}
+                disabled={!activeVariant || activeVariant.stock <= 0 || isAddingToCart}
+                onClick={handleAddToBag}
                 className="flex-1 bg-stone-950 text-white rounded-none hover:bg-amber-500 hover:text-stone-950 h-12 text-xs font-bold uppercase tracking-widest transition-colors duration-200"
               >
-                Add to Bag
+                {isAddingToCart ? "Adding..." : "Add to Bag"}
+              </Button>
+
+              <Button
+                variant="outline"
+                type="button"
+                disabled={isTogglingWishlist}
+                onClick={handleToggleWishlist}
+                className={`border-stone-300 hover:border-stone-950 h-12 w-12 p-0 flex items-center justify-center rounded-none transition-colors ${
+                  isWishlisted ? "text-rose-500 hover:text-rose-600 bg-rose-50/50" : "text-stone-500 hover:text-stone-950 bg-transparent"
+                }`}
+                title={isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
+              >
+                <Heart className={`h-5 w-5 ${isWishlisted ? "fill-rose-500 text-rose-500" : ""}`} />
               </Button>
             </div>
 
@@ -489,34 +565,50 @@ export default function ProductDetails({ slug }: Params) {
                 {/* Review List */}
                 <div className="flex flex-col gap-6">
                   <h3 className="text-sm font-bold text-stone-800 uppercase tracking-wide">
-                    {reviewsCount} customer review for <span className="font-serif italic text-amber-600">"{product.name}"</span>
+                    {reviewsCount} customer review{reviewsCount !== 1 ? "s" : ""} for <span className="font-serif italic text-amber-600">&ldquo;{product.name}&rdquo;</span>
                   </h3>
                   
-                  <div className="flex gap-4 border-b border-stone-100 pb-6">
-                    <div className="h-10 w-10 bg-amber-100 text-amber-700 font-bold rounded-full flex items-center justify-center shrink-0 text-sm">
-                      A
-                    </div>
-                    <div className="flex flex-col gap-1.5">
-                      <div className="flex text-amber-500">
-                        <Star className="h-3 w-3 fill-amber-500" />
-                        <Star className="h-3 w-3 fill-amber-500" />
-                        <Star className="h-3 w-3 fill-amber-500" />
-                        <Star className="h-3 w-3 fill-amber-500" />
-                        <Star className="h-3 w-3 fill-amber-500" />
+                  {isReviewsLoading ? (
+                    <p className="text-stone-400 text-xs italic">Loading customer reviews...</p>
+                  ) : reviews.length > 0 ? (
+                    reviews.map((rev) => (
+                      <div key={rev.id} className="flex gap-4 border-b border-stone-100 pb-6">
+                        <div className="h-10 w-10 bg-amber-100 text-amber-700 font-bold rounded-full flex items-center justify-center shrink-0 text-sm">
+                          {(rev.user?.name || "A").substring(0, 1).toUpperCase()}
+                        </div>
+                        <div className="flex flex-col gap-1.5">
+                          <div className="flex text-amber-500">
+                            {[...Array(5)].map((_, i) => (
+                              <Star
+                                key={i}
+                                className={`h-3 w-3 ${i < rev.rating ? "fill-amber-500 text-amber-500" : "text-stone-250 text-stone-200"}`}
+                              />
+                            ))}
+                          </div>
+                          <p className="text-xs text-stone-400">
+                            <span className="font-bold text-stone-700">{rev.user?.name || "Customer"}</span> – {new Date(rev.createdAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+                          </p>
+                          <p className="text-sm text-stone-600 mt-1 font-light leading-relaxed">
+                            {rev.comment}
+                          </p>
+                        </div>
                       </div>
-                      <p className="text-xs text-stone-400">
-                        <span className="font-bold text-stone-700">admin</span> – June 3, 2026
-                      </p>
-                      <p className="text-sm text-stone-600 mt-1 font-light leading-relaxed">
-                        Exquisite craftsmanship and premium weight. The infinity loop has a stunning high-polish finish. Highly recommended!
-                      </p>
-                    </div>
-                  </div>
+                    ))
+                  ) : (
+                    <p className="text-stone-400 italic">No reviews yet. Be the first to share your thoughts!</p>
+                  )}
 
                   {reviewSubmitted && (
                     <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 p-4 text-xs font-semibold flex items-center gap-2">
                       <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
-                      Thank you! Your review has been submitted for approval by our gemologists.
+                      Thank you! Your review has been submitted successfully.
+                    </div>
+                  )}
+
+                  {reviewError && (
+                    <div className="bg-rose-50 border border-rose-200 text-rose-800 p-4 text-xs font-semibold flex items-center gap-2">
+                      <AlertTriangle size={16} className="text-rose-600 shrink-0" />
+                      {reviewError}
                     </div>
                   )}
                 </div>
