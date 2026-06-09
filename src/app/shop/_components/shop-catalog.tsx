@@ -32,6 +32,7 @@ export function ShopCatalog({ initialSearch = "" }: ShopCatalogProps) {
   const [sortBy, setSortBy] = useState<ShopSortKey>("relevance");
   const [viewMode, setViewMode] = useState<ShopViewMode>("grid");
   const [page, setPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(8);
 
   const { data: listingData, isLoading: isListingLoading } =
     useGetProductListingQuery({
@@ -97,16 +98,16 @@ export function ShopCatalog({ initialSearch = "" }: ShopCatalogProps) {
     return filtered;
   }, [maxPrice, minPrice, rawProducts, search, selectedBrandId, selectedCategoryId, sortBy]);
 
-  const totalPages = Math.max(1, Math.ceil(processedProducts.length / ITEMS_PER_PAGE));
+  const totalPages = Math.max(1, Math.ceil(processedProducts.length / itemsPerPage));
   const activePage = Math.min(page, totalPages);
-  const startIndex = (activePage - 1) * ITEMS_PER_PAGE;
+  const startIndex = (activePage - 1) * itemsPerPage;
   const paginatedProducts = processedProducts.slice(
     startIndex,
-    startIndex + ITEMS_PER_PAGE
+    startIndex + itemsPerPage
   );
 
   const resultStart = processedProducts.length === 0 ? 0 : startIndex + 1;
-  const resultEnd = Math.min(startIndex + ITEMS_PER_PAGE, processedProducts.length);
+  const resultEnd = Math.min(startIndex + itemsPerPage, processedProducts.length);
 
   const resetPagination = () => setPage(1);
 
@@ -118,6 +119,7 @@ export function ShopCatalog({ initialSearch = "" }: ShopCatalogProps) {
     setMaxPrice(availableMaxPrice);
     setSortBy("relevance");
     setPage(1);
+    setItemsPerPage(8);
   };
 
   return (
@@ -151,8 +153,9 @@ export function ShopCatalog({ initialSearch = "" }: ShopCatalogProps) {
         </div>
 
         <div className="order-1 lg:order-2">
-          <div className="mb-8 flex h-12 items-center border border-[#ded7cc] bg-white px-4 font-[var(--font-corano)]">
-            <Search className="mr-3 h-5 w-5 shrink-0 text-[#c29958]" />
+          {/* Elegant Search Input */}
+          <div className="mb-8 flex h-12 items-center border border-stone-200 bg-white px-4 font-[var(--font-corano)] focus-within:border-[#c29958] transition-colors shadow-sm">
+            <Search className="mr-3 h-4 w-4 shrink-0 text-[#c29958]" />
             <input
               value={search}
               onChange={(event) => {
@@ -160,7 +163,7 @@ export function ShopCatalog({ initialSearch = "" }: ShopCatalogProps) {
                 resetPagination();
               }}
               placeholder="Search catalog..."
-              className="min-w-0 flex-1 bg-transparent text-sm text-[#555555] outline-none placeholder:text-[#999999]"
+              className="min-w-0 flex-1 bg-transparent text-sm text-stone-800 outline-none placeholder:text-stone-400"
             />
           </div>
 
@@ -175,6 +178,11 @@ export function ShopCatalog({ initialSearch = "" }: ShopCatalogProps) {
               resetPagination();
             }}
             onViewModeChange={setViewMode}
+            itemsPerPage={itemsPerPage}
+            onItemsPerPageChange={(limit) => {
+              setItemsPerPage(limit);
+              resetPagination();
+            }}
           />
 
           <ShopProductGrid

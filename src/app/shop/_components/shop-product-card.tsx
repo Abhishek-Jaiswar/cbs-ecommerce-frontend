@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Heart, RefreshCw, Search, ShoppingBag, Star } from "lucide-react";
+import { Heart, ShoppingBag, Star } from "lucide-react";
 import { useToggleWishlistItemMutation } from "@/services/api/wishlist/wishlist-api";
 import { getProductImage } from "@/lib/utils";
 import type { ShopProduct, ShopViewMode } from "./shop-types";
@@ -23,44 +23,6 @@ function formatPrice(price: string) {
   }).format(numeric);
 }
 
-function ProductActions({
-  productId,
-  productSlug,
-}: {
-  productId: string;
-  productSlug: string;
-}) {
-  const [toggleWishlist, { isLoading }] = useToggleWishlistItemMutation();
-
-  return (
-    <div className="absolute right-4 top-4 flex translate-x-4 flex-col gap-2 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100">
-      <button
-        type="button"
-        disabled={isLoading}
-        onClick={() => toggleWishlist({ productId })}
-        aria-label="Add to wishlist"
-        className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-[#222222] shadow-sm transition-colors hover:bg-[#c29958] hover:text-white disabled:opacity-60"
-      >
-        <Heart className="h-4 w-4" />
-      </button>
-      <button
-        type="button"
-        aria-label="Compare product"
-        className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-[#222222] shadow-sm transition-colors hover:bg-[#c29958] hover:text-white"
-      >
-        <RefreshCw className="h-4 w-4" />
-      </button>
-      <Link
-        href={`/shop/${productSlug}`}
-        aria-label="Quick view product"
-        className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-[#222222] shadow-sm transition-colors hover:bg-[#c29958] hover:text-white"
-      >
-        <Search className="h-4 w-4" />
-      </Link>
-    </div>
-  );
-}
-
 export function ShopProductCard({ product, viewMode }: ShopProductCardProps) {
   const productImage = getProductImage(product.slug);
   const originalPrice = product.originalPrice ? Number(product.originalPrice) : 0;
@@ -70,113 +32,149 @@ export function ShopProductCard({ product, viewMode }: ShopProductCardProps) {
       ? Math.round(((originalPrice - price) / originalPrice) * 100)
       : 0;
 
+  const [toggleWishlist, { isLoading }] = useToggleWishlistItemMutation();
+  const rating = "4.8"; // Default premium rating fallback
+
   if (viewMode === "list") {
     return (
-      <article className="group grid gap-6 border border-[#eee8df] bg-white p-4 font-[var(--font-corano)] transition-shadow hover:shadow-md md:grid-cols-[260px_1fr]">
-        <Link href={`/shop/${product.slug}`} className="relative block aspect-square overflow-hidden bg-[#f7f2ea]">
+      <article className="group grid gap-8 border-b border-stone-100 pb-8 font-[var(--font-corano)] md:grid-cols-[240px_1fr] bg-transparent">
+        <Link href={`/shop/${product.slug}`} className="relative block aspect-square overflow-hidden bg-[#fbfaf8]">
           <Image
             src={productImage}
             alt={product.name}
             fill
-            sizes="(min-width: 768px) 260px, 100vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            sizes="(min-width: 768px) 240px, 100vw"
+            className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
           />
-          <ProductActions productId={product.id} productSlug={product.slug} />
         </Link>
 
-        <div className="flex flex-col justify-center">
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#c29958]">
+        <div className="flex flex-col justify-center text-left">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#c29958]">
             Zenvoraa
           </p>
-          <h3 className="mt-3 text-xl font-bold text-[#222222] transition-colors group-hover:text-[#c29958]">
+          <h3 className="mt-2 text-xl font-serif font-medium text-stone-850 leading-snug transition-colors duration-300 group-hover:text-[#c29958]">
             <Link href={`/shop/${product.slug}`}>{product.name}</Link>
           </h3>
-          <div className="mt-3 flex text-[#c29958]">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <Star key={star} className="h-4 w-4 fill-current" />
-            ))}
+          
+          <div className="mt-2.5 flex items-center gap-3 text-xs text-stone-400 font-mono uppercase tracking-wider">
+            <div className="flex items-center gap-1 text-[#c29958]">
+              <Star className="h-3 w-3 fill-current stroke-current" />
+              <span className="font-bold text-stone-500">{rating}</span>
+            </div>
+            <span>•</span>
+            <span>SKU: {product.id.substring(0, 8).toUpperCase()}</span>
           </div>
+
           <div className="mt-4 flex items-baseline gap-3">
-            <span className="text-lg font-bold text-[#c29958]">
+            <span className="text-lg font-bold text-stone-850 tracking-wide">
               {formatPrice(product.price)}
             </span>
             {product.originalPrice && (
-              <span className="text-sm text-[#999999] line-through">
+              <span className="text-sm text-stone-400 line-through font-light">
                 {formatPrice(product.originalPrice)}
               </span>
             )}
           </div>
-          <p className="mt-4 max-w-xl text-sm leading-7 text-[#555555]">
+          <p className="mt-4 text-xs leading-relaxed text-stone-500 max-w-xl">
             {product.excerpt}
           </p>
-          <Link
-            href={`/shop/${product.slug}`}
-            className="mt-6 inline-flex h-11 w-fit items-center gap-2 bg-[#222222] px-6 text-xs font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#c29958]"
-          >
-            <ShoppingBag className="h-4 w-4" />
-            View Product
-          </Link>
+          <div className="mt-6 flex items-center gap-4">
+            <Link
+              href={`/shop/${product.slug}`}
+              className="inline-flex h-10 items-center justify-center gap-2 border border-stone-900 bg-stone-900 px-6 text-[11px] font-semibold uppercase tracking-widest text-white transition-all duration-300 hover:bg-[#c29958] hover:border-[#c29958] hover:text-white active:scale-[0.98]"
+            >
+              <ShoppingBag className="h-3.5 w-3.5" />
+              View Product
+            </Link>
+            <button
+              type="button"
+              disabled={isLoading}
+              onClick={() => toggleWishlist({ productId: product.id })}
+              className="flex h-10 w-10 items-center justify-center border border-stone-200 text-stone-600 hover:text-white hover:bg-[#c29958] hover:border-[#c29958] transition-all duration-300"
+              aria-label="Add to wishlist"
+            >
+              <Heart className="h-4 w-4" />
+            </button>
+          </div>
         </div>
       </article>
     );
   }
 
   return (
-    <article className="group font-[var(--font-corano)]">
-      <div className="relative overflow-hidden bg-[#f7f2ea]">
-        <Link href={`/shop/${product.slug}`} className="relative block aspect-square">
+    <article className="group flex h-full flex-col bg-transparent font-[var(--font-corano)] pb-4">
+      <div className="relative overflow-hidden bg-[#fbfaf8] aspect-square">
+        <Link href={`/shop/${product.slug}`} className="relative block w-full h-full">
           <Image
             src={productImage}
             alt={product.name}
             fill
             sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
           />
         </Link>
 
-        <div className="absolute left-4 top-4 flex flex-col gap-2">
+        <div className="absolute left-3 top-3 flex flex-col gap-1.5 z-10">
           {product.isNew && (
-            <span className="bg-[#222222] px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
+            <span className="bg-stone-900/90 backdrop-blur-[2px] px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-white shadow-sm">
               New
             </span>
           )}
           {discount > 0 && (
-            <span className="bg-[#c29958] px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
+            <span className="bg-[#c29958]/95 backdrop-blur-[2px] px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-white shadow-sm">
               {discount}%
             </span>
           )}
         </div>
 
-        <ProductActions productId={product.id} productSlug={product.slug} />
+        {/* Minimal Wishlist Button in Top-Right */}
+        <div className="absolute right-3 top-3 z-10">
+          <button
+            type="button"
+            disabled={isLoading}
+            onClick={() => toggleWishlist({ productId: product.id })}
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-white/95 backdrop-blur-[2px] text-stone-700 shadow-sm border border-stone-100/50 transition-all duration-300 hover:bg-[#c29958] hover:text-white hover:border-[#c29958] hover:scale-105 disabled:opacity-60"
+            aria-label="Add to wishlist"
+          >
+            <Heart className="h-3.5 w-3.5" />
+          </button>
+        </div>
 
         <Link
           href={`/shop/${product.slug}`}
-          className="absolute inset-x-0 bottom-0 flex h-11 translate-y-full items-center justify-center gap-2 bg-[#222222] text-xs font-bold uppercase tracking-wide text-white transition-transform duration-300 hover:bg-[#c29958] group-hover:translate-y-0"
+          className="absolute inset-x-0 bottom-0 flex h-10 translate-y-full items-center justify-center gap-1.5 bg-stone-900/90 backdrop-blur-[2px] text-[10px] font-bold uppercase tracking-widest text-white transition-all duration-300 hover:bg-[#c29958] group-hover:translate-y-0 z-10"
         >
-          <ShoppingBag className="h-4 w-4" />
+          <ShoppingBag className="h-3.5 w-3.5" />
           View Product
         </Link>
       </div>
 
-      <div className="pt-5 text-center">
-        <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#c29958]">
+      <div className="flex flex-1 flex-col pt-4 text-left">
+        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#c29958]">
           Zenvoraa
         </p>
-        <h3 className="mt-2 text-base font-bold text-[#222222] transition-colors group-hover:text-[#c29958]">
+        <h3 className="mt-1.5 text-[15px] font-serif font-medium text-stone-850 leading-snug transition-colors duration-300 group-hover:text-[#c29958] line-clamp-1">
           <Link href={`/shop/${product.slug}`}>{product.name}</Link>
         </h3>
-        <div className="mt-2 flex justify-center text-[#c29958]">
-          {[1, 2, 3, 4, 5].map((star) => (
-            <Star key={star} className="h-3.5 w-3.5 fill-current" />
-          ))}
-        </div>
-        <div className="mt-3 flex items-baseline justify-center gap-2">
-          <span className="font-bold text-[#c29958]">{formatPrice(product.price)}</span>
-          {product.originalPrice && (
-            <span className="text-sm text-[#999999] line-through">
-              {formatPrice(product.originalPrice)}
-            </span>
-          )}
+        
+        <p className="mt-2 text-xs leading-relaxed text-stone-400 line-clamp-2 min-h-[32px]">
+          {product.excerpt}
+        </p>
+
+        {/* Left Aligned Price and Right Aligned Star */}
+        <div className="mt-3 flex items-center justify-between border-t border-stone-100/60 pt-3">
+          <div className="flex items-baseline gap-2">
+            <span className="text-sm font-bold text-stone-850 tracking-wide">{formatPrice(product.price)}</span>
+            {product.originalPrice && (
+              <span className="text-[11px] text-stone-400 line-through font-light">
+                {formatPrice(product.originalPrice)}
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-1 text-[#c29958]">
+            <Star className="h-3 w-3 fill-current stroke-current" />
+            <span className="text-[11px] font-bold text-stone-500 font-mono">{rating}</span>
+          </div>
         </div>
       </div>
     </article>

@@ -10,7 +10,6 @@ import {
   Heart,
   Headphones,
   RefreshCw,
-  Search,
   ShieldCheck,
   ShoppingBag,
   Star,
@@ -102,58 +101,82 @@ const categoryBanners = [
 const fallbackProducts = [
   {
     brand: "Gold",
+    excerpt: "A polished everyday piece with a bright diamond-inspired finish.",
     image: "/corano/product/product-1.jpg",
     oldPrice: "$29.99",
     price: "$50.00",
+    rating: "4.9",
+    slug: "perfect-diamond-jewelry",
     title: "Perfect Diamond Jewelry",
   },
   {
     brand: "Mony",
+    excerpt: "A warm golden necklace designed for layered occasion styling.",
     image: "/corano/product/product-2.jpg",
     oldPrice: "$35.00",
     price: "$60.00",
+    rating: "4.8",
+    slug: "handmade-golden-necklace",
     title: "Handmade Golden Necklace",
   },
   {
     brand: "Diamond",
+    excerpt: "Refined sparkle with a minimal setting and crisp silhouette.",
     image: "/corano/product/product-3.jpg",
     oldPrice: "",
     price: "$40.00",
+    rating: "4.7",
+    slug: "minimal-diamond-jewelry",
     title: "Perfect Diamond Jewelry",
   },
   {
     brand: "Silver",
+    excerpt: "A sculpted ornament with cool silver tones and elegant shine.",
     image: "/corano/product/product-4.jpg",
     oldPrice: "$45.00",
     price: "$70.00",
+    rating: "4.8",
+    slug: "diamond-exclusive-ornament",
     title: "Diamond Exclusive Ornament",
   },
   {
     brand: "Mony",
+    excerpt: "A citygold ring with a smooth profile and easy daily polish.",
     image: "/corano/product/product-5.jpg",
     oldPrice: "$25.00",
     price: "$45.00",
+    rating: "4.6",
+    slug: "citygold-exclusive-ring",
     title: "Citygold Exclusive Ring",
   },
   {
     brand: "Gold",
+    excerpt: "A statement piece built around classic shine and soft detailing.",
     image: "/corano/product/product-6.jpg",
     oldPrice: "$60.00",
     price: "$80.00",
+    rating: "4.9",
+    slug: "classic-diamond-jewelry",
     title: "Perfect Diamond Jewelry",
   },
   {
     brand: "Mony",
+    excerpt: "Hand-finished gold styling with a clean neckline presence.",
     image: "/corano/product/product-7.jpg",
     oldPrice: "$40.00",
     price: "$55.00",
+    rating: "4.7",
+    slug: "golden-necklace-edit",
     title: "Handmade Golden Necklace",
   },
   {
     brand: "Diamond",
+    excerpt: "A bright diamond look for weddings, gifting, and evening wear.",
     image: "/corano/product/product-8.jpg",
     oldPrice: "",
     price: "$95.00",
+    rating: "5.0",
+    slug: "diamond-jewelry-highlight",
     title: "Perfect Diamond Jewelry",
   },
 ];
@@ -237,70 +260,87 @@ function ProductCard({
 }) {
   const image = staticProduct?.image ?? "/corano/product/product-1.jpg";
   const title = product?.name ?? staticProduct?.title ?? "Perfect Diamond Jewelry";
+  const excerpt =
+    product?.excerpt ??
+    staticProduct?.excerpt ??
+    "A refined Zenvoraa piece designed for everyday elegance.";
   const price = product ? formatPrice(product.price) : staticProduct?.price ?? "$50.00";
   const oldPrice = product?.originalPrice
     ? formatPrice(product.originalPrice)
     : staticProduct?.oldPrice;
-  const href = product ? `/shop/${product.slug}` : "/shop";
+  const href = product
+    ? `/shop/${product.slug}`
+    : `/shop/${staticProduct?.slug ?? "perfect-diamond-jewelry"}`;
+  const rating = staticProduct?.rating ?? "4.8";
 
   return (
-    <article className="group font-[var(--font-corano)]">
-      <div className="relative overflow-hidden bg-[#f7f2ea]">
-        <Link href={href} className="relative block aspect-square">
+    <article className="group flex h-full flex-col bg-transparent font-[var(--font-corano)] pb-4">
+      <div className="relative overflow-hidden bg-[#fbfaf8] aspect-square">
+        <Link href={href} className="relative block w-full h-full">
           <Image
             src={image}
             alt={title}
             fill
             sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
           />
         </Link>
-        <div className="absolute left-4 top-4 flex flex-col gap-2">
-          <span className="bg-[#222222] px-2 py-1 text-[10px] font-bold uppercase text-white">
+        <div className="absolute left-3 top-3 flex flex-col gap-1.5 z-10">
+          <span className="bg-stone-900/90 backdrop-blur-[2px] px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-white shadow-sm">
             New
           </span>
           {oldPrice && (
-            <span className="bg-[#c29958] px-2 py-1 text-[10px] font-bold uppercase text-white">
+            <span className="bg-[#c29958]/95 backdrop-blur-[2px] px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-white shadow-sm">
               Sale
             </span>
           )}
         </div>
-        <div className="absolute right-4 top-4 flex translate-x-4 flex-col gap-2 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100">
-          {[Heart, RefreshCw, Search].map((Icon, index) => (
-            <button
-              key={index}
-              type="button"
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-[#222222] shadow-sm transition-colors hover:bg-[#c29958] hover:text-white"
-            >
-              <Icon className="h-4 w-4" />
-            </button>
-          ))}
+        
+        {/* Minimal Wishlist Button in Top-Right */}
+        <div className="absolute right-3 top-3 z-10">
+          <button
+            type="button"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-white/95 backdrop-blur-[2px] text-stone-700 shadow-sm border border-stone-100/50 transition-all duration-300 hover:bg-[#c29958] hover:text-white hover:border-[#c29958] hover:scale-105"
+            aria-label="Add to wishlist"
+          >
+            <Heart className="h-3.5 w-3.5" />
+          </button>
         </div>
+
+        {/* Quick Add Slide-Up Bar */}
         <Link
           href={href}
-          className="absolute inset-x-0 bottom-0 flex h-11 translate-y-full items-center justify-center gap-2 bg-[#222222] text-xs font-bold uppercase tracking-wide text-white transition-transform duration-300 hover:bg-[#c29958] group-hover:translate-y-0"
+          className="absolute inset-x-0 bottom-0 flex h-10 translate-y-full items-center justify-center gap-1.5 bg-stone-900/90 backdrop-blur-[2px] text-[10px] font-bold uppercase tracking-widest text-white transition-all duration-300 hover:bg-[#c29958] group-hover:translate-y-0 z-10"
         >
-          <ShoppingBag className="h-4 w-4" />
+          <ShoppingBag className="h-3.5 w-3.5" />
           View Product
         </Link>
       </div>
-      <div className="pt-5 text-center">
-        <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#c29958]">
+
+      <div className="flex flex-1 flex-col pt-4 text-left">
+        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#c29958]">
           {staticProduct?.brand ?? "Zenvoraa"}
         </p>
-        <h3 className="mt-2 text-base font-bold text-[#222222] transition-colors group-hover:text-[#c29958]">
+        <h3 className="mt-1.5 text-[15px] font-serif font-medium text-stone-850 leading-snug transition-colors duration-300 group-hover:text-[#c29958] line-clamp-1">
           <Link href={href}>{title}</Link>
         </h3>
-        <div className="mt-2 flex justify-center text-[#c29958]">
-          {[1, 2, 3, 4, 5].map((star) => (
-            <Star key={star} className="h-3.5 w-3.5 fill-current" />
-          ))}
-        </div>
-        <div className="mt-3 flex items-baseline justify-center gap-2">
-          <span className="font-bold text-[#c29958]">{price}</span>
-          {oldPrice && (
-            <span className="text-sm text-[#999999] line-through">{oldPrice}</span>
-          )}
+        
+        <p className="mt-2 text-xs leading-relaxed text-stone-400 line-clamp-2 min-h-[32px]">
+          {excerpt}
+        </p>
+
+        {/* Left Aligned Price and Right Aligned Star */}
+        <div className="mt-3 flex items-center justify-between border-t border-stone-100/60 pt-3">
+          <div className="flex items-baseline gap-2">
+            <span className="text-sm font-bold text-stone-850 tracking-wide">{price}</span>
+            {oldPrice && (
+              <span className="text-[11px] text-stone-400 line-through font-light">{oldPrice}</span>
+            )}
+          </div>
+          <div className="flex items-center gap-1 text-[#c29958]">
+            <Star className="h-3 w-3 fill-current stroke-current" />
+            <span className="text-[11px] font-bold text-stone-500 font-mono">{rating}</span>
+          </div>
         </div>
       </div>
     </article>
