@@ -11,6 +11,8 @@ type ShopToolbarProps = {
   viewMode: ShopViewMode;
   onSortChange: (sortBy: ShopSortKey) => void;
   onViewModeChange: (viewMode: ShopViewMode) => void;
+  itemsPerPage: number;
+  onItemsPerPageChange: (itemsPerPage: number) => void;
 };
 
 const sortOptions: { label: string; value: ShopSortKey }[] = [
@@ -30,7 +32,11 @@ export function ShopToolbar({
   viewMode,
   onSortChange,
   onViewModeChange,
+  itemsPerPage,
+  onItemsPerPageChange,
 }: ShopToolbarProps) {
+  const itemsPerPageOptions = [8, 12, 16, 24];
+
   return (
     <div className="mb-8 border border-[#eee8df] bg-white px-5 py-4 font-[var(--font-corano)]">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -73,20 +79,41 @@ export function ShopToolbar({
           </p>
         </div>
 
-        <label className="flex items-center gap-3 text-sm text-[#555555]">
-          Sort By :
-          <select
-            value={sortBy}
-            onChange={(event) => onSortChange(event.target.value as ShopSortKey)}
-            className="h-10 min-w-48 border border-[#ded7cc] bg-white px-3 text-sm text-[#555555] outline-none focus:border-[#c29958]"
-          >
-            {sortOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </label>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <label className="flex items-center gap-3 text-sm text-[#555555]">
+            Items per page:
+            <select
+              value={itemsPerPage}
+              onChange={(event) =>
+                onItemsPerPageChange(Number(event.target.value))
+              }
+              className="h-10 min-w-[5rem] border border-[#ded7cc] bg-white px-3 text-sm text-[#555555] outline-none focus:border-[#c29958]"
+            >
+              {itemsPerPageOptions.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="flex items-center gap-3 text-sm text-[#555555]">
+            Sort By :
+            <select
+              value={sortBy}
+              onChange={(event) =>
+                onSortChange(event.target.value as ShopSortKey)
+              }
+              className="h-10 min-w-48 border border-[#ded7cc] bg-white px-3 text-sm text-[#555555] outline-none focus:border-[#c29958]"
+            >
+              {sortOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
       </div>
     </div>
   );
