@@ -117,7 +117,7 @@ export default function CheckoutPage() {
     
     if (savedAddresses.length > 0 && !selectedAddressId && !isNewAddress) {
       // Find default shipping or just use first one
-      const defaultAddr = savedAddresses.find((a) => a.isDefaultShipping) ?? savedAddresses[0];
+      const defaultAddr = savedAddresses.find((a: Address) => a.isDefaultShipping) ?? savedAddresses[0];
       timerId = setTimeout(() => {
         setSelectedAddressId(defaultAddr.id);
         fillAddressState(defaultAddr);
@@ -136,7 +136,7 @@ export default function CheckoutPage() {
   const handleSelectSavedAddress = (addrId: string) => {
     setSelectedAddressId(addrId);
     setIsNewAddress(false);
-    const addr = savedAddresses.find((a) => a.id === addrId);
+    const addr = savedAddresses.find((a: Address) => a.id === addrId);
     if (addr) fillAddressState(addr);
   };
 
@@ -394,7 +394,7 @@ export default function CheckoutPage() {
                   Select Delivery Address
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {savedAddresses.map((addr) => {
+                  {savedAddresses.map((addr: Address) => {
                     const isSelected = selectedAddressId === addr.id && !isNewAddress;
                     return (
                       <div

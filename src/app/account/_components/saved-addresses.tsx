@@ -222,7 +222,7 @@ const SavedAddresses: React.FC = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          {addresses.map((addr) => (
+          {addresses.map((addr: Address) => (
             <div
               key={addr.id}
               className="bg-white border border-stone-200 p-5 shadow-sm space-y-4 relative flex flex-col justify-between"

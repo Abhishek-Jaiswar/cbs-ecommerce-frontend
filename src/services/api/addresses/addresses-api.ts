@@ -1,5 +1,5 @@
 import { baseApi } from "../base-api";
-import { BaseResponse } from "../auth/auth-api";
+import { BaseResponse } from "../auth/auth-api.types";
 
 export interface Address {
   id: string;

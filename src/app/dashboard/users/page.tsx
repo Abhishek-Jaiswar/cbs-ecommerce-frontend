@@ -7,7 +7,7 @@ import {
   useUpdateUserRoleMutation,
   useDeleteUserMutation,
 } from "@/services/api/auth/auth-api";
-import { User } from "@/services/api/auth/auth-api";
+import { User } from "@/services/api/auth/auth-api.types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {

@@ -62,7 +62,7 @@ export default function AddressesPage() {
 
   // Search filter local list items
   const filteredAddresses = addresses.filter(
-    (a) =>
+    (a: Address) =>
       a.fullname.toLowerCase().includes(search.toLowerCase()) ||
       a.city.toLowerCase().includes(search.toLowerCase()) ||
       a.state.toLowerCase().includes(search.toLowerCase()) ||
@@ -171,7 +171,7 @@ export default function AddressesPage() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredAddresses.map((a) => (
+                  filteredAddresses.map((a: Address) => (
                     <TableRow
                       key={a.id}
                       className="border-b border-stone-200 dark:border-stone-800 hover:bg-stone-50/50 dark:hover:bg-stone-900/30"

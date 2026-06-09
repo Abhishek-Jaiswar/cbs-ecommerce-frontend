@@ -20,13 +20,18 @@ export default function AccountPage() {
   const [logoutApi] = useLogoutMutation();
 
   const [activeTab, setActiveTab] = useState<TabType>("profile");
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Redirect to login if not authenticated
   useEffect(() => {
-    if (!loading && !isAuthenticated) {
+    if (isMounted && !loading && !isAuthenticated) {
       router.push("/login?redirect=/account");
     }
-  }, [loading, isAuthenticated, router]);
+  }, [isMounted, loading, isAuthenticated, router]);
 
   const handleLogout = async () => {
     try {
@@ -38,7 +43,7 @@ export default function AccountPage() {
     }
   };
 
-  if (loading || (!isAuthenticated && !loading)) {
+  if (!isMounted || loading || (!isAuthenticated && !loading)) {
     return (
       <div className="min-h-screen bg-stone-50/50 py-16 flex justify-center items-center">
         <div className="text-center space-y-4">

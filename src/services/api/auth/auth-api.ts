@@ -1,45 +1,13 @@
 import { baseApi } from "../base-api";
-
-export interface BaseResponse<T = undefined> {
-  success: boolean;
-  message: string;
-  data?: T;
-}
-
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  emailVerified: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface RegisterPayload {
-  name: string;
-  email: string;
-  password?: string;
-}
-
-export interface LoginPayload {
-  email: string;
-  password?: string;
-}
-
-export interface OtpRequestPayload {
-  email: string;
-}
-
-export interface OtpVerifyPayload {
-  email: string;
-  otp: string;
-}
-
-export interface ResetPasswordPayload {
-  email: string;
-  newPassword?: string;
-}
+import {
+  BaseResponse,
+  LoginPayload,
+  OtpRequestPayload,
+  OtpVerifyPayload,
+  RegisterPayload,
+  ResetPasswordPayload,
+  User,
+} from "./auth-api.types";
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -78,7 +46,10 @@ export const authApi = baseApi.injectEndpoints({
       }),
     }),
 
-    verifyEmailOtp: builder.mutation<BaseResponse<{ email: string; verified: boolean }>, OtpVerifyPayload>({
+    verifyEmailOtp: builder.mutation<
+      BaseResponse<{ email: string; verified: boolean }>,
+      OtpVerifyPayload
+    >({
       query: (payload) => ({
         url: "/auth/email-verification/verify-otp",
         method: "POST",
@@ -94,7 +65,10 @@ export const authApi = baseApi.injectEndpoints({
       }),
     }),
 
-    verifyPasswordResetOtp: builder.mutation<BaseResponse<{ email: string; verified: boolean }>, OtpVerifyPayload>({
+    verifyPasswordResetOtp: builder.mutation<
+      BaseResponse<{ email: string; verified: boolean }>,
+      OtpVerifyPayload
+    >({
       query: (payload) => ({
         url: "/auth/forgot-password/verify-otp",
         method: "POST",
@@ -110,7 +84,16 @@ export const authApi = baseApi.injectEndpoints({
       }),
     }),
 
-    getUsers: builder.query<BaseResponse<{ items: User[]; total: number; page: number; limit: number; totalPages: number }>, { page?: number; limit?: number } | void>({
+    getUsers: builder.query<
+      BaseResponse<{
+        items: User[];
+        total: number;
+        page: number;
+        limit: number;
+        totalPages: number;
+      }>,
+      { page?: number; limit?: number } | void
+    >({
       query: (params) => {
         if (params) {
           const { page = 1, limit = 10 } = params;
@@ -121,11 +104,17 @@ export const authApi = baseApi.injectEndpoints({
       providesTags: ["Users"],
     }),
 
-    getUserById: builder.query<BaseResponse<User & { addresses: any[] }>, string>({
+    getUserById: builder.query<
+      BaseResponse<User & { addresses: any[] }>,
+      string
+    >({
       query: (id) => `/auth/${id}`,
     }),
 
-    updateUserRole: builder.mutation<BaseResponse<User>, { id: string; role: "USER" | "ADMIN" }>({
+    updateUserRole: builder.mutation<
+      BaseResponse<User>,
+      { id: string; role: "USER" | "ADMIN" }
+    >({
       query: ({ id, role }) => ({
         url: `/auth/${id}/role`,
         method: "PATCH",
