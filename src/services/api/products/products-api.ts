@@ -16,6 +16,12 @@ export const productApi = baseApi.injectEndpoints({
       providesTags: ["Products"],
     }),
 
+    getAdminProductListing: builder.query<ProductApiResponse, ProductListingParams>({
+      query: ({ page = 1, limit = 100 }) =>
+        `/products/admin/all?page=${page}&limit=${limit}`,
+      providesTags: ["Products"],
+    }),
+
     getProductDetails: builder.query<IProductDetailsResponse, string>({
       query: (slug: string) => `/products/slug/${slug}`,
       providesTags: ["ProductDetails"],
@@ -117,6 +123,14 @@ export const productApi = baseApi.injectEndpoints({
         url: "/products",
         method: "POST",
         body,
+      }),
+      invalidatesTags: ["Products"],
+    }),
+
+    deleteProduct: builder.mutation<unknown, string>({
+      query: (id) => ({
+        url: `/products/${id}`,
+        method: "DELETE",
       }),
       invalidatesTags: ["Products"],
     }),
@@ -270,6 +284,7 @@ export const productApi = baseApi.injectEndpoints({
 
 export const {
   useGetProductListingQuery,
+  useGetAdminProductListingQuery,
   useGetProductDetailsQuery,
   useGetProductByIdQuery,
   useUpdateBasicInfoMutation,
@@ -283,6 +298,7 @@ export const {
   useUploadImagesMutation,
   useDeleteImageMutation,
   useCreateProductMutation,
+  useDeleteProductMutation,
   useCreateColorMutation,
   useDeleteColorMutation,
   useCreateSizeMutation,

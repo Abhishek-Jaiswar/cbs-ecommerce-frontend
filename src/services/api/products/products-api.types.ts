@@ -15,6 +15,9 @@ export interface ProductListing {
   offerEnds: string | null;
   forListing: boolean;
   categoryId: string;
+  status?: "ACTIVE" | "DRAFT" | "INACTIVE" | "ARCHIVED";
+  brandId?: string;
+  createdAt?: string;
 }
 
 export interface ProductListingParams {

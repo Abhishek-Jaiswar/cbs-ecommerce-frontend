@@ -16,6 +16,13 @@ import {
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 
+const STATUS_STYLES: Record<string, string> = {
+  ACTIVE: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  DRAFT: "bg-zinc-100 text-zinc-600 border-zinc-200",
+  INACTIVE: "bg-amber-50 text-amber-700 border-amber-200",
+  ARCHIVED: "bg-red-50 text-red-600 border-red-200",
+};
+
 export const columns = (onDelete?: (id: string) => void): ColumnDef<ProductListing>[] => [
   {
     id: "select",
@@ -41,26 +48,25 @@ export const columns = (onDelete?: (id: string) => void): ColumnDef<ProductListi
   },
   {
     accessorKey: "name",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="hover:bg-accent -ml-4 font-semibold text-foreground"
-        >
-          Product Name
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="hover:bg-accent -ml-4 font-semibold text-foreground"
+      >
+        Product Name
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
     cell: ({ row }) => {
       const name = row.getValue("name") as string;
-      const slug = row.original.slug as string;
+      const slug = row.original.slug;
 
       return (
-        <div className="flex flex-col gap-1 py-1">
+        <div className="flex flex-col gap-0.5 py-1">
           <Link
-            href={`/products`}
+            href={`/shop/${slug}`}
+            target="_blank"
             className="font-medium text-foreground hover:underline hover:text-primary transition-colors line-clamp-1"
           >
             {name}
@@ -71,54 +77,47 @@ export const columns = (onDelete?: (id: string) => void): ColumnDef<ProductListi
     },
   },
   {
-    accessorKey: "excerpt",
-    header: "Description",
-    cell: ({ row }) => {
-      const excerpt = row.getValue("excerpt") as string;
-      return <div className="text-muted-foreground line-clamp-1 max-w-[280px]">{excerpt}</div>;
-    },
-  },
-  {
     accessorKey: "price",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="hover:bg-accent -ml-4 font-semibold text-foreground"
-        >
-          Price
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="hover:bg-accent -ml-4 font-semibold text-foreground"
+      >
+        Price
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
     cell: ({ row }) => {
       const price = parseFloat(row.getValue("price") as string);
       const originalPrice = row.original.originalPrice
         ? parseFloat(row.original.originalPrice)
         : null;
 
-      const formattedPrice = new Intl.NumberFormat("en-IN", {
-        style: "currency",
-        currency: "INR",
-      }).format(price);
-
-      const formattedOriginalPrice = originalPrice
-        ? new Intl.NumberFormat("en-IN", {
-            style: "currency",
-            currency: "INR",
-          }).format(originalPrice)
-        : null;
+      const fmt = (n: number) =>
+        new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(n);
 
       return (
         <div className="flex flex-col gap-0.5">
-          <span className="font-medium text-foreground">{formattedPrice}</span>
-          {formattedOriginalPrice && (
-            <span className="text-xs text-muted-foreground line-through">
-              {formattedOriginalPrice}
-            </span>
+          <span className="font-medium text-foreground">{fmt(price)}</span>
+          {originalPrice && (
+            <span className="text-xs text-muted-foreground line-through">{fmt(originalPrice)}</span>
           )}
         </div>
+      );
+    },
+  },
+  {
+    id: "status",
+    header: "Status",
+    cell: ({ row }) => {
+      const status = row.original.status ?? "DRAFT";
+      const style = STATUS_STYLES[status] ?? STATUS_STYLES.DRAFT;
+
+      return (
+        <Badge variant="outline" className={`${style} capitalize text-[10px] px-2 py-0.5 font-semibold`}>
+          {status.toLowerCase()}
+        </Badge>
       );
     },
   },
@@ -126,12 +125,15 @@ export const columns = (onDelete?: (id: string) => void): ColumnDef<ProductListi
     id: "badges",
     header: "Attributes",
     cell: ({ row }) => {
-      const isNew = row.original.isNew;
-      const isFeatured = row.original.isFeatured;
-      const isSale = row.original.isSale;
+      const { isNew, isFeatured, isSale, forListing } = row.original;
 
       return (
         <div className="flex flex-wrap gap-1">
+          {forListing && (
+            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 text-[10px] px-1.5 py-0">
+              Listed
+            </Badge>
+          )}
           {isNew && (
             <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-[10px] px-1.5 py-0">
               New
@@ -147,8 +149,8 @@ export const columns = (onDelete?: (id: string) => void): ColumnDef<ProductListi
               Sale
             </Badge>
           )}
-          {!isNew && !isFeatured && !isSale && (
-            <span className="text-xs text-muted-foreground">-</span>
+          {!forListing && !isNew && !isFeatured && !isSale && (
+            <span className="text-xs text-muted-foreground">—</span>
           )}
         </div>
       );
@@ -178,7 +180,7 @@ export const columns = (onDelete?: (id: string) => void): ColumnDef<ProductListi
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild className="cursor-pointer">
-              <Link href={`/products`}>
+              <Link href={`/shop/${product.slug}`} target="_blank">
                 <Eye className="mr-2 h-4 w-4 text-muted-foreground" />
                 View Public
               </Link>
