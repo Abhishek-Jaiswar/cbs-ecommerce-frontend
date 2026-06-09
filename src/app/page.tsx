@@ -1,314 +1,714 @@
 "use client";
 
-import React from "react";
-import Link from "next/link";
 import Image from "next/image";
-import { useGetProductListingQuery } from "@/services/api/products/products-api";
-import { ArrowRight, Star, ShieldCheck, Heart, Sparkles, Award } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  CreditCard,
+  Heart,
+  Headphones,
+  RefreshCw,
+  Search,
+  ShieldCheck,
+  ShoppingBag,
+  Star,
+  Truck,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { getProductImage } from "@/lib/utils";
+import { mockBlogPosts } from "@/data/blogs";
+import { useGetProductListingQuery } from "@/services/api/products/products-api";
+import type { ProductListing } from "@/services/api/products/products-api.types";
 
-const collections = [
+const heroSlides = [
   {
-    name: "Bracelets",
-    slug: "bracelets",
-    image: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=600&auto=format&fit=crop&q=80",
-    tagline: "Elegant wristwear",
+    align: "left",
+    description: "Designer Jewelry Necklaces-Bracelets-Earings",
+    image: "/corano/slider/home1-slide2.jpg",
+    title: "Family Jewelry",
+    titleAccent: "Collection",
   },
   {
-    name: "Rings",
-    slug: "rings",
-    image: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=600&auto=format&fit=crop&q=80",
-    tagline: "Eternal bands of light",
+    align: "right",
+    description: "Shukra Yogam & Silver Power Silver Saving Schemes.",
+    image: "/corano/slider/home1-slide3.jpg",
+    title: "Diamonds Jewelry",
+    titleAccent: "Collection",
   },
   {
-    name: "Necklaces",
-    slug: "necklaces",
-    image: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=600&auto=format&fit=crop&q=80",
-    tagline: "Timeless neckpieces",
-  },
-  {
-    name: "Earrings",
-    slug: "earrings",
-    image: "https://images.unsplash.com/photo-1635767798638-3e25273a8236?w=600&auto=format&fit=crop&q=80",
-    tagline: "Stunning ear adornments",
+    align: "left",
+    description: "Rings, Occasion Pieces, Pandora & More.",
+    image: "/corano/slider/home1-slide1.jpg",
+    title: "Grace Designer",
+    titleAccent: "Jewelry",
   },
 ];
 
-export default function LandingPage() {
-  const { data, isLoading } = useGetProductListingQuery({ page: 1, limit: 10 });
-  const products = data?.data.items ?? [];
-  const featuredProducts = products.filter((p) => p.isFeatured).slice(0, 4);
-  const displayProducts = featuredProducts.length > 0 ? featuredProducts : products.slice(0, 4);
+const policies = [
+  {
+    description: "Free shipping all order",
+    icon: Truck,
+    title: "Free Shipping",
+  },
+  {
+    description: "Support 24 hours a day",
+    icon: Headphones,
+    title: "Support 24/7",
+  },
+  {
+    description: "30 days for free return",
+    icon: RefreshCw,
+    title: "Money Return",
+  },
+  {
+    description: "We ensure secure payment",
+    icon: CreditCard,
+    title: "100% Payment Secure",
+  },
+];
+
+const categoryBanners = [
+  {
+    align: "right",
+    image: "/corano/banner/img1-top.jpg",
+    label: "Beautiful",
+    title: "Wedding",
+    titleAccent: "Rings",
+  },
+  {
+    align: "center",
+    image: "/corano/banner/img2-top.jpg",
+    label: "Earrings",
+    title: "Tangerine Floral",
+    titleAccent: "Earring",
+  },
+  {
+    align: "center",
+    image: "/corano/banner/img3-top.jpg",
+    label: "New Arrivals",
+    title: "Pearl",
+    titleAccent: "Necklaces",
+  },
+  {
+    align: "right",
+    image: "/corano/banner/img4-top.jpg",
+    label: "New Design",
+    title: "Diamond",
+    titleAccent: "Jewelry",
+  },
+];
+
+const fallbackProducts = [
+  {
+    brand: "Gold",
+    image: "/corano/product/product-1.jpg",
+    oldPrice: "$29.99",
+    price: "$50.00",
+    title: "Perfect Diamond Jewelry",
+  },
+  {
+    brand: "Mony",
+    image: "/corano/product/product-2.jpg",
+    oldPrice: "$35.00",
+    price: "$60.00",
+    title: "Handmade Golden Necklace",
+  },
+  {
+    brand: "Diamond",
+    image: "/corano/product/product-3.jpg",
+    oldPrice: "",
+    price: "$40.00",
+    title: "Perfect Diamond Jewelry",
+  },
+  {
+    brand: "Silver",
+    image: "/corano/product/product-4.jpg",
+    oldPrice: "$45.00",
+    price: "$70.00",
+    title: "Diamond Exclusive Ornament",
+  },
+  {
+    brand: "Mony",
+    image: "/corano/product/product-5.jpg",
+    oldPrice: "$25.00",
+    price: "$45.00",
+    title: "Citygold Exclusive Ring",
+  },
+  {
+    brand: "Gold",
+    image: "/corano/product/product-6.jpg",
+    oldPrice: "$60.00",
+    price: "$80.00",
+    title: "Perfect Diamond Jewelry",
+  },
+  {
+    brand: "Mony",
+    image: "/corano/product/product-7.jpg",
+    oldPrice: "$40.00",
+    price: "$55.00",
+    title: "Handmade Golden Necklace",
+  },
+  {
+    brand: "Diamond",
+    image: "/corano/product/product-8.jpg",
+    oldPrice: "",
+    price: "$95.00",
+    title: "Perfect Diamond Jewelry",
+  },
+];
+
+const testimonials = [
+  {
+    author: "Lindsy Niloms",
+    image: "/corano/testimonial/testimonial-1.png",
+    quote:
+      "Vivamus a lobortis ipsum, vel condimentum magna. Etiam id turpis tortor. Nunc scelerisque, nisi a blandit varius.",
+  },
+  {
+    author: "Daisy Millan",
+    image: "/corano/testimonial/testimonial-2.png",
+    quote:
+      "Nunc purus venenatis ligula, sed venenatis orci augue nec sapien. The finish and packaging felt truly premium.",
+  },
+  {
+    author: "Anamika Lusy",
+    image: "/corano/testimonial/testimonial-3.png",
+    quote:
+      "The jewelry arrived beautifully polished and the details were even better in person. A lovely shopping experience.",
+  },
+];
+
+const groupedProducts = [
+  {
+    title: "Best Seller Product",
+    products: [
+      ["Diamond Exclusive Ring", "/corano/product/product-1.jpg", "$50.00", "$29.99"],
+      ["Handmade Golden Ring", "/corano/product/product-3.jpg", "$55.00", "$30.00"],
+      ["Exclusive Gold Jewelry", "/corano/product/product-5.jpg", "$45.00", "$25.00"],
+      ["Perfect Diamond Earring", "/corano/product/product-7.jpg", "$50.00", "$29.99"],
+    ],
+  },
+  {
+    title: "On-Sale Product",
+    products: [
+      ["Diamond Exclusive Ring", "/corano/product/product-17.jpg", "$50.00", "$29.99"],
+      ["Handmade Golden Necklace", "/corano/product/product-16.jpg", "$60.00", "$40.00"],
+      ["Perfect Diamond Jewelry", "/corano/product/product-12.jpg", "$70.00", "$55.00"],
+      ["Citygold Exclusive Ring", "/corano/product/product-11.jpg", "$45.00", "$25.00"],
+    ],
+  },
+];
+
+function formatPrice(price: string) {
+  const numeric = Number(price);
+  if (!Number.isFinite(numeric)) return price;
+
+  return new Intl.NumberFormat("en-IN", {
+    currency: "INR",
+    maximumFractionDigits: 2,
+    style: "currency",
+  }).format(numeric);
+}
+
+function SectionTitle({
+  subtitle,
+  title,
+}: {
+  subtitle: string;
+  title: string;
+}) {
+  return (
+    <div className="mb-10 text-center font-[var(--font-corano)]">
+      <h2 className="text-3xl font-bold capitalize text-[#222222] sm:text-4xl">
+        {title}
+      </h2>
+      <p className="mt-3 text-sm text-[#777777]">{subtitle}</p>
+    </div>
+  );
+}
+
+function ProductCard({
+  product,
+  staticProduct,
+}: {
+  product?: ProductListing;
+  staticProduct?: (typeof fallbackProducts)[number];
+}) {
+  const image = staticProduct?.image ?? "/corano/product/product-1.jpg";
+  const title = product?.name ?? staticProduct?.title ?? "Perfect Diamond Jewelry";
+  const price = product ? formatPrice(product.price) : staticProduct?.price ?? "$50.00";
+  const oldPrice = product?.originalPrice
+    ? formatPrice(product.originalPrice)
+    : staticProduct?.oldPrice;
+  const href = product ? `/shop/${product.slug}` : "/shop";
 
   return (
-    <div className="flex-1 bg-white">
-      {/* HERO SECTION */}
-      <section className="relative h-[85vh] w-full overflow-hidden bg-stone-950 flex items-center">
-        {/* Background Image with Overlay */}
-        <div className="absolute inset-0 opacity-40">
+    <article className="group font-[var(--font-corano)]">
+      <div className="relative overflow-hidden bg-[#f7f2ea]">
+        <Link href={href} className="relative block aspect-square">
           <Image
-            src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?q=80&w=1600&auto=format&fit=crop"
-            alt="ZenVora Luxury Jewelry Background"
+            src={image}
+            alt={title}
             fill
-            priority
-            sizes="100vw"
-            className="object-cover object-center"
+            sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-stone-950 via-stone-900/80 to-transparent" />
+        </Link>
+        <div className="absolute left-4 top-4 flex flex-col gap-2">
+          <span className="bg-[#222222] px-2 py-1 text-[10px] font-bold uppercase text-white">
+            New
+          </span>
+          {oldPrice && (
+            <span className="bg-[#c29958] px-2 py-1 text-[10px] font-bold uppercase text-white">
+              Sale
+            </span>
+          )}
         </div>
-
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full z-10 text-white">
-          <div className="max-w-2xl flex flex-col gap-6">
-            <div className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 rounded-full px-4 py-1.5 self-start">
-              <Sparkles className="h-4 w-4 text-amber-400" />
-              <span className="text-xs font-semibold uppercase tracking-wider text-amber-300">
-                The Heritage Collection
-              </span>
-            </div>
-            <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-stone-50 leading-[1.1]">
-              Crafting Pure <span className="text-amber-500">Brilliance</span> For Your Moments
-            </h1>
-            <p className="text-base sm:text-lg text-stone-300 max-w-lg leading-relaxed font-light">
-              Explore ZenVora's curated line of premium, ethically sourced diamond rings, sterling silver bracelets, and gold neckpieces built to stand the test of time.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 mt-2">
-              <Button size="lg" className="bg-amber-500 text-stone-950 hover:bg-amber-400 text-sm font-semibold tracking-wide h-12 px-8 rounded-none transition-all duration-300" asChild>
-                <Link href="/shop">
-                  Discover Catalog <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-              <Button size="lg" variant="outline" className="border-stone-500 text-stone-50 hover:bg-stone-800 hover:text-white text-sm font-semibold tracking-wide h-12 px-8 rounded-none transition-all duration-300" asChild>
-                <Link href="/shop?tag=new">
-                  New Arrivals
-                </Link>
-              </Button>
-            </div>
-          </div>
+        <div className="absolute right-4 top-4 flex translate-x-4 flex-col gap-2 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100">
+          {[Heart, RefreshCw, Search].map((Icon, index) => (
+            <button
+              key={index}
+              type="button"
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-[#222222] shadow-sm transition-colors hover:bg-[#c29958] hover:text-white"
+            >
+              <Icon className="h-4 w-4" />
+            </button>
+          ))}
         </div>
-      </section>
-
-      {/* LUXURY BADGES */}
-      <section className="border-y border-stone-100 bg-stone-50 py-10">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
-            <div className="flex flex-col md:flex-row items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 text-amber-700 shrink-0">
-                <Award className="h-6 w-6" />
-              </div>
-              <div>
-                <h4 className="text-sm font-bold text-stone-900 uppercase tracking-wider">Certified Craftsmanship</h4>
-                <p className="text-xs text-stone-500 mt-1">Every design is created by master craftsmen with premium quality metals.</p>
-              </div>
-            </div>
-            <div className="flex flex-col md:flex-row items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 text-amber-700 shrink-0">
-                <ShieldCheck className="h-6 w-6" />
-              </div>
-              <div>
-                <h4 className="text-sm font-bold text-stone-900 uppercase tracking-wider">Lifetime Warranty</h4>
-                <p className="text-xs text-stone-500 mt-1">We stand by our stones. Full repair and sizing support on all premium releases.</p>
-              </div>
-            </div>
-            <div className="flex flex-col md:flex-row items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 text-amber-700 shrink-0">
-                <Sparkles className="h-6 w-6" />
-              </div>
-              <div>
-                <h4 className="text-sm font-bold text-stone-900 uppercase tracking-wider">Ethically Sourced</h4>
-                <p className="text-xs text-stone-500 mt-1">Conflict-free diamonds and sustainably gathered gems from approved reserves.</p>
-              </div>
-            </div>
-          </div>
+        <Link
+          href={href}
+          className="absolute inset-x-0 bottom-0 flex h-11 translate-y-full items-center justify-center gap-2 bg-[#222222] text-xs font-bold uppercase tracking-wide text-white transition-transform duration-300 hover:bg-[#c29958] group-hover:translate-y-0"
+        >
+          <ShoppingBag className="h-4 w-4" />
+          View Product
+        </Link>
+      </div>
+      <div className="pt-5 text-center">
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#c29958]">
+          {staticProduct?.brand ?? "Zenvoraa"}
+        </p>
+        <h3 className="mt-2 text-base font-bold text-[#222222] transition-colors group-hover:text-[#c29958]">
+          <Link href={href}>{title}</Link>
+        </h3>
+        <div className="mt-2 flex justify-center text-[#c29958]">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <Star key={star} className="h-3.5 w-3.5 fill-current" />
+          ))}
         </div>
-      </section>
+        <div className="mt-3 flex items-baseline justify-center gap-2">
+          <span className="font-bold text-[#c29958]">{price}</span>
+          {oldPrice && (
+            <span className="text-sm text-[#999999] line-through">{oldPrice}</span>
+          )}
+        </div>
+      </div>
+    </article>
+  );
+}
 
-      {/* CURATED COLLECTIONS */}
-      <section className="py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-stone-900">
-              Shop by Category
-            </h2>
-            <div className="mx-auto mt-2 h-[2px] w-16 bg-amber-500" />
-            <p className="mt-4 text-stone-500 text-sm max-w-md mx-auto">
-              Curated jewelry lines representing the heights of design and precious metal excellence.
-            </p>
-          </div>
+export default function LandingPage() {
+  const [activeSlide, setActiveSlide] = useState(0);
+  const [activeTab, setActiveTab] = useState("All");
+  const { data, isLoading } = useGetProductListingQuery({ limit: 8, page: 1 });
+  const displayProducts = data?.data.items.slice(0, 8) ?? [];
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {collections.map((col) => (
-              <Link
-                key={col.slug}
-                href={`/shop?category=${col.slug}`}
-                className="group relative h-96 overflow-hidden bg-stone-100 block transition-all duration-300 shadow-sm hover:shadow-lg"
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setActiveSlide((current) => (current + 1) % heroSlides.length);
+    }, 5000);
+
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const slide = heroSlides[activeSlide];
+
+  return (
+    <main className="flex-1 bg-white font-[var(--font-corano)]">
+      <section className="relative overflow-hidden">
+        <div className="relative min-h-[520px] md:min-h-[650px]">
+          {heroSlides.map((item, index) => (
+            <div
+              key={item.image}
+              className={`absolute inset-0 transition-opacity duration-700 ${
+                activeSlide === index ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              <Image
+                src={item.image}
+                alt={`${item.title} ${item.titleAccent}`}
+                fill
+                priority={index === 0}
+                sizes="100vw"
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-white/15" />
+            </div>
+          ))}
+          <div className="relative z-10 mx-auto flex min-h-[520px] max-w-7xl items-center px-4 sm:px-6 md:min-h-[650px] lg:px-8">
+            <div
+              className={`max-w-xl ${
+                slide.align === "right" ? "ml-auto text-left md:text-right" : ""
+              }`}
+            >
+              <h1 className="text-4xl font-bold leading-tight text-[#222222] sm:text-5xl md:text-6xl">
+                {slide.title}
+                <span className="block text-[#c29958]">{slide.titleAccent}</span>
+              </h1>
+              <p className="mt-5 text-base font-bold text-[#555555] md:text-lg">
+                {slide.description}
+              </p>
+              <Button
+                asChild
+                className="mt-8 h-12 rounded-none bg-[#222222] px-8 text-xs font-bold uppercase tracking-wide text-white hover:bg-[#c29958]"
               >
-                <Image
-                  src={col.image}
-                  alt={col.name}
-                  fill
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-                {/* Gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-stone-950/20 to-transparent" />
-                <div className="absolute bottom-6 left-6 text-white">
-                  <span className="text-[10px] uppercase tracking-widest text-amber-400 font-semibold">
-                    {col.tagline}
-                  </span>
-                  <h3 className="text-xl font-bold tracking-wide mt-1">{col.name}</h3>
-                  <span className="inline-flex items-center gap-1 text-xs text-stone-300 mt-3 font-semibold group-hover:text-amber-300 transition-colors">
-                    Explore <ArrowRight className="h-3 w-3" />
-                  </span>
-                </div>
-              </Link>
+                <Link href="/shop">Read More</Link>
+              </Button>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() =>
+              setActiveSlide((activeSlide - 1 + heroSlides.length) % heroSlides.length)
+            }
+            className="absolute left-4 top-1/2 z-20 hidden h-11 w-11 -translate-y-1/2 items-center justify-center border border-[#ddd6ca] bg-white/80 text-[#222222] transition-colors hover:bg-[#c29958] hover:text-white md:flex"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveSlide((activeSlide + 1) % heroSlides.length)}
+            className="absolute right-4 top-1/2 z-20 hidden h-11 w-11 -translate-y-1/2 items-center justify-center border border-[#ddd6ca] bg-white/80 text-[#222222] transition-colors hover:bg-[#c29958] hover:text-white md:flex"
+          >
+            <ArrowRight className="h-5 w-5" />
+          </button>
+          <div className="absolute bottom-7 left-0 right-0 z-20 flex justify-center gap-3">
+            {heroSlides.map((item, index) => (
+              <button
+                key={item.image}
+                type="button"
+                onClick={() => setActiveSlide(index)}
+                className={`h-3 w-3 rounded-full border border-[#c29958] ${
+                  activeSlide === index ? "bg-[#c29958]" : "bg-white"
+                }`}
+              />
             ))}
           </div>
         </div>
       </section>
 
-      {/* FEATURED AD SECTION */}
-      <section className="relative h-[50vh] bg-stone-900 flex items-center justify-center text-center text-white overflow-hidden">
-        <div className="absolute inset-0 opacity-30">
-          <Image
-            src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=80&w=1200&auto=format&fit=crop"
-            alt="Luxury background banner"
-            fill
-            sizes="100vw"
-            className="object-cover"
-          />
-        </div>
-        <div className="relative max-w-xl px-4 z-10 flex flex-col gap-4">
-          <span className="text-xs uppercase tracking-widest text-amber-400 font-bold">Limited Offer</span>
-          <h2 className="text-3xl sm:text-4xl leading-tight">Dazzle in Gold & Diamonds</h2>
-          <p className="text-sm text-stone-300 leading-relaxed font-light">
-            Enjoy up to 25% off during our spring solstice catalog showcase. Receive a complimentary diamond polishing cloth with every order over $500.
+      <section className="border-b border-[#eee8df] bg-white py-8">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <p className="text-center text-sm leading-7 text-[#555555]">
+            Discover Zenvoraa jewelry collections crafted for everyday elegance,
+            celebrations, and timeless gifting.
           </p>
-          <Button size="lg" className="bg-amber-500 text-stone-950 hover:bg-amber-400 font-bold rounded-none self-center px-8 mt-2 transition-all duration-300" asChild>
-            <Link href="/shop">
-              Shop The Sale
-            </Link>
-          </Button>
         </div>
       </section>
 
-      {/* FEATURED PRODUCTS */}
-      <section className="py-20 bg-stone-50">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row items-center justify-between mb-12">
-            <div className="text-center sm:text-left">
-              <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-stone-900">
-                Featured Highlights
-              </h2>
-              <div className="mt-2 h-[2px] w-16 bg-amber-500 mx-auto sm:mx-0" />
+      <section className="py-16">
+        <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:grid-cols-2 sm:px-6 lg:grid-cols-4 lg:px-8">
+          {policies.map(({ description, icon: Icon, title }) => (
+            <div key={title} className="flex items-center gap-4">
+              <Icon className="h-10 w-10 shrink-0 text-[#c29958]" />
+              <div>
+                <h3 className="text-base font-bold text-[#222222]">{title}</h3>
+                <p className="mt-1 text-sm text-[#777777]">{description}</p>
+              </div>
             </div>
-            <Button variant="link" className="text-amber-600 hover:text-amber-700 text-sm font-semibold tracking-wide mt-4 sm:mt-0" asChild>
-              <Link href="/shop" className="flex items-center gap-1.5">
-                View Entire Collection <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
+          ))}
+        </div>
+      </section>
 
+      <section className="pb-16">
+        <div className="mx-auto grid max-w-7xl gap-5 px-4 sm:grid-cols-2 sm:px-6 lg:px-8">
+          {categoryBanners.map((banner) => (
+            <Link
+              key={banner.image}
+              href="/shop"
+              className="group relative block min-h-[250px] overflow-hidden bg-[#f7f2ea]"
+            >
+              <Image
+                src={banner.image}
+                alt={`${banner.title} ${banner.titleAccent}`}
+                fill
+                sizes="(min-width: 640px) 50vw, 100vw"
+                className="object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+              <div
+                className={`absolute inset-y-0 flex w-full flex-col justify-center p-8 ${
+                  banner.align === "center"
+                    ? "items-center text-center"
+                    : "items-end text-right"
+                }`}
+              >
+                <p className="text-sm font-bold uppercase text-[#c29958]">
+                  {banner.label}
+                </p>
+                <h2 className="mt-2 text-3xl font-bold text-[#222222]">
+                  {banner.title}
+                  <span className="block">{banner.titleAccent}</span>
+                </h2>
+                <span className="mt-5 border-b border-[#222222] text-xs font-bold uppercase text-[#222222] transition-colors group-hover:border-[#c29958] group-hover:text-[#c29958]">
+                  Shop Now
+                </span>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <section className="py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <SectionTitle title="our products" subtitle="Add our products to weekly lineup" />
+          <div className="mb-10 flex flex-wrap justify-center gap-3">
+            {["All", "Gold", "Diamond", "Platinum", "Silver"].map((tab) => (
+              <button
+                key={tab}
+                type="button"
+                onClick={() => setActiveTab(tab)}
+                className={`border px-5 py-2 text-xs font-bold uppercase tracking-wide transition-colors ${
+                  activeTab === tab
+                    ? "border-[#c29958] bg-[#c29958] text-white"
+                    : "border-[#eee8df] text-[#555555] hover:border-[#c29958] hover:text-[#c29958]"
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
           {isLoading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="animate-pulse flex flex-col gap-4">
-                  <div className="bg-stone-200 h-80 w-full" />
-                  <div className="h-4 bg-stone-200 w-1/3 rounded" />
-                  <div className="h-6 bg-stone-200 w-3/4 rounded" />
-                  <div className="h-4 bg-stone-200 w-1/2 rounded" />
+            <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-4">
+              {[1, 2, 3, 4].map((item) => (
+                <div key={item} className="animate-pulse">
+                  <div className="aspect-square bg-[#f0ebe2]" />
+                  <div className="mx-auto mt-5 h-4 w-24 bg-[#f0ebe2]" />
+                  <div className="mx-auto mt-3 h-5 w-40 bg-[#f0ebe2]" />
                 </div>
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {displayProducts.map((product) => {
-                const discount = product.originalPrice
-                  ? Math.round(
-                      ((parseFloat(product.originalPrice) - parseFloat(product.price)) /
-                        parseFloat(product.originalPrice)) *
-                        100
-                    )
-                  : 0;
-
-                const primaryImage = getProductImage(product.slug);
-
-                return (
-                  <div
-                    key={product.id}
-                    className="group relative bg-white border border-stone-200 overflow-hidden flex flex-col h-full hover:shadow-md transition-all duration-300"
-                  >
-                    {/* Badge */}
-                    <div className="absolute top-3 left-3 z-10 flex flex-col gap-1.5">
-                      {product.isNew && (
-                        <span className="bg-stone-900 text-white text-[10px] font-bold uppercase tracking-wider px-2 py-0.5">
-                          New
-                        </span>
-                      )}
-                      {product.originalPrice && discount > 0 && (
-                        <span className="bg-amber-500 text-stone-950 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5">
-                          -{discount}%
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Product Image */}
-                    <div className="relative aspect-square w-full bg-stone-50 overflow-hidden">
-                      <Image
-                        src={primaryImage}
-                        alt={product.name}
-                        fill
-                        sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                    </div>
-
-                    {/* Content */}
-                    <div className="p-5 flex flex-col flex-1 gap-2">
-                      <span className="text-[10px] font-semibold text-amber-600 uppercase tracking-widest">
-                        ZenVora Luxury
-                      </span>
-                      <h3 className="text-base text-stone-900 line-clamp-1 group-hover:text-amber-600 transition-colors">
-                        <Link href={`/shop/${product.slug}`}>{product.name}</Link>
-                      </h3>
-                      <p className="text-xs text-stone-500 line-clamp-2 leading-relaxed">
-                        {product.excerpt}
-                      </p>
-
-                      <div className="flex items-center gap-1 text-amber-500 text-xs mt-1">
-                        <Star className="h-3 w-3 fill-amber-500" />
-                        <Star className="h-3 w-3 fill-amber-500" />
-                        <Star className="h-3 w-3 fill-amber-500" />
-                        <Star className="h-3 w-3 fill-amber-500" />
-                        <Star className="h-3 w-3 fill-amber-500" />
-                        <span className="text-[10px] text-stone-400 ml-1">(1 review)</span>
-                      </div>
-
-                      {/* Pricing */}
-                      <div className="flex items-baseline gap-2 mt-auto pt-3 border-t border-stone-100">
-                        <span className="text-base font-bold text-stone-900">${product.price}</span>
-                        {product.originalPrice && (
-                          <span className="text-xs text-stone-400 line-through">
-                            ${product.originalPrice}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Action Button */}
-                    <Link
-                      href={`/shop/${product.slug}`}
-                      className="w-full text-center py-2.5 bg-stone-900 text-white text-xs font-semibold uppercase tracking-wider hover:bg-amber-500 hover:text-stone-950 transition-colors mt-auto block"
-                    >
-                      View Details
-                    </Link>
-                  </div>
-                );
-              })}
+            <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-4">
+              {displayProducts.length > 0
+                ? displayProducts.map((product) => (
+                    <ProductCard key={product.id} product={product} />
+                  ))
+                : fallbackProducts.map((product) => (
+                    <ProductCard key={product.image} staticProduct={product} />
+                  ))}
             </div>
           )}
         </div>
       </section>
-    </div>
+
+      <section className="pb-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <Link
+            href="/shop"
+            className="group relative block min-h-[250px] overflow-hidden bg-[#f7f2ea]"
+          >
+            <Image
+              src="/corano/banner/img1-middle.jpg"
+              alt="Beautiful bridal collection"
+              fill
+              sizes="100vw"
+              className="object-cover transition-transform duration-700 group-hover:scale-105"
+            />
+            <div className="absolute inset-y-0 right-0 flex w-full flex-col items-end justify-center p-8 text-right md:w-1/2 md:p-12">
+              <p className="text-sm font-bold uppercase text-[#c29958]">
+                Wedding Collection
+              </p>
+              <h2 className="mt-2 text-3xl font-bold text-[#222222] md:text-4xl">
+                Designer Jewelry
+              </h2>
+              <span className="mt-5 border-b border-[#222222] text-xs font-bold uppercase text-[#222222] transition-colors group-hover:border-[#c29958] group-hover:text-[#c29958]">
+                Shop Now
+              </span>
+            </div>
+          </Link>
+        </div>
+      </section>
+
+      <section className="relative py-20">
+        <Image
+          src="/corano/testimonial/testimonials-bg.jpg"
+          alt="Testimonials background"
+          fill
+          sizes="100vw"
+          className="-z-10 object-cover"
+        />
+        <div className="absolute inset-0 -z-10 bg-white/70" />
+        <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
+          <SectionTitle title="testimonials" subtitle="What they say" />
+          <div className="grid gap-8 md:grid-cols-3">
+            {testimonials.map((testimonial) => (
+              <article key={testimonial.author}>
+                <Image
+                  src={testimonial.image}
+                  alt={testimonial.author}
+                  width={86}
+                  height={86}
+                  className="mx-auto rounded-full"
+                />
+                <p className="mt-6 text-sm leading-7 text-[#555555]">
+                  {testimonial.quote}
+                </p>
+                <div className="mt-4 flex justify-center text-[#c29958]">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star key={star} className="h-4 w-4 fill-current" />
+                  ))}
+                </div>
+                <h3 className="mt-4 text-sm font-bold uppercase text-[#222222]">
+                  {testimonial.author}
+                </h3>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-16">
+        <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
+          <Link
+            href="/shop"
+            className="group relative block min-h-[360px] overflow-hidden bg-[#f7f2ea]"
+          >
+            <Image
+              src="/corano/banner/img-bottom-banner.jpg"
+              alt="Wedding rings"
+              fill
+              sizes="(min-width: 1024px) 50vw, 100vw"
+              className="object-cover transition-transform duration-700 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center">
+              <p className="text-sm font-bold uppercase text-[#c29958]">Beautiful</p>
+              <h2 className="mt-2 text-4xl font-bold text-[#222222]">
+                Wedding Rings
+              </h2>
+              <span className="mt-5 border-b border-[#222222] text-xs font-bold uppercase text-[#222222] transition-colors group-hover:border-[#c29958] group-hover:text-[#c29958]">
+                Shop Now
+              </span>
+            </div>
+          </Link>
+          <div className="grid gap-8 md:grid-cols-2">
+            {groupedProducts.map((group) => (
+              <div key={group.title}>
+                <h3 className="mb-6 border-b border-[#eee8df] pb-3 text-lg font-bold capitalize text-[#222222]">
+                  {group.title}
+                </h3>
+                <div className="space-y-5">
+                  {group.products.map(([title, image, price, oldPrice]) => (
+                    <Link
+                      key={`${title}-${image}`}
+                      href="/shop"
+                      className="group flex gap-4"
+                    >
+                      <Image
+                        src={image}
+                        alt={title}
+                        width={82}
+                        height={82}
+                        className="bg-[#f7f2ea] object-cover"
+                      />
+                      <div>
+                        <h4 className="text-sm font-bold capitalize text-[#222222] transition-colors group-hover:text-[#c29958]">
+                          {title}
+                        </h4>
+                        <div className="mt-2 flex gap-2">
+                          <span className="font-bold text-[#c29958]">{price}</span>
+                          <span className="text-sm text-[#999999] line-through">
+                            {oldPrice}
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="pb-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <SectionTitle title="latest blogs" subtitle="There are latest blog posts" />
+          <div className="grid gap-7 md:grid-cols-3">
+            {mockBlogPosts.map((post) => (
+              <article key={post.id} className="group">
+                <Link
+                  href={`/blog#${post.slug}`}
+                  className="relative block aspect-[1.45] overflow-hidden"
+                >
+                  <Image
+                    src={post.image}
+                    alt={post.title}
+                    fill
+                    sizes="(min-width: 768px) 33vw, 100vw"
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                  <span className="absolute left-4 top-4 bg-[#c29958] px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
+                    {post.category}
+                  </span>
+                </Link>
+                <div className="pt-5">
+                  <p className="text-xs uppercase text-[#777777]">
+                    By {post.author} / {post.date} / {post.readTime}
+                  </p>
+                  <h3 className="mt-2 text-base font-bold leading-6 text-[#222222] transition-colors group-hover:text-[#c29958]">
+                    <Link href={`/blog#${post.slug}`}>{post.title}</Link>
+                  </h3>
+                  <p className="mt-3 text-sm leading-6 text-[#666666]">
+                    {post.excerpt}
+                  </p>
+                  <Link
+                    href={`/blog#${post.slug}`}
+                    className="mt-4 inline-block border-b border-[#222222] text-xs font-bold uppercase tracking-wide text-[#222222] transition-colors group-hover:border-[#c29958] group-hover:text-[#c29958]"
+                  >
+                    Read More
+                  </Link>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="border-t border-[#eee8df] py-12">
+        <div className="mx-auto grid max-w-7xl grid-cols-2 items-center gap-8 px-4 sm:grid-cols-3 sm:px-6 lg:grid-cols-6 lg:px-8">
+          {[1, 2, 3, 4, 5, 6].map((brand) => (
+            <Image
+              key={brand}
+              src={`/corano/brand/${brand}.png`}
+              alt={`Brand ${brand}`}
+              width={160}
+              height={90}
+              className="mx-auto opacity-60 transition-opacity hover:opacity-100"
+            />
+          ))}
+        </div>
+      </section>
+
+      <section className="border-t border-[#eee8df] bg-[#f9f5f0] py-10">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-5 px-4 text-center sm:px-6 md:flex-row md:text-left lg:px-8">
+          <div>
+            <h2 className="text-2xl font-bold text-[#222222]">
+              Ready to find your next signature piece?
+            </h2>
+            <p className="mt-2 text-sm text-[#777777]">
+              Explore the full Zenvoraa catalog with live shop filters.
+            </p>
+          </div>
+          <Button
+            asChild
+            className="h-12 rounded-none bg-[#c29958] px-8 text-xs font-bold uppercase tracking-wide text-white hover:bg-[#222222]"
+          >
+            <Link href="/shop">
+              Shop Collection <ShieldCheck className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
+        </div>
+      </section>
+    </main>
   );
 }
