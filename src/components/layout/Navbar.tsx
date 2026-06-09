@@ -42,6 +42,7 @@ import {
   useGetCategoriesQuery,
   useGetProductListingQuery,
 } from "@/services/api/products/products-api";
+import { useGetActiveAnnouncementsQuery } from "@/services/api/announcements/announcements-api";
 import type { ICategories } from "@/services/api/products/products-api.types";
 import { cn, getProductImage } from "@/lib/utils";
 
@@ -221,9 +222,11 @@ function ProductSearchBox({
 function MegaMenuColumn({
   links,
   title,
+  onItemClick,
 }: {
   links: { href: string; label: string }[];
   title: string;
+  onItemClick?: () => void;
 }) {
   return (
     <div>
@@ -234,6 +237,7 @@ function MegaMenuColumn({
           <li key={`${title}-${link.href}-${link.label}`}>
             <Link
               href={link.href}
+              onClick={onItemClick}
               className="transition-colors hover:text-[#c29958]"
             >
               {link.label}
@@ -245,7 +249,15 @@ function MegaMenuColumn({
   );
 }
 
-function ShopMegaMenu({ categories }: { categories: ICategories[] }) {
+function ShopMegaMenu({
+  categories,
+  isOpen,
+  onClose,
+}: {
+  categories: ICategories[];
+  isOpen: boolean;
+  onClose: () => void;
+}) {
   const activeCategories = categories.filter((category) => category.isActive);
   const rootCategories = activeCategories.filter((category) => !category.parentId);
   const subCategories = activeCategories.filter((category) => category.parentId);
@@ -272,11 +284,14 @@ function ShopMegaMenu({ categories }: { categories: ICategories[] }) {
         ];
 
   return (
-    <div className="invisible fixed left-1/2 top-[125px] z-40 w-[min(1380px,calc(100vw-48px))] -translate-x-1/2 translate-y-3 border border-[#eee8df] bg-white px-9 py-9 opacity-0 shadow-[0_10px_30px_rgba(0,0,0,0.08)] transition-all duration-200 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+    <div className={cn(
+      "invisible fixed left-1/2 top-[125px] z-40 w-[min(1380px,calc(100vw-48px))] -translate-x-1/2 translate-y-3 border border-[#eee8df] bg-white px-9 py-9 opacity-0 shadow-[0_10px_30px_rgba(0,0,0,0.08)] transition-all duration-200 pointer-events-none",
+      isOpen && "visible translate-y-0 opacity-100 pointer-events-auto"
+    )}>
       <div className="grid grid-cols-4 gap-12">
-        <MegaMenuColumn links={categoryLinks} title="Categories" />
-        <MegaMenuColumn links={subCategoryLinks} title="Sub Categories" />
-        <MegaMenuColumn links={shopFeatureLinks} title="Shop" />
+        <MegaMenuColumn links={categoryLinks} title="Categories" onItemClick={onClose} />
+        <MegaMenuColumn links={subCategoryLinks} title="Sub Categories" onItemClick={onClose} />
+        <MegaMenuColumn links={shopFeatureLinks} title="Shop" onItemClick={onClose} />
         <MegaMenuColumn
           title="More"
           links={[
@@ -285,12 +300,14 @@ function ShopMegaMenu({ categories }: { categories: ICategories[] }) {
             { label: "Wishlist", href: "/wishlist" },
             { label: "My Account", href: "/account" },
           ]}
+          onItemClick={onClose}
         />
       </div>
 
       <div className="mt-9 grid grid-cols-2 gap-6">
         <Link
           href="/shop?category=wedding-rings"
+          onClick={onClose}
           className="group/banner relative block h-[190px] overflow-hidden bg-[#f7f2ea]"
         >
           <Image
@@ -312,6 +329,7 @@ function ShopMegaMenu({ categories }: { categories: ICategories[] }) {
 
         <Link
           href="/shop?category=jewellery"
+          onClick={onClose}
           className="group/banner relative block h-[190px] overflow-hidden bg-[#f7f2ea]"
         >
           <Image
@@ -340,6 +358,7 @@ const Navbar = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
   const { user, isAuthenticated } = useAppSelector((state) => state.auth);
   const [logoutApi] = useLogoutMutation();
 
@@ -350,10 +369,12 @@ const Navbar = () => {
     skip: !isAuthenticated,
   });
   const { data: categoriesRes } = useGetCategoriesQuery();
+  const { data: announcementsRes } = useGetActiveAnnouncementsQuery();
 
   const cartCount = cartRes?.data?.items?.length ?? 0;
   const wishlistCount = wishlistRes?.data?.items?.length ?? 0;
   const categories = categoriesRes?.data.items ?? [];
+  const activeAnnouncements = announcementsRes?.data ?? [];
 
   const allMobileLinks = useMemo(
     () => [...navItems, ...pageLinks],
@@ -374,14 +395,42 @@ const Navbar = () => {
     <header className="sticky top-0 z-50 border-b border-[#e5e0d8] bg-white font-[var(--font-corano)] text-[#222222]">
       <div className="hidden border-b border-[#efebe4] bg-white text-xs text-[#555555] lg:block">
         <div className="mx-auto flex h-11 max-w-[1170px] items-center justify-between px-4">
-          <p>Welcome to Zenvoraa Jewelry online store</p>
-          <div className="flex items-center gap-7">
-            <button className="inline-flex items-center gap-1 transition-colors hover:text-[#c29958]">
-              $ Currency <ChevronDown className="h-3.5 w-3.5" />
-            </button>
-            <button className="inline-flex items-center gap-1 transition-colors hover:text-[#c29958]">
-              English <ChevronDown className="h-3.5 w-3.5" />
-            </button>
+          <p className="shrink-0 border-r border-[#e5e0d8]">Welcome to Zenvoraa Jewelry online store</p>
+          <div className="relative flex-1 max-w-5xl overflow-hidden ml-8">
+            {activeAnnouncements.length > 0 ? (
+              <div className="flex items-center w-full">
+                <style>{`
+                  @keyframes marquee {
+                    0% { transform: translate3d(0, 0, 0); }
+                    100% { transform: translate3d(-50%, 0, 0); }
+                  }
+                  .animate-marquee {
+                    display: inline-flex;
+                    white-space: nowrap;
+                    animation: marquee 30s linear infinite;
+                  }
+                  .animate-marquee:hover {
+                    animation-play-state: paused;
+                  }
+                `}</style>
+                <div className="animate-marquee gap-8">
+                  {[...activeAnnouncements, ...activeAnnouncements].map((ann, idx) => (
+                    <span key={`${ann.id}-${idx}`} className="inline-flex items-center gap-1.5 font-medium text-[#c29958]">
+                      {ann.link ? (
+                        <Link href={ann.link} className="hover:underline">
+                          {ann.text}
+                        </Link>
+                      ) : (
+                        <span>{ann.text}</span>
+                      )}
+                      <span className="text-gray-300 ml-4 font-normal">|</span>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <p className="text-right text-[#c29958] font-medium">✨ Free shipping on orders over ₹2000! ✨</p>
+            )}
           </div>
         </div>
       </div>
@@ -395,9 +444,15 @@ const Navbar = () => {
           <nav className="hidden items-center gap-8 text-[13px] font-bold uppercase tracking-wide lg:flex">
             {navItems.map((item) => (
               item.href === "/shop" ? (
-                <div key={item.href} className="group py-8">
+                <div
+                  key={item.href}
+                  className="group py-8"
+                  onMouseEnter={() => setIsMegaMenuOpen(true)}
+                  onMouseLeave={() => setIsMegaMenuOpen(false)}
+                >
                   <Link
                     href={item.href}
+                    onClick={() => setIsMegaMenuOpen(false)}
                     className={cn(
                       "inline-flex items-center gap-1 transition-colors hover:text-[#c29958]",
                       pathname === item.href && "text-[#c29958]"
@@ -406,7 +461,11 @@ const Navbar = () => {
                     {item.label}
                     <ChevronDown className="h-3.5 w-3.5" />
                   </Link>
-                  <ShopMegaMenu categories={categories} />
+                  <ShopMegaMenu
+                    categories={categories}
+                    isOpen={isMegaMenuOpen}
+                    onClose={() => setIsMegaMenuOpen(false)}
+                  />
                 </div>
               ) : (
                 <Link

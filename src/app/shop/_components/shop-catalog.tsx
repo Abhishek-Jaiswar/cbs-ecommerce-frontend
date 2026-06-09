@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Search } from "lucide-react";
 import {
   useGetBrandsQuery,
@@ -17,22 +18,40 @@ const ITEMS_PER_PAGE = 12;
 
 type ShopCatalogProps = {
   initialSearch?: string;
+  initialCategory?: string;
+  initialTag?: string;
+  initialFeatured?: boolean;
+  initialSale?: boolean;
 };
 
 function getOptionalBrandId(product: ShopProduct) {
   return (product as ShopProduct & { brandId?: string }).brandId;
 }
 
-export function ShopCatalog({ initialSearch = "" }: ShopCatalogProps) {
+export function ShopCatalog({
+  initialSearch = "",
+  initialCategory = "",
+  initialTag = "",
+  initialFeatured = false,
+  initialSale = false,
+  initialBrand = "",
+}: ShopCatalogProps & { initialBrand?: string }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const [search, setSearch] = useState(initialSearch);
   const [selectedCategoryId, setSelectedCategoryId] = useState("all");
-  const [selectedBrandId, setSelectedBrandId] = useState("all");
+  const [selectedBrandId, setSelectedBrandId] = useState(initialBrand || "all");
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(1000000);
   const [sortBy, setSortBy] = useState<ShopSortKey>("relevance");
   const [viewMode, setViewMode] = useState<ShopViewMode>("grid");
   const [page, setPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(8);
+
+  const [onlyNew, setOnlyNew] = useState(initialTag === "new");
+  const [onlyFeatured, setOnlyFeatured] = useState(initialFeatured);
+  const [onlySale, setOnlySale] = useState(initialSale);
 
   const { data: listingData, isLoading: isListingLoading } =
     useGetProductListingQuery({
@@ -61,6 +80,154 @@ export function ShopCatalog({ initialSearch = "" }: ShopCatalogProps) {
     return prices.length > 0 ? Math.ceil(Math.max(...prices)) : 1000000;
   }, [rawProducts]);
 
+  // Sync state with URL params
+  useEffect(() => {
+    setSearch(initialSearch);
+  }, [initialSearch]);
+
+  useEffect(() => {
+    setOnlyNew(initialTag === "new");
+  }, [initialTag]);
+
+  useEffect(() => {
+    setOnlyFeatured(initialFeatured);
+  }, [initialFeatured]);
+
+  useEffect(() => {
+    setOnlySale(initialSale);
+  }, [initialSale]);
+
+  useEffect(() => {
+    setSelectedBrandId(initialBrand || "all");
+  }, [initialBrand]);
+
+  useEffect(() => {
+    if (initialCategory && categories.length > 0) {
+      const matched = categories.find(
+        (c) => c.slug.toLowerCase() === initialCategory.toLowerCase()
+      );
+      if (matched) {
+        setSelectedCategoryId(matched.id);
+      } else {
+        setSelectedCategoryId("all");
+      }
+    } else if (!initialCategory) {
+      setSelectedCategoryId("all");
+    }
+  }, [initialCategory, categories]);
+
+  // Read minPrice/maxPrice/page/sortBy from searchParams on load/popstate
+  useEffect(() => {
+    const minP = searchParams.get("minPrice");
+    const maxP = searchParams.get("maxPrice");
+    const p = searchParams.get("page");
+    const sort = searchParams.get("sortBy");
+
+    if (minP) setMinPrice(Number(minP));
+    if (maxP) setMaxPrice(Number(maxP));
+    if (p) setPage(Number(p));
+    if (sort) setSortBy(sort as ShopSortKey);
+  }, [searchParams]);
+
+  // Helper to sync local filter state to browser URL search params
+  const updateUrl = (updatedFilters: {
+    categorySlug?: string | null;
+    brandId?: string;
+    searchVal?: string;
+    minP?: number;
+    maxP?: number;
+    sortKey?: ShopSortKey;
+    pageNum?: number;
+    isFeaturedVal?: boolean;
+    isSaleVal?: boolean;
+    isNewVal?: boolean;
+  }) => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+
+    if (updatedFilters.categorySlug !== undefined) {
+      if (updatedFilters.categorySlug) {
+        params.set("category", updatedFilters.categorySlug);
+      } else {
+        params.delete("category");
+      }
+    }
+
+    if (updatedFilters.brandId !== undefined) {
+      if (updatedFilters.brandId && updatedFilters.brandId !== "all") {
+        params.set("brand", updatedFilters.brandId);
+      } else {
+        params.delete("brand");
+      }
+    }
+
+    if (updatedFilters.searchVal !== undefined) {
+      if (updatedFilters.searchVal.trim()) {
+        params.set("search", updatedFilters.searchVal.trim());
+      } else {
+        params.delete("search");
+      }
+    }
+
+    if (updatedFilters.minP !== undefined) {
+      if (updatedFilters.minP > 0) {
+        params.set("minPrice", updatedFilters.minP.toString());
+      } else {
+        params.delete("minPrice");
+      }
+    }
+
+    if (updatedFilters.maxP !== undefined) {
+      if (updatedFilters.maxP < availableMaxPrice) {
+        params.set("maxPrice", updatedFilters.maxP.toString());
+      } else {
+        params.delete("maxPrice");
+      }
+    }
+
+    if (updatedFilters.sortKey !== undefined) {
+      if (updatedFilters.sortKey !== "relevance") {
+        params.set("sortBy", updatedFilters.sortKey);
+      } else {
+        params.delete("sortBy");
+      }
+    }
+
+    if (updatedFilters.pageNum !== undefined) {
+      if (updatedFilters.pageNum > 1) {
+        params.set("page", updatedFilters.pageNum.toString());
+      } else {
+        params.delete("page");
+      }
+    }
+
+    if (updatedFilters.isFeaturedVal !== undefined) {
+      if (updatedFilters.isFeaturedVal) {
+        params.set("featured", "true");
+      } else {
+        params.delete("featured");
+      }
+    }
+
+    if (updatedFilters.isSaleVal !== undefined) {
+      if (updatedFilters.isSaleVal) {
+        params.set("sale", "true");
+      } else {
+        params.delete("sale");
+      }
+    }
+
+    if (updatedFilters.isNewVal !== undefined) {
+      if (updatedFilters.isNewVal) {
+        params.set("tag", "new");
+      } else {
+        params.delete("tag");
+      }
+    }
+
+    router.push(`/shop?${params.toString()}`, { scroll: false });
+  };
+
   const processedProducts = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
 
@@ -77,8 +244,11 @@ export function ShopCatalog({ initialSearch = "" }: ShopCatalogProps) {
       const matchesBrand = selectedBrandId === "all" || brandId === selectedBrandId;
       const matchesPrice =
         Number.isFinite(price) && price >= minPrice && price <= maxPrice;
+      const matchesFeatured = !onlyFeatured || product.isFeatured;
+      const matchesSale = !onlySale || product.isSale;
+      const matchesNew = !onlyNew || product.isNew;
 
-      return matchesSearch && matchesCategory && matchesBrand && matchesPrice;
+      return matchesSearch && matchesCategory && matchesBrand && matchesPrice && matchesFeatured && matchesSale && matchesNew;
     });
 
     if (sortBy === "name-asc") {
@@ -96,7 +266,18 @@ export function ShopCatalog({ initialSearch = "" }: ShopCatalogProps) {
     }
 
     return filtered;
-  }, [maxPrice, minPrice, rawProducts, search, selectedBrandId, selectedCategoryId, sortBy]);
+  }, [
+    maxPrice,
+    minPrice,
+    rawProducts,
+    search,
+    selectedBrandId,
+    selectedCategoryId,
+    sortBy,
+    onlyNew,
+    onlyFeatured,
+    onlySale,
+  ]);
 
   const totalPages = Math.max(1, Math.ceil(processedProducts.length / itemsPerPage));
   const activePage = Math.min(page, totalPages);
@@ -118,8 +299,12 @@ export function ShopCatalog({ initialSearch = "" }: ShopCatalogProps) {
     setMinPrice(0);
     setMaxPrice(availableMaxPrice);
     setSortBy("relevance");
+    setOnlyNew(false);
+    setOnlyFeatured(false);
+    setOnlySale(false);
     setPage(1);
     setItemsPerPage(8);
+    router.push("/shop");
   };
 
   return (
@@ -136,18 +321,23 @@ export function ShopCatalog({ initialSearch = "" }: ShopCatalogProps) {
             onBrandChange={(brandId) => {
               setSelectedBrandId(brandId);
               resetPagination();
+              updateUrl({ brandId, pageNum: 1 });
             }}
             onCategoryChange={(categoryId) => {
               setSelectedCategoryId(categoryId);
               resetPagination();
+              const cat = categories.find((c) => c.id === categoryId);
+              updateUrl({ categorySlug: cat ? cat.slug : null, pageNum: 1 });
             }}
             onMaxPriceChange={(value) => {
               setMaxPrice(value);
               resetPagination();
+              updateUrl({ maxP: value, pageNum: 1 });
             }}
             onMinPriceChange={(value) => {
               setMinPrice(value);
               resetPagination();
+              updateUrl({ minP: value, pageNum: 1 });
             }}
           />
         </div>
@@ -161,6 +351,7 @@ export function ShopCatalog({ initialSearch = "" }: ShopCatalogProps) {
               onChange={(event) => {
                 setSearch(event.target.value);
                 resetPagination();
+                updateUrl({ searchVal: event.target.value, pageNum: 1 });
               }}
               placeholder="Search catalog..."
               className="min-w-0 flex-1 bg-transparent text-sm text-stone-800 outline-none placeholder:text-stone-400"
@@ -176,6 +367,7 @@ export function ShopCatalog({ initialSearch = "" }: ShopCatalogProps) {
             onSortChange={(value) => {
               setSortBy(value);
               resetPagination();
+              updateUrl({ sortKey: value, pageNum: 1 });
             }}
             onViewModeChange={setViewMode}
             itemsPerPage={itemsPerPage}
@@ -195,7 +387,10 @@ export function ShopCatalog({ initialSearch = "" }: ShopCatalogProps) {
           <ShopPagination
             activePage={activePage}
             totalPages={totalPages}
-            onPageChange={setPage}
+            onPageChange={(p) => {
+              setPage(p);
+              updateUrl({ pageNum: p });
+            }}
           />
         </div>
       </div>

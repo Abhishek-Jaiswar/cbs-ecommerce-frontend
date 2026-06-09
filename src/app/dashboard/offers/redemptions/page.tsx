@@ -47,7 +47,7 @@ export default function CouponRedemptionsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="space-y-1">
-          <h1 className="text-3xl font-extrabold tracking-tight font-serif text-stone-950 dark:text-stone-50">
+          <h1 className="text-3xl font-extrabold tracking-tight text-stone-950 dark:text-stone-50">
             Coupon Redemptions Log
           </h1>
           <p className="text-sm text-stone-500 dark:text-stone-400 max-w-xl">

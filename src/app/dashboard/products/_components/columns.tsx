@@ -55,7 +55,7 @@ export const columns = (onDelete?: (id: string) => void): ColumnDef<ProductListi
     },
     cell: ({ row }) => {
       const name = row.getValue("name") as string;
-      const slug = row.original.slug;
+      const slug = row.original.slug as string;
 
       return (
         <div className="flex flex-col gap-1 py-1">

@@ -114,6 +114,10 @@ const data = {
           title: "Coupon Redemptions",
           url: "/dashboard/offers/redemptions",
         },
+        {
+          title: "Announcements",
+          url: "/dashboard/announcements",
+        },
       ],
     },
     {
