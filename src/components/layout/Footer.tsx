@@ -10,8 +10,9 @@ import {
 
 const informationLinks = [
   { label: "About Us", href: "/about" },
+  { label: "Return & Refund Policy", href: "/refund-policy" },
   { label: "Delivery Information", href: "/delivery" },
-  { label: "Privacy Policy", href: "/privacy" },
+  { label: "Privacy Policy", href: "/privacy-policy" },
   { label: "Terms & Conditions", href: "/terms" },
   { label: "Contact Us", href: "/contact" },
   { label: "Site Map", href: "/sitemap" },
@@ -26,7 +27,7 @@ const socialLinks = [
 
 const Footer = () => {
   return (
-    <footer className="mt-20 border-t border-[#eee8df] bg-[#f7f2ea] font-(--font-corano) text-[#555555]">
+    <footer className="mt-20 border-t border-[#eee8df] bg-[#f7f2ea] font-[var(--font-corano)] text-[#555555]">
       <div className="mx-auto max-w-[1170px] px-4 py-16 lg:py-20">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
           <div>
@@ -124,7 +125,7 @@ const Footer = () => {
 
       <div className="bg-white py-5">
         <p className="px-4 text-center text-sm text-[#555555]">
-          © {new Date().getFullYear()} <b className="text-[#222222]">Zenvoraa</b> Made with care by{" "}
+          &copy; {new Date().getFullYear()} <b className="text-[#222222]">Zenvoraa</b> Made with care by{" "}
           <span className="font-bold text-[#c29958]">CBS TEAM</span>
         </p>
       </div>
