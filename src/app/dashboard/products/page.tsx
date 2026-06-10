@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useGetProductListingQuery } from "@/services/api/products/products-api";
+import { useGetAdminProductListingQuery, useDeleteProductMutation } from "@/services/api/products/products-api";
 import { DataTable } from "./_components/data-table";
 import { columns } from "./_components/columns";
 import { Button } from "@/components/ui/button";
@@ -12,24 +12,32 @@ const AllProducts = () => {
   const [page, setPage] = React.useState(1);
   const [limit, setLimit] = React.useState(10);
 
-  const { data, isLoading, isError, refetch } = useGetProductListingQuery({
+  const { data, isLoading, isError, refetch } = useGetAdminProductListingQuery({
     page,
     limit,
   });
 
+  const [deleteProduct] = useDeleteProductMutation();
+
   const products = data?.data.items ?? [];
   const pageCount = data?.data.totalPages ?? 1;
 
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage);
+  const handleDelete = async (id: string) => {
+    if (!window.confirm("Are you sure you want to permanently delete this product? This cannot be undone.")) return;
+    try {
+      await deleteProduct(id).unwrap();
+      refetch();
+    } catch (err) {
+      console.error("Failed to delete product:", err);
+    }
   };
 
+  const handlePageChange = (newPage: number) => setPage(newPage);
   const handlePageSizeChange = (newLimit: number) => {
     setLimit(newLimit);
-    setPage(1); // Reset to first page when changing page size
+    setPage(1);
   };
 
-  // Loading skeleton state
   if (isLoading) {
     return (
       <div className="p-6 md:p-10 space-y-6">
@@ -50,7 +58,6 @@ const AllProducts = () => {
     );
   }
 
-  // Error state card
   if (isError) {
     return (
       <div className="p-6 md:p-10 flex flex-col items-center justify-center min-h-[60vh] text-center space-y-4">
@@ -69,17 +76,15 @@ const AllProducts = () => {
     );
   }
 
-  // Column definitions
-  const cols = columns();
+  const cols = columns(handleDelete);
 
   return (
     <div className="flex-1 space-y-6 p-6 md:p-10 bg-background">
-      {/* Premium Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="space-y-0.5">
           <h1 className="text-3xl font-bold tracking-tight text-foreground">All Products</h1>
           <p className="text-sm text-muted-foreground">
-            Manage your inventory listings, descriptions, variants, and sale pricing.
+            Showing <span className="font-semibold text-foreground">{data?.data.total ?? 0}</span> total products — including drafts, inactive, and archived.
           </p>
         </div>
         <Button asChild className="self-start sm:self-auto shadow-sm gap-2">
@@ -90,7 +95,6 @@ const AllProducts = () => {
         </Button>
       </div>
 
-      {/* Advanced Data Table Integration */}
       <DataTable
         columns={cols}
         data={products}
@@ -105,4 +109,3 @@ const AllProducts = () => {
 };
 
 export default AllProducts;
-

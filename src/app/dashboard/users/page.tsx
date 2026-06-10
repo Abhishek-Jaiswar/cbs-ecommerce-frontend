@@ -7,7 +7,7 @@ import {
   useUpdateUserRoleMutation,
   useDeleteUserMutation,
 } from "@/services/api/auth/auth-api";
-import { User } from "@/services/api/auth/auth-api";
+import { User } from "@/services/api/auth/auth-api.types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -177,7 +177,7 @@ export default function CustomersPage() {
       {/* Header section */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="space-y-1">
-          <h1 className="text-3xl font-extrabold tracking-tight font-serif text-stone-950 dark:text-stone-50">
+          <h1 className="text-3xl font-extrabold tracking-tight text-stone-950 dark:text-stone-50">
             Customers Directory
           </h1>
           <p className="text-sm text-stone-500 dark:text-stone-400 max-w-xl">
@@ -352,7 +352,7 @@ export default function CustomersPage() {
       <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
         <DialogContent className="sm:max-w-2xl w-full bg-white dark:bg-stone-950 border border-stone-200 dark:border-stone-800 rounded-lg p-6">
           <DialogHeader>
-            <DialogTitle className="text-lg font-serif font-bold text-stone-950 dark:text-stone-50 flex items-center gap-2">
+            <DialogTitle className="text-lg font-bold text-stone-950 dark:text-stone-50 flex items-center gap-2">
               <UserIcon className="h-5 w-5 text-amber-500" />
               Customer Profile Audit
             </DialogTitle>
@@ -505,7 +505,7 @@ export default function CustomersPage() {
       <Dialog open={isRoleOpen} onOpenChange={setIsRoleOpen}>
         <DialogContent className="max-w-sm w-full bg-white dark:bg-stone-950 border border-stone-200 dark:border-stone-800 p-6 rounded-lg">
           <DialogHeader>
-            <DialogTitle className="text-base font-serif font-bold text-stone-950 dark:text-stone-50 flex items-center gap-2">
+            <DialogTitle className="text-base font-bold text-stone-950 dark:text-stone-50 flex items-center gap-2">
               <ShieldAlert className="h-5 w-5 text-amber-500" />
               Adjust Account Role
             </DialogTitle>
@@ -576,7 +576,7 @@ export default function CustomersPage() {
       <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
         <DialogContent className="max-w-sm w-full bg-white dark:bg-stone-950 border border-stone-200 dark:border-stone-800 p-6 rounded-lg">
           <DialogHeader>
-            <DialogTitle className="text-base font-serif font-bold text-stone-950 dark:text-stone-50">
+            <DialogTitle className="text-base font-bold text-stone-950 dark:text-stone-50">
               Confirm Account Deletion
             </DialogTitle>
             <DialogDescription className="text-xs text-stone-400">

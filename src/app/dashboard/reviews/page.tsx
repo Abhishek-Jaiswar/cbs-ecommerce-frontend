@@ -127,7 +127,7 @@ export default function ReviewsModerationPage() {
       {/* Header section */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="space-y-1">
-          <h1 className="text-3xl font-extrabold tracking-tight font-serif text-stone-950 dark:text-stone-50">
+          <h1 className="text-3xl font-extrabold tracking-tight text-stone-950 dark:text-stone-50">
             Reviews Moderation
           </h1>
           <p className="text-sm text-stone-500 dark:text-stone-400 max-w-xl">
@@ -359,7 +359,7 @@ export default function ReviewsModerationPage() {
       <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
         <DialogContent className="max-w-md w-full bg-white dark:bg-stone-950 border border-stone-200 dark:border-stone-800 p-6 rounded-lg">
           <DialogHeader>
-            <DialogTitle className="text-lg font-serif font-bold text-stone-950 dark:text-stone-50 flex items-center gap-2">
+            <DialogTitle className="text-lg font-bold text-stone-950 dark:text-stone-50 flex items-center gap-2">
               <MessageSquare className="h-5 w-5 text-amber-500" />
               Review Details
             </DialogTitle>
@@ -443,7 +443,7 @@ export default function ReviewsModerationPage() {
       <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
         <DialogContent className="max-w-sm w-full bg-white dark:bg-stone-950 border border-stone-200 dark:border-stone-800 p-6 rounded-lg">
           <DialogHeader>
-            <DialogTitle className="text-base font-serif font-bold text-stone-950 dark:text-stone-50 flex items-center gap-2">
+            <DialogTitle className="text-base font-bold text-stone-950 dark:text-stone-50 flex items-center gap-2">
               <Trash2 className="h-5 w-5 text-red-500" />
               Remove Review Record
             </DialogTitle>

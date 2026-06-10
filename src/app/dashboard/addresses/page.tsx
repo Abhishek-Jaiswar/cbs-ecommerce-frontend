@@ -62,7 +62,7 @@ export default function AddressesPage() {
 
   // Search filter local list items
   const filteredAddresses = addresses.filter(
-    (a) =>
+    (a: Address) =>
       a.fullname.toLowerCase().includes(search.toLowerCase()) ||
       a.city.toLowerCase().includes(search.toLowerCase()) ||
       a.state.toLowerCase().includes(search.toLowerCase()) ||
@@ -107,7 +107,7 @@ export default function AddressesPage() {
       {/* Header section */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="space-y-1">
-          <h1 className="text-3xl font-extrabold tracking-tight font-serif text-stone-950 dark:text-stone-50">
+          <h1 className="text-3xl font-extrabold tracking-tight text-stone-950 dark:text-stone-50">
             Addresses Registry
           </h1>
           <p className="text-sm text-stone-500 dark:text-stone-400 max-w-xl">
@@ -171,7 +171,7 @@ export default function AddressesPage() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredAddresses.map((a) => (
+                  filteredAddresses.map((a: Address) => (
                     <TableRow
                       key={a.id}
                       className="border-b border-stone-200 dark:border-stone-800 hover:bg-stone-50/50 dark:hover:bg-stone-900/30"
@@ -292,7 +292,7 @@ export default function AddressesPage() {
       <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
         <DialogContent className="max-w-sm w-full bg-white dark:bg-stone-950 border border-stone-200 dark:border-stone-800 p-6 rounded-lg">
           <DialogHeader>
-            <DialogTitle className="text-base font-serif font-bold text-stone-950 dark:text-stone-50 flex items-center gap-2">
+            <DialogTitle className="text-base font-bold text-stone-950 dark:text-stone-50 flex items-center gap-2">
               <MapPin className="h-5 w-5 text-red-500" />
               Remove Address Record
             </DialogTitle>

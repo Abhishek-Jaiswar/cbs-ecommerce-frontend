@@ -4,13 +4,14 @@ import * as React from "react";
 import {
   useCreateVariantMutation,
   useDeleteVariantMutation,
+  useUpdateVariantMutation,
 } from "@/services/api/products/products-api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
-import { Check, Plus, Trash } from "lucide-react";
+import { Check, Plus, Trash, Pencil } from "lucide-react";
 
 interface EditVariantsCardProps {
   productId: string;
@@ -25,6 +26,7 @@ export function EditVariantsCard({
 }: EditVariantsCardProps) {
   const [createVariant, { isLoading: isCreatingVariant }] = useCreateVariantMutation();
   const [deleteVariant] = useDeleteVariantMutation();
+  const [updateVariant, { isLoading: isUpdatingVariant }] = useUpdateVariantMutation();
 
   // Variants Input States
   const [selectedColorId, setSelectedColorId] = React.useState("");
@@ -32,6 +34,12 @@ export function EditVariantsCard({
   const [variantPrice, setVariantPrice] = React.useState("");
   const [variantStock, setVariantStock] = React.useState("");
   const [isVariantDialogOpen, setIsVariantDialogOpen] = React.useState(false);
+
+  // Edit Variants States
+  const [editVariantId, setEditVariantId] = React.useState<string | null>(null);
+  const [editPrice, setEditPrice] = React.useState("");
+  const [editStock, setEditStock] = React.useState("");
+  const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
 
   const handleCreateVariant = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,6 +60,35 @@ export function EditVariantsCard({
       setSelectedSizeId("");
       setVariantPrice("");
       setVariantStock("");
+      refetchProduct();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleEditClick = (variant: any) => {
+    setEditVariantId(variant.id);
+    setEditPrice(variant.price !== null && variant.price !== undefined ? String(variant.price) : "");
+    setEditStock(String(variant.stock));
+    setIsEditDialogOpen(true);
+  };
+
+  const handleUpdateVariant = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editVariantId || !editStock) return;
+
+    try {
+      await updateVariant({
+        variantId: editVariantId,
+        body: {
+          price: editPrice ? parseFloat(editPrice) : null,
+          stock: parseInt(editStock, 10),
+        },
+      }).unwrap();
+      setIsEditDialogOpen(false);
+      setEditVariantId(null);
+      setEditPrice("");
+      setEditStock("");
       refetchProduct();
     } catch (err) {
       console.error(err);
@@ -194,14 +231,24 @@ export function EditVariantsCard({
                       </td>
                       <td className="p-3 font-medium">{v.stock} units</td>
                       <td className="p-3 text-right">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7 text-destructive hover:bg-destructive/10 hover:text-destructive rounded-lg"
-                          onClick={() => handleDeleteVariant(v.id)}
-                        >
-                          <Trash className="h-3.5 w-3.5" />
-                        </Button>
+                        <div className="flex justify-end gap-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7 text-muted-foreground hover:bg-muted/80 rounded-lg"
+                            onClick={() => handleEditClick(v)}
+                          >
+                            <Pencil className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7 text-destructive hover:bg-destructive/10 hover:text-destructive rounded-lg"
+                            onClick={() => handleDeleteVariant(v.id)}
+                          >
+                            <Trash className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
                       </td>
                     </tr>
                   );
@@ -216,6 +263,44 @@ export function EditVariantsCard({
             </tbody>
           </table>
         </div>
+
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent className="sm:max-w-md bg-card text-foreground border-border">
+            <form onSubmit={handleUpdateVariant}>
+              <DialogHeader>
+                <DialogTitle>Edit Variant</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                <div className="space-y-2">
+                  <label className="text-xs font-semibold">Price Override (₹)</label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    placeholder={`Inherit default: ₹${product?.price || "0"}`}
+                    value={editPrice}
+                    onChange={(e) => setEditPrice(e.target.value)}
+                    className="bg-background border-input text-sm"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-semibold">Stock Quantity *</label>
+                  <Input
+                    type="number"
+                    placeholder="e.g. 50"
+                    value={editStock}
+                    onChange={(e) => setEditStock(e.target.value)}
+                    className="bg-background border-input text-sm"
+                    required
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button type="submit" disabled={isUpdatingVariant}>Save Changes</Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
       </CardContent>
     </Card>
   );

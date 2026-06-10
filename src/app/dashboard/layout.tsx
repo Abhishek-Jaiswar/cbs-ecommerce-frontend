@@ -18,16 +18,21 @@ export default function DashboardLayout({
 }) {
   const router = useRouter();
   const { user, isAuthenticated, loading } = useAppSelector((state) => state.auth);
+  const [isMounted, setIsMounted] = React.useState(false);
 
-  useEffect(() => {
-    if (!loading) {
+  React.useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  React.useEffect(() => {
+    if (isMounted && !loading) {
       if (!isAuthenticated || !user || user.role !== "ADMIN") {
         router.push("/login");
       }
     }
-  }, [loading, isAuthenticated, user, router]);
+  }, [isMounted, loading, isAuthenticated, user, router]);
 
-  if (loading) {
+  if (!isMounted || loading) {
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-stone-50">
         <div className="text-center flex flex-col items-center gap-3">
@@ -55,7 +60,7 @@ export default function DashboardLayout({
   const userProfile = {
     name: user.name,
     email: user.email,
-    avatar: "/avatars/admin.jpg",
+    avatar: "",
   };
 
   return (

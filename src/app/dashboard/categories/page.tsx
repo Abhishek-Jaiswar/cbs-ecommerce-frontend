@@ -250,7 +250,7 @@ export default function CategoriesPage() {
       {/* Header section */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="space-y-1">
-          <h1 className="text-3xl font-extrabold tracking-tight font-serif text-stone-950 dark:text-stone-50">
+          <h1 className="text-3xl font-extrabold tracking-tight text-stone-950 dark:text-stone-50">
             Product Categories
           </h1>
           <p className="text-sm text-stone-500 dark:text-stone-400 max-w-xl">
@@ -428,7 +428,7 @@ export default function CategoriesPage() {
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
         <DialogContent className="sm:max-w-2xl w-full bg-white dark:bg-stone-950 border border-stone-200 dark:border-stone-800 rounded-lg p-6">
           <DialogHeader>
-            <DialogTitle className="text-lg font-serif font-bold text-stone-950 dark:text-stone-50">
+            <DialogTitle className="text-lg font-bold text-stone-950 dark:text-stone-50">
               {editingCategory ? "Edit Category Details" : "Create New Category"}
             </DialogTitle>
             <DialogDescription className="text-xs text-stone-400">
@@ -624,7 +624,7 @@ export default function CategoriesPage() {
       <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
         <DialogContent className="max-w-sm w-full bg-white dark:bg-stone-950 border border-stone-200 dark:border-stone-800 p-6 rounded-lg">
           <DialogHeader>
-            <DialogTitle className="text-base font-serif font-bold text-stone-950 dark:text-stone-50">
+            <DialogTitle className="text-base font-bold text-stone-950 dark:text-stone-50">
               Confirm Category Deletion
             </DialogTitle>
             <DialogDescription className="text-xs text-stone-400">

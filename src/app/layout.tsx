@@ -2,14 +2,14 @@ import "./globals.css";
 import { Geist } from "next/font/google";
 import HeaderFooterWrapper from "@/components/layout/header-footer-wrapper";
 import { Metadata } from "next";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { StoreProvider } from "@/store/store-provider";
+import { AuthProvider } from "@/components/auth/auth-provider";
 
 const geistSans = Geist({
   subsets: ["latin"],
   variable: "--font-sans",
 });
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { StoreProvider } from "@/store/store-provider";
-import { AuthProvider } from "@/components/auth/auth-provider";
 
 export const metadata: Metadata = {
   title: {

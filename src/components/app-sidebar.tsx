@@ -61,6 +61,10 @@ const data = {
           url: "/dashboard/products/create",
         },
         {
+          title: "Inventory",
+          url: "/dashboard/inventory",
+        },
+        {
           title: "Categories",
           url: "/dashboard/categories",
         },
@@ -109,6 +113,10 @@ const data = {
         {
           title: "Coupon Redemptions",
           url: "/dashboard/offers/redemptions",
+        },
+        {
+          title: "Announcements",
+          url: "/dashboard/announcements",
         },
       ],
     },
