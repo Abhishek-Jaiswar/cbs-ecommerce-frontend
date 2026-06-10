@@ -24,8 +24,11 @@ const nextConfig: NextConfig = {
     cpus: 1,
   },
 
+  devIndicators: false,
+
   async rewrites() {
-    const rawBackendUrl = process.env.BACKEND_API_URL || "http://localhost:8000";
+    const rawBackendUrl =
+      process.env.BACKEND_API_URL || "http://localhost:8000";
     // Strip trailing slashes, /api/v1, or /api to prevent duplicated paths
     const cleanedBackendUrl = rawBackendUrl.replace(/\/api(\/v1)?\/?$/, "");
 
