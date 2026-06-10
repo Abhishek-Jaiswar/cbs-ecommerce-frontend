@@ -7,14 +7,13 @@ import {
   useGetBrandsQuery,
   useGetCategoriesQuery,
   useGetProductListingQuery,
+  useGetProductTagsQuery,
 } from "@/services/api/products/products-api";
 import { ShopPagination } from "./shop-pagination";
 import { ShopProductGrid } from "./shop-product-grid";
 import { ShopSidebar } from "./shop-sidebar";
 import { ShopToolbar } from "./shop-toolbar";
 import type { ShopProduct, ShopSortKey, ShopViewMode } from "./shop-types";
-
-const ITEMS_PER_PAGE = 12;
 
 type ShopCatalogProps = {
   initialSearch?: string;
@@ -23,10 +22,6 @@ type ShopCatalogProps = {
   initialFeatured?: boolean;
   initialSale?: boolean;
 };
-
-function getOptionalBrandId(product: ShopProduct) {
-  return (product as ShopProduct & { brandId?: string }).brandId;
-}
 
 export function ShopCatalog({
   initialSearch = "",
@@ -41,7 +36,8 @@ export function ShopCatalog({
 
   const [search, setSearch] = useState(initialSearch);
   const [selectedCategoryId, setSelectedCategoryId] = useState("all");
-  const [selectedBrandId, setSelectedBrandId] = useState(initialBrand || "all");
+  const [selectedBrandIds, setSelectedBrandIds] = useState<string[]>([]);
+  const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(1000000);
   const [sortBy, setSortBy] = useState<ShopSortKey>("relevance");
@@ -60,6 +56,7 @@ export function ShopCatalog({
     });
   const { data: categoriesData } = useGetCategoriesQuery();
   const { data: brandsData } = useGetBrandsQuery();
+  const { data: tagsData } = useGetProductTagsQuery();
 
   const categories = useMemo(
     () => categoriesData?.data.items ?? [],
@@ -69,8 +66,14 @@ export function ShopCatalog({
     () => listingData?.data.items ?? [],
     [listingData?.data.items]
   );
-  const hasProductBrandIds = rawProducts.some((product) => getOptionalBrandId(product));
-  const brands = hasProductBrandIds ? brandsData?.data.items ?? [] : [];
+  const brands = useMemo(
+    () => brandsData?.data.items ?? [],
+    [brandsData?.data.items]
+  );
+  const tags = useMemo(
+    () => tagsData?.data.items ?? [],
+    [tagsData?.data.items]
+  );
 
   const availableMaxPrice = useMemo(() => {
     const prices = rawProducts
@@ -80,14 +83,10 @@ export function ShopCatalog({
     return prices.length > 0 ? Math.ceil(Math.max(...prices)) : 1000000;
   }, [rawProducts]);
 
-  // Sync state with URL params
+  // Sync search state with URL params
   useEffect(() => {
     setSearch(initialSearch);
   }, [initialSearch]);
-
-  useEffect(() => {
-    setOnlyNew(initialTag === "new");
-  }, [initialTag]);
 
   useEffect(() => {
     setOnlyFeatured(initialFeatured);
@@ -97,10 +96,7 @@ export function ShopCatalog({
     setOnlySale(initialSale);
   }, [initialSale]);
 
-  useEffect(() => {
-    setSelectedBrandId(initialBrand || "all");
-  }, [initialBrand]);
-
+  // Sync categories state with URL param
   useEffect(() => {
     if (initialCategory && categories.length > 0) {
       const matched = categories.find(
@@ -115,6 +111,49 @@ export function ShopCatalog({
       setSelectedCategoryId("all");
     }
   }, [initialCategory, categories]);
+
+  // Sync brands state with URL param (comma-separated names/slugs)
+  useEffect(() => {
+    const brandParam = searchParams.get("brand");
+    if (brandParam && brands.length > 0) {
+      const brandList = brandParam.split(",").filter(Boolean);
+      const brandIds = brandList.map((slug) => {
+        const matched = brands.find(
+          (b) => b.name.toLowerCase() === slug.toLowerCase() || b.id === slug
+        );
+        return matched ? matched.id : slug;
+      });
+      setSelectedBrandIds(brandIds);
+    } else {
+      setSelectedBrandIds(initialBrand && initialBrand !== "all" ? [initialBrand] : []);
+    }
+  }, [searchParams, brands, initialBrand]);
+
+  // Sync tags state with URL param (comma-separated names/slugs)
+  useEffect(() => {
+    const tagParam = searchParams.get("tag");
+    if (tagParam && tags.length > 0) {
+      const tagList = tagParam.split(",").filter(Boolean);
+      const tagIds: string[] = [];
+      let hasNewTag = false;
+
+      tagList.forEach((slug) => {
+        if (slug === "new") {
+          hasNewTag = true;
+        } else {
+          const matched = tags.find(
+            (t) => t.slug.toLowerCase() === slug.toLowerCase() || t.id === slug
+          );
+          if (matched) tagIds.push(matched.id);
+        }
+      });
+      setSelectedTagIds(tagIds);
+      setOnlyNew(hasNewTag);
+    } else {
+      setSelectedTagIds([]);
+      setOnlyNew(initialTag === "new");
+    }
+  }, [searchParams, tags, initialTag]);
 
   // Read minPrice/maxPrice/page/sortBy from searchParams on load/popstate
   useEffect(() => {
@@ -132,7 +171,8 @@ export function ShopCatalog({
   // Helper to sync local filter state to browser URL search params
   const updateUrl = (updatedFilters: {
     categorySlug?: string | null;
-    brandId?: string;
+    brandIds?: string[];
+    tagIds?: string[];
     searchVal?: string;
     minP?: number;
     maxP?: number;
@@ -153,11 +193,33 @@ export function ShopCatalog({
       }
     }
 
-    if (updatedFilters.brandId !== undefined) {
-      if (updatedFilters.brandId && updatedFilters.brandId !== "all") {
-        params.set("brand", updatedFilters.brandId);
+    if (updatedFilters.brandIds !== undefined) {
+      if (updatedFilters.brandIds.length > 0) {
+        const brandNames = updatedFilters.brandIds
+          .map((id) => brands.find((b) => b.id === id)?.name.toLowerCase() || id)
+          .join(",");
+        params.set("brand", brandNames);
       } else {
         params.delete("brand");
+      }
+    }
+
+    if (updatedFilters.tagIds !== undefined || updatedFilters.isNewVal !== undefined) {
+      const activeTagIds = updatedFilters.tagIds !== undefined ? updatedFilters.tagIds : selectedTagIds;
+      const isNewActive = updatedFilters.isNewVal !== undefined ? updatedFilters.isNewVal : onlyNew;
+      
+      const finalTags: string[] = [];
+      if (isNewActive) finalTags.push("new");
+      
+      activeTagIds.forEach((id) => {
+        const slug = tags.find((t) => t.id === id)?.slug;
+        if (slug) finalTags.push(slug);
+      });
+
+      if (finalTags.length > 0) {
+        params.set("tag", finalTags.join(","));
+      } else {
+        params.delete("tag");
       }
     }
 
@@ -217,38 +279,128 @@ export function ShopCatalog({
       }
     }
 
-    if (updatedFilters.isNewVal !== undefined) {
-      if (updatedFilters.isNewVal) {
-        params.set("tag", "new");
-      } else {
-        params.delete("tag");
-      }
-    }
-
     router.push(`/shop?${params.toString()}`, { scroll: false });
   };
+
+  // Helper to find parent category and all its children/grandchildren categories recursively
+  const selectedCategoryIds = useMemo(() => {
+    if (selectedCategoryId === "all") return new Set(["all"]);
+    const ids = new Set([selectedCategoryId]);
+
+    const findChildren = (parentId: string) => {
+      categories.forEach((cat) => {
+        if (cat.parentId === parentId) {
+          ids.add(cat.id);
+          findChildren(cat.id);
+        }
+      });
+    };
+
+    findChildren(selectedCategoryId);
+    return ids;
+  }, [selectedCategoryId, categories]);
+
+  // Compute live product counts dynamically based on all products in the catalog
+  const productCounts = useMemo(() => {
+    const counts = {
+      categories: {} as Record<string, number>,
+      brands: {} as Record<string, number>,
+      tags: {} as Record<string, number>,
+    };
+
+    counts.categories.all = rawProducts.length;
+
+    categories.forEach((c) => {
+      counts.categories[c.id] = 0;
+    });
+    brands.forEach((b) => {
+      counts.brands[b.id] = 0;
+    });
+    tags.forEach((t) => {
+      counts.tags[t.id] = 0;
+    });
+
+    rawProducts.forEach((product) => {
+      if (product.categoryId) {
+        counts.categories[product.categoryId] = (counts.categories[product.categoryId] ?? 0) + 1;
+      }
+      if (product.brandId) {
+        counts.brands[product.brandId] = (counts.brands[product.brandId] ?? 0) + 1;
+      }
+      if (product.productTags) {
+        product.productTags.forEach((pt) => {
+          counts.tags[pt.tag.id] = (counts.tags[pt.tag.id] ?? 0) + 1;
+        });
+      }
+    });
+
+    // Accumulate child category counts into parent category counts recursively
+    categories.forEach((cat) => {
+      if (cat.parentId) {
+        const addToParent = (parentId: string, amount: number) => {
+          const parent = categories.find((c) => c.id === parentId);
+          if (parent) {
+            counts.categories[parent.id] = (counts.categories[parent.id] ?? 0) + amount;
+            if (parent.parentId) {
+              addToParent(parent.parentId, amount);
+            }
+          }
+        };
+        const childCount = rawProducts.filter((p) => p.categoryId === cat.id).length;
+        addToParent(cat.parentId, childCount);
+      }
+    });
+
+    return counts;
+  }, [rawProducts, categories, brands, tags]);
 
   const processedProducts = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
 
     const filtered = rawProducts.filter((product) => {
       const price = Number(product.price);
-      const brandId = getOptionalBrandId(product);
+      
+      // Search term filtering
       const matchesSearch =
         normalizedSearch.length === 0 ||
         product.name.toLowerCase().includes(normalizedSearch) ||
         product.excerpt.toLowerCase().includes(normalizedSearch) ||
         product.slug.toLowerCase().includes(normalizedSearch);
+
+      // Category / Subcategory nested filtering
       const matchesCategory =
-        selectedCategoryId === "all" || product.categoryId === selectedCategoryId;
-      const matchesBrand = selectedBrandId === "all" || brandId === selectedBrandId;
+        selectedCategoryId === "all" || selectedCategoryIds.has(product.categoryId);
+
+      // Multi-brand selection filtering
+      const matchesBrand =
+        selectedBrandIds.length === 0 ||
+        (product.brandId && selectedBrandIds.includes(product.brandId));
+
+      // Price range filtering
       const matchesPrice =
         Number.isFinite(price) && price >= minPrice && price <= maxPrice;
+
+      // Multi-tag selection filtering
+      const productTagIds = product.productTags?.map((pt) => pt.tag.id) ?? [];
+      const matchesTags =
+        selectedTagIds.length === 0 ||
+        selectedTagIds.some((id) => productTagIds.includes(id));
+
+      // Flag tags filtering
       const matchesFeatured = !onlyFeatured || product.isFeatured;
       const matchesSale = !onlySale || product.isSale;
       const matchesNew = !onlyNew || product.isNew;
 
-      return matchesSearch && matchesCategory && matchesBrand && matchesPrice && matchesFeatured && matchesSale && matchesNew;
+      return (
+        matchesSearch &&
+        matchesCategory &&
+        matchesBrand &&
+        matchesPrice &&
+        matchesTags &&
+        matchesFeatured &&
+        matchesSale &&
+        matchesNew
+      );
     });
 
     if (sortBy === "name-asc") {
@@ -271,8 +423,10 @@ export function ShopCatalog({
     minPrice,
     rawProducts,
     search,
-    selectedBrandId,
+    selectedBrandIds,
     selectedCategoryId,
+    selectedCategoryIds,
+    selectedTagIds,
     sortBy,
     onlyNew,
     onlyFeatured,
@@ -295,7 +449,8 @@ export function ShopCatalog({
   const handleResetFilters = () => {
     setSearch("");
     setSelectedCategoryId("all");
-    setSelectedBrandId("all");
+    setSelectedBrandIds([]);
+    setSelectedTagIds([]);
     setMinPrice(0);
     setMaxPrice(availableMaxPrice);
     setSortBy("relevance");
@@ -314,14 +469,16 @@ export function ShopCatalog({
           <ShopSidebar
             brands={brands}
             categories={categories}
+            tags={tags}
             maxPrice={maxPrice === 1000000 ? availableMaxPrice : maxPrice}
             minPrice={minPrice}
-            selectedBrandId={selectedBrandId}
+            selectedBrandIds={selectedBrandIds}
             selectedCategoryId={selectedCategoryId}
-            onBrandChange={(brandId) => {
-              setSelectedBrandId(brandId);
+            selectedTagIds={selectedTagIds}
+            onBrandChange={(brandIds) => {
+              setSelectedBrandIds(brandIds);
               resetPagination();
-              updateUrl({ brandId, pageNum: 1 });
+              updateUrl({ brandIds, pageNum: 1 });
             }}
             onCategoryChange={(categoryId) => {
               setSelectedCategoryId(categoryId);
@@ -329,16 +486,20 @@ export function ShopCatalog({
               const cat = categories.find((c) => c.id === categoryId);
               updateUrl({ categorySlug: cat ? cat.slug : null, pageNum: 1 });
             }}
-            onMaxPriceChange={(value) => {
-              setMaxPrice(value);
+            onTagChange={(tagIds) => {
+              setSelectedTagIds(tagIds);
               resetPagination();
-              updateUrl({ maxP: value, pageNum: 1 });
+              updateUrl({ tagIds, pageNum: 1 });
             }}
-            onMinPriceChange={(value) => {
-              setMinPrice(value);
+            onPriceChange={(range) => {
+              setMinPrice(range[0]);
+              setMaxPrice(range[1]);
               resetPagination();
-              updateUrl({ minP: value, pageNum: 1 });
+              updateUrl({ minP: range[0], maxP: range[1], pageNum: 1 });
             }}
+            productCounts={productCounts}
+            absoluteMaxPrice={availableMaxPrice}
+            onResetFilters={handleResetFilters}
           />
         </div>
 

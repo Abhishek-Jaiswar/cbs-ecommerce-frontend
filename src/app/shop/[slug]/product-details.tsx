@@ -20,7 +20,7 @@ import {
   Package2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useAddToCartMutation } from "@/services/api/cart/cart-api";
+import { useAddToCartMutation, useGetCartQuery, useUpdateCartItemQuantityMutation } from "@/services/api/cart/cart-api";
 import { useToggleWishlistItemMutation, useGetWishlistQuery } from "@/services/api/wishlist/wishlist-api";
 import { useGetProductReviewsQuery, useCreateReviewMutation } from "@/services/api/reviews/reviews-api";
 import { useAppSelector } from "@/store/hooks";
@@ -146,15 +146,35 @@ export default function ProductDetails({ slug }: Params) {
   const product = data?.data;
   const { isAuthenticated, user } = useAppSelector((state) => state.auth);
 
-  const [selectedColor, setSelectedColor] = useState<string>("");
-  const [selectedSize, setSelectedSize] = useState<string>("");
+  const [selectedColorState, setSelectedColorState] = useState<string>("");
+  const [selectedSizeState, setSelectedSizeState] = useState<string>("");
+  const [activeImgIndexState, setActiveImgIndex] = useState<number | null>(null);
+  const [prevVariantId, setPrevVariantId] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
-  const [activeImgIndex, setActiveImgIndex] = useState(0);
   const [activeTab, setActiveTab] = useState("description");
   const [imgFading, setImgFading] = useState(false);
   const [hoveredStar, setHoveredStar] = useState(0);
 
+  const selectedColor = selectedColorState || product?.colors?.[0]?.id || "";
+  const selectedSize = selectedSizeState || product?.sizes?.[0]?.id || "";
+
+  const setSelectedColor = useCallback((colorId: string) => {
+    setSelectedColorState(colorId);
+    setActiveImgIndex(null);
+  }, []);
+
+  const setSelectedSize = useCallback((sizeId: string) => {
+    setSelectedSizeState(sizeId);
+  }, []);
+
+  const activeVariant = useMemo(() =>
+    product?.variants?.find((v) => v.color?.id === selectedColor && v.size?.id === selectedSize) ?? null,
+    [product, selectedColor, selectedSize]
+  );
+
   const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
+  const [updateCartItemQuantity, { isLoading: isUpdatingCart }] = useUpdateCartItemQuantityMutation();
+  const { data: cartRes } = useGetCartQuery(undefined, { skip: !isAuthenticated });
   const [toggleWishlist, { isLoading: isTogglingWishlist }] = useToggleWishlistItemMutation();
   const { data: wishlistRes } = useGetWishlistQuery(undefined, { skip: !isAuthenticated });
   const isWishlisted = wishlistRes?.data?.items?.some((item) => item.product?.id === product?.id) ?? false;
@@ -175,15 +195,11 @@ export default function ProductDetails({ slug }: Params) {
   const [reviewError, setReviewError] = useState("");
 
   useEffect(() => {
-    if (product) {
-      if (product.colors?.length > 0 && !selectedColor) setSelectedColor(product.colors[0].id);
-      if (product.sizes?.length > 0 && !selectedSize) setSelectedSize(product.sizes[0].id);
-    }
     if (isAuthenticated && user) {
-      setReviewName(user.name);
-      setReviewEmail(user.email);
+      setReviewName((prev) => prev || user.name);
+      setReviewEmail((prev) => prev || user.email);
     }
-  }, [product, selectedColor, selectedSize, isAuthenticated, user]);
+  }, [isAuthenticated, user]);
 
   const galleryImages = useMemo(() => {
     if (!product?.images?.length)
@@ -196,22 +212,28 @@ export default function ProductDetails({ slug }: Params) {
   }, [product, slug]);
 
   const switchImage = useCallback((idx: number) => {
-    if (idx === activeImgIndex) return;
     setImgFading(true);
     setTimeout(() => { setActiveImgIndex(idx); setImgFading(false); }, 160);
-  }, [activeImgIndex]);
+  }, []);
 
-  useEffect(() => {
-    if (selectedColor) {
-      const idx = galleryImages.findIndex((img) => img.colorId === selectedColor);
-      if (idx !== -1) switchImage(idx);
-    }
-  }, [selectedColor, galleryImages, switchImage]);
+  const activeImgIndex = useMemo(() => {
+    if (activeImgIndexState !== null) return activeImgIndexState;
+    if (!selectedColor) return 0;
+    const idx = galleryImages.findIndex((img) => img.colorId === selectedColor);
+    return idx !== -1 ? idx : 0;
+  }, [activeImgIndexState, selectedColor, galleryImages]);
 
-  const activeVariant = useMemo(() =>
-    product?.variants?.find((v) => v.color?.id === selectedColor && v.size?.id === selectedSize) ?? null,
-    [product, selectedColor, selectedSize]
-  );
+  const existingCartItem = useMemo(() => {
+    if (!cartRes?.data?.items || !activeVariant) return null;
+    return cartRes.data.items.find((item) => item.variantId === activeVariant.id);
+  }, [cartRes, activeVariant]);
+
+  // Adjust state during render to reset quantity when selected variant changes
+  const currentVariantId = activeVariant?.id ?? null;
+  if (currentVariantId !== prevVariantId) {
+    setPrevVariantId(currentVariantId);
+    setQuantity(existingCartItem?.quantity ?? 1);
+  }
 
   const displayPrice = activeVariant ? activeVariant.price : product?.price ?? "0.00";
   const displayOriginalPrice = product?.originalPrice ?? null;
@@ -224,7 +246,13 @@ export default function ProductDetails({ slug }: Params) {
   const handleAddToBag = async () => {
     if (!isAuthenticated) { router.push("/login"); return; }
     if (!activeVariant) return;
-    try { await addToCart({ variantId: activeVariant.id, quantity }).unwrap(); }
+    try {
+      if (existingCartItem) {
+        await updateCartItemQuantity({ cartItemId: existingCartItem.id, quantity }).unwrap();
+      } else {
+        await addToCart({ variantId: activeVariant.id, quantity }).unwrap();
+      }
+    }
     catch (err) { console.error("Failed to add to bag", err); }
   };
 
@@ -252,7 +280,7 @@ export default function ProductDetails({ slug }: Params) {
   // ─── Loading ──────────────────────────────────────────────────────────────
   if (isLoading) {
     return (
-      <div className="flex-1 bg-[#f9f5f0] py-10 min-h-screen font-[var(--font-corano)]">
+      <div className="flex-1 bg-[#f9f5f0] py-10 min-h-screen font-(--font-corano)">
         <div className="mx-auto max-w-[1170px] px-4">
           <div className="h-3 bg-[#e8e2d9] w-52 rounded animate-pulse mb-7" />
           <div className="bg-white border border-[#e4dfd7] p-6 animate-pulse">
@@ -280,7 +308,7 @@ export default function ProductDetails({ slug }: Params) {
   // ─── Error ────────────────────────────────────────────────────────────────
   if (isError || !product) {
     return (
-      <div className="flex-1 bg-[#f9f5f0] py-24 text-center font-[var(--font-corano)]">
+      <div className="flex-1 bg-[#f9f5f0] py-24 text-center font-(--font-corano)">
         <div className="mx-auto max-w-sm px-4">
           <AlertTriangle className="h-10 w-10 text-amber-500 mx-auto mb-4" />
           <h2 className="text-lg font-serif text-[#222222]">Design Not Found</h2>
@@ -300,7 +328,7 @@ export default function ProductDetails({ slug }: Params) {
   const isInStock = !!activeVariant && activeVariant.stock > 0;
 
   return (
-    <div className="flex-1 bg-[#f9f5f0] min-h-screen font-[var(--font-corano)]">
+    <div className="flex-1 bg-[#f9f5f0] min-h-screen font-(--font-corano)">
       <div className="mx-auto max-w-[1170px] px-4 py-8">
 
         {/* Breadcrumbs */}
@@ -334,7 +362,7 @@ export default function ProductDetails({ slug }: Params) {
                     {galleryImages.map((img, i) => (
                       <button
                         key={i}
-                        onClick={() => switchImage(i)}
+                        onClick={() => i !== activeImgIndex && switchImage(i)}
                         className={`relative w-[60px] h-[60px] shrink-0 overflow-hidden border-2 transition-all duration-150 bg-[#f9f5f0] ${
                           i === activeImgIndex ? "border-[#c29958]" : "border-transparent hover:border-[#e4dfd7]"
                         }`}
@@ -368,7 +396,7 @@ export default function ProductDetails({ slug }: Params) {
                   {galleryImages.length > 1 && (
                     <div className="flex gap-2 mt-2.5 flex-wrap sm:hidden">
                       {galleryImages.map((img, i) => (
-                        <button key={i} onClick={() => switchImage(i)} className={`relative w-12 h-12 overflow-hidden border-2 transition-all ${i === activeImgIndex ? "border-[#c29958]" : "border-transparent hover:border-[#e4dfd7]"}`}>
+                        <button key={i} onClick={() => i !== activeImgIndex && switchImage(i)} className={`relative w-12 h-12 overflow-hidden border-2 transition-all ${i === activeImgIndex ? "border-[#c29958]" : "border-transparent hover:border-[#e4dfd7]"}`}>
                           <Image src={img.url} alt={`View ${i + 1}`} fill sizes="48px" className="object-cover" />
                         </button>
                       ))}
@@ -520,19 +548,19 @@ export default function ProductDetails({ slug }: Params) {
 
                 {/* Add to bag */}
                 <Button
-                  disabled={!activeVariant || !isInStock || isAddingToCart}
+                  disabled={!activeVariant || !isInStock || isAddingToCart || isUpdatingCart}
                   onClick={handleAddToBag}
                   className="flex-1 bg-[#222222] text-white rounded-none hover:bg-[#c29958] h-11 text-[10px] font-bold uppercase tracking-widest transition-all duration-300 disabled:opacity-50"
                 >
-                  {isAddingToCart ? (
+                  {isAddingToCart || isUpdatingCart ? (
                     <span className="flex items-center gap-2">
                       <svg className="h-3.5 w-3.5 animate-spin" viewBox="0 0 24 24" fill="none">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                       </svg>
-                      Adding…
+                      {isAddingToCart ? "Adding…" : "Updating…"}
                     </span>
-                  ) : "Add to Bag"}
+                  ) : existingCartItem ? "Update Bag" : "Add to Bag"}
                 </Button>
 
                 {/* Wishlist */}
@@ -646,7 +674,7 @@ export default function ProductDetails({ slug }: Params) {
                 <div className="flex flex-col gap-5">
                   <h3 className="text-xs font-bold text-[#555] uppercase tracking-wider">
                     {reviewsCount} Review{reviewsCount !== 1 ? "s" : ""} for{" "}
-                    <span className="font-serif italic text-[#c29958] normal-case">"{product.name}"</span>
+                    <span className="font-serif italic text-[#c29958] normal-case">&quot;{product.name}&quot;</span>
                   </h3>
 
                   {isReviewsLoading ? (

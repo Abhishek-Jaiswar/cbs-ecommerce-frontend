@@ -17,7 +17,11 @@ export interface ProductListing {
   categoryId: string;
   status?: "ACTIVE" | "DRAFT" | "INACTIVE" | "ARCHIVED";
   brandId?: string;
+  brand?: { name: string } | null;
   createdAt?: string;
+  productTags?: { tag: ITag }[];
+  variants?: { id: string; stock: number }[];
+  colors?: IProductColors[];
 }
 
 export interface ProductListingParams {

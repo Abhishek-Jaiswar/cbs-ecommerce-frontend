@@ -17,6 +17,7 @@ import {
   DesktopActions,
   DesktopNav,
   MobileMenu,
+  SearchDialog,
 } from "@/components/landing-page/navbar";
 
 const navItems = [
@@ -34,6 +35,7 @@ const Navbar = () => {
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   const { user, isAuthenticated } = useAppSelector((state) => state.auth);
   const [logoutApi] = useLogoutMutation();
@@ -89,6 +91,7 @@ const Navbar = () => {
             cartCount={cartCount}
             wishlistCount={wishlistCount}
             onLogout={handleLogout}
+            onSearchClick={() => setIsSearchOpen(true)}
           />
 
           <div className="flex items-center gap-5 lg:hidden">
@@ -101,10 +104,17 @@ const Navbar = () => {
               isAuthenticated={isAuthenticated}
               user={user}
               handleLogout={handleLogout}
+              onSearchClick={() => setIsSearchOpen(true)}
             />
           </div>
         </div>
       </div>
+
+      <SearchDialog
+        isOpen={isSearchOpen}
+        onOpen={() => setIsSearchOpen(true)}
+        onClose={() => setIsSearchOpen(false)}
+      />
     </header>
   );
 };

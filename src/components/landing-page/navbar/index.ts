@@ -8,3 +8,4 @@ export { default as AnnouncementBar } from "./announcement-bar";
 export { MobileMenu } from "./mobile/mobile-menu";
 export { MobileNavLinks } from "./mobile/mobile-nav-links";
 export { MobileAccountSection } from "./mobile/mobile-account-section";
+export { default as SearchDialog } from "./search-dialog";

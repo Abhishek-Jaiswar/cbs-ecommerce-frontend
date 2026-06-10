@@ -24,6 +24,7 @@ interface Props {
   isAuthenticated: boolean;
   user: { name: string; role?: string } | null;
   handleLogout: () => void;
+  onSearchClick: () => void;
 }
 
 export function MobileMenu({
@@ -35,6 +36,7 @@ export function MobileMenu({
   isAuthenticated,
   user,
   handleLogout,
+  onSearchClick,
 }: Props) {
   // Append account-related links below nav items when signed in
   const allLinks = [
@@ -86,11 +88,15 @@ export function MobileMenu({
             </SheetClose>
           </SheetHeader>
 
-          <ProductSearchBox
-            className="m-5"
-            placeholder="Search products"
-            onNavigate={() => onOpenChange(false)}
-          />
+          <div className="px-5 py-4">
+            <ProductSearchBox
+              placeholder="Search products"
+              onClick={() => {
+                onSearchClick();
+                onOpenChange(false);
+              }}
+            />
+          </div>
 
           <MobileNavLinks pathname={pathname} links={allLinks} />
 

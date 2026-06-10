@@ -26,6 +26,7 @@ interface DesktopActionsProps {
   cartCount: number;
   wishlistCount: number;
   onLogout: () => void;
+  onSearchClick: () => void;
 }
 
 export default function DesktopActions({
@@ -34,10 +35,11 @@ export default function DesktopActions({
   cartCount,
   wishlistCount,
   onLogout,
+  onSearchClick,
 }: DesktopActionsProps) {
   return (
     <div className="hidden items-center gap-6 lg:flex">
-      <ProductSearchBox className="w-72" />
+      <ProductSearchBox className="w-72" onClick={onSearchClick} />
 
       <div className="flex items-center gap-5">
         <DropdownMenu>

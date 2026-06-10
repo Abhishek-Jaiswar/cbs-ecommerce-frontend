@@ -14,7 +14,7 @@ export default function AnnouncementBar({ announcements }: AnnouncementBarProps)
   return (
     <div className="hidden border-b border-[#efebe4] bg-white text-xs text-[#555555] lg:block">
       <div className="mx-auto flex h-11 max-w-[1170px] items-center justify-between px-4">
-        <p className="shrink-0 border-r border-[#e5e0d8]">
+        <p className="shrink-0 border-[#e5e0d8]">
           Welcome to Zenvoraa Jewelry online store
         </p>
         <div className="relative ml-8 max-w-5xl flex-1 overflow-hidden">
