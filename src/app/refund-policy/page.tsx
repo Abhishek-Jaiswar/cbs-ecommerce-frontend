@@ -9,6 +9,7 @@ import {
   Video,
   XCircle,
 } from "lucide-react";
+import { PolicyPageNav } from "@/components/common/policy-page-nav";
 
 const policyHighlights = [
   {
@@ -80,9 +81,21 @@ export default function ReturnRefundPage() {
               Please keep your packaging, invoice, product photos, and unboxing
               video ready before raising a request.
             </p>
+            <div className="mt-6 grid gap-3 border-t border-white/10 pt-6">
+              {["48-hour report window", "Photos required", "Replacement first"].map(
+                (item) => (
+                  <div key={item} className="flex items-center gap-2 text-xs text-white/70">
+                    <CheckCircle2 className="h-4 w-4 text-[#c8a96e]" />
+                    {item}
+                  </div>
+                ),
+              )}
+            </div>
           </div>
         </div>
       </section>
+
+      <PolicyPageNav active="refund" />
 
       <section className="py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -90,9 +103,11 @@ export default function ReturnRefundPage() {
             {policyHighlights.map(({ title, description, icon: Icon }) => (
               <div
                 key={title}
-                className="border border-[#eee8df] bg-white p-7 shadow-sm transition hover:-translate-y-1 hover:border-[#c8a96e] hover:shadow-md"
+                className="group border border-[#eee8df] bg-white p-7 shadow-sm transition hover:-translate-y-1 hover:border-[#c8a96e] hover:shadow-md"
               >
-                <Icon className="h-7 w-7 text-[#c29958]" aria-hidden="true" />
+                <div className="flex h-12 w-12 items-center justify-center border border-[#eadfce] bg-[#fbfaf7] transition group-hover:border-[#c8a96e]">
+                  <Icon className="h-6 w-6 text-[#c29958]" aria-hidden="true" />
+                </div>
                 <h2 className="mt-5 text-lg font-bold">{title}</h2>
                 <p className="mt-3 text-sm leading-7 text-stone-500">
                   {description}
@@ -105,7 +120,7 @@ export default function ReturnRefundPage() {
 
       <section className="pb-20">
         <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[0.95fr_1.05fr] lg:px-8">
-          <div className="border border-[#eee8df] bg-white p-8 shadow-sm">
+          <div className="border border-[#eee8df] bg-white p-8 shadow-sm transition hover:border-[#c8a96e]">
             <span className="text-xs font-bold uppercase tracking-[0.3em] text-[#c29958]">
               Eligibility
             </span>
@@ -130,7 +145,7 @@ export default function ReturnRefundPage() {
             </div>
           </div>
 
-          <div className="border border-[#eee8df] bg-[#f6f1ea] p-8">
+          <div className="border border-[#eee8df] bg-[#f6f1ea] p-8 transition hover:border-[#c8a96e]">
             <span className="text-xs font-bold uppercase tracking-[0.3em] text-[#9f7b3d]">
               How To Initiate
             </span>
@@ -141,7 +156,7 @@ export default function ReturnRefundPage() {
             <div className="mt-8 space-y-4">
               {returnSteps.map((step, index) => (
                 <div key={step} className="flex gap-4">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center bg-[#111111] text-sm font-bold text-white">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center border border-[#c8a96e] bg-[#111111] text-sm font-bold text-white">
                     {index + 1}
                   </div>
                   <p className="pt-1.5 text-sm leading-7 text-stone-600">
