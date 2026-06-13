@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useGetAdminProductListingQuery, useDeleteProductMutation } from "@/services/api/products/products-api";
+import { useGetAdminProductListingQuery, useDeleteProductMutation, useUpdateStatusMutation } from "@/services/api/products/products-api";
 import { DataTable } from "./_components/data-table";
 import { columns } from "./_components/columns";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,16 @@ const AllProducts = () => {
   });
 
   const [deleteProduct] = useDeleteProductMutation();
+  const [updateStatus] = useUpdateStatusMutation();
+
+  const handleStatusChange = async (id: string, status: string) => {
+    try {
+      await updateStatus({ id, status }).unwrap();
+      refetch();
+    } catch (err) {
+      console.error("Failed to update status:", err);
+    }
+  };
 
   const products = data?.data.items ?? [];
   const pageCount = data?.data.totalPages ?? 1;
@@ -76,7 +86,7 @@ const AllProducts = () => {
     );
   }
 
-  const cols = columns(handleDelete);
+  const cols = columns(handleDelete, handleStatusChange);
 
   return (
     <div className="flex-1 space-y-6 p-6 md:p-10 bg-background">
