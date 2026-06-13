@@ -104,6 +104,7 @@ export const cartApi = baseApi.injectEndpoints({
       invalidatesTags: ["Cart"],
     }),
   }),
+  overrideExisting: true,
 });
 
 export const {

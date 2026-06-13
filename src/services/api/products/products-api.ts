@@ -280,6 +280,7 @@ export const productApi = baseApi.injectEndpoints({
       invalidatesTags: ["Tags"],
     }),
   }),
+  overrideExisting: true,
 });
 
 export const {

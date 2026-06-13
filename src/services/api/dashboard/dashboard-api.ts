@@ -7,6 +7,7 @@ export const dashboardApi = baseApi.injectEndpoints({
       query: () => "/dashboard/overview",
     }),
   }),
+  overrideExisting: true,
 });
 
 export const { useGetDashboardOverviewStatsQuery } = dashboardApi;

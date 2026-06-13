@@ -71,6 +71,7 @@ export const announcementsApi = baseApi.injectEndpoints({
       invalidatesTags: ["Announcements"],
     }),
   }),
+  overrideExisting: true,
 });
 
 export const {

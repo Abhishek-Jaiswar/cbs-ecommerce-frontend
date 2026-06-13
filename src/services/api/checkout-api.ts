@@ -142,6 +142,7 @@ export const checkoutApi = baseApi.injectEndpoints({
       invalidatesTags: ["Orders", "Cart"],
     }),
   }),
+  overrideExisting: true,
 });
 
 export const {
