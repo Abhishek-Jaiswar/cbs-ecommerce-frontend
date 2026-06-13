@@ -11,9 +11,9 @@ import {
 const informationLinks = [
   { label: "About Us", href: "/about" },
   { label: "Return & Refund Policy", href: "/refund-policy" },
-  { label: "Delivery Information", href: "/delivery" },
+  { label: "Shipping Policy", href: "/shipping-policy" },
   { label: "Privacy Policy", href: "/privacy-policy" },
-  { label: "Terms & Conditions", href: "/terms" },
+  { label: "Terms & Conditions", href: "/terms-conditions" },
   { label: "Contact Us", href: "/contact" },
   { label: "Site Map", href: "/sitemap" },
 ];
