@@ -37,7 +37,7 @@ export async function generateMetadata({
   }
 
   try {
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.zenvora.com/api/v1";
     const res = await fetch(`${API_URL}/categories/slug/${categorySlug}`);
     const result = await res.json();
     const category = result?.data;

@@ -8,8 +8,8 @@ type PageProps = {
   }>;
 };
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://zenvoraa-shop.vercel.app";
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://zenvoraa.com";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.zenvora.com/api/v1";
 
 export async function generateMetadata({
   params,

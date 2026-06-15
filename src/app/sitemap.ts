@@ -1,8 +1,8 @@
 import { MetadataRoute } from "next";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://zenvoraa-shop.vercel.app";
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://zenvoraa.com";
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://api.zenvora.com/api/v1";
 
   // 1. Static Pages
   const staticRoutes = [
