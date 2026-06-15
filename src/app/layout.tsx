@@ -12,13 +12,16 @@ const geistSans = Geist({
   variable: "--font-sans",
 });
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://zenvoraa-shop.vercel.app";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
-    default: "Zenvora",
-    template: "%s | Zenvora",
+    default: "ZenVoraa | Handcrafted Premium Jewelry",
+    template: "%s | ZenVoraa",
   },
   description:
-    "Shop premium jewelry collections including rings, necklaces, earrings, bracelets, and more. Crafted with elegance and designed for every occasion.",
+    "Shop premium artificial jewelry collections including rings, necklaces, earrings, bracelets, and more. Crafted with elegance and designed for every occasion.",
   keywords: [
     "jewelry",
     "online jewelry store",
@@ -28,8 +31,37 @@ export const metadata: Metadata = {
     "bracelets",
     "premium jewelry",
     "fashion jewelry",
-    "Zenvora",
+    "ZenVoraa",
   ],
+  alternates: {
+    canonical: "./",
+  },
+  openGraph: {
+    title: "ZenVoraa | Handcrafted Premium Jewelry",
+    description:
+      "Shop premium artificial jewelry collections including rings, necklaces, earrings, bracelets, and more. Crafted with elegance and designed for every occasion.",
+    siteName: "ZenVoraa",
+    url: siteUrl,
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "ZenVoraa Handcrafted Premium Jewelry",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ZenVoraa | Handcrafted Premium Jewelry",
+    description:
+      "Shop premium artificial jewelry collections including rings, necklaces, earrings, bracelets, and more.",
+    images: ["/og-image.jpg"],
+  },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "",
+  },
 };
 
 export default function RootLayout({
@@ -47,17 +79,31 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "WebSite",
-              "name": "ZenVora",
-              "url": "https://zenvoraa-shop.vercel.app", // Placeholder frontend URL, matches config
-              "potentialAction": {
-                "@type": "SearchAction",
-                "target": "https://zenvoraa-shop.vercel.app/shop?search={search_term_string}",
-                "query-input": "required name=search_term_string",
+            __html: JSON.stringify([
+              {
+                "@context": "https://schema.org",
+                "@type": "WebSite",
+                "name": "ZenVoraa",
+                "url": siteUrl,
+                "potentialAction": {
+                  "@type": "SearchAction",
+                  "target": `${siteUrl}/shop?search={search_term_string}`,
+                  "query-input": "required name=search_term_string",
+                },
               },
-            }),
+              {
+                "@context": "https://schema.org",
+                "@type": "Organization",
+                "name": "ZenVoraa",
+                "url": siteUrl,
+                "logo": `${siteUrl}/logo.png`,
+                "sameAs": [
+                  "https://www.facebook.com/ZenVoraa",
+                  "https://www.instagram.com/ZenVoraa",
+                  "https://twitter.com/ZenVoraa",
+                ],
+              },
+            ]),
           }}
         />
       </head>
