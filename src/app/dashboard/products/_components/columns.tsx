@@ -5,7 +5,15 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ProductListing } from "@/services/api/products/products-api.types";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, ArrowUpDown, Pencil, Trash, Eye, Copy, RefreshCw } from "lucide-react";
+import {
+  MoreHorizontal,
+  ArrowUpDown,
+  Pencil,
+  Trash,
+  Eye,
+  Copy,
+  RefreshCw,
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -45,7 +53,11 @@ interface ActionsCellProps {
   onStatusChange?: (id: string, status: string) => void;
 }
 
-const ActionsCell: React.FC<ActionsCellProps> = ({ product, onDelete, onStatusChange }) => {
+const ActionsCell: React.FC<ActionsCellProps> = ({
+  product,
+  onDelete,
+  onStatusChange,
+}) => {
   const [status, setStatus] = React.useState<string>(product.status ?? "DRAFT");
   const [isOpen, setIsOpen] = React.useState(false);
   const [isSaving, setIsSaving] = React.useState(false);
@@ -98,7 +110,10 @@ const ActionsCell: React.FC<ActionsCellProps> = ({ product, onDelete, onStatusCh
 
           {onStatusChange && (
             <DialogTrigger asChild>
-              <DropdownMenuItem className="cursor-pointer" onSelect={(e) => e.preventDefault()}>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onSelect={(e) => e.preventDefault()}
+              >
                 <RefreshCw className="mr-2 h-4 w-4 text-muted-foreground" />
                 Change Status
               </DropdownMenuItem>
@@ -124,7 +139,11 @@ const ActionsCell: React.FC<ActionsCellProps> = ({ product, onDelete, onStatusCh
         <DialogHeader>
           <DialogTitle>Change Product Status</DialogTitle>
           <div className="text-xs text-muted-foreground mt-1">
-            Update the catalog visibility for <span className="font-semibold text-foreground">{product.name}</span>.
+            Update the catalog visibility for{" "}
+            <span className="font-semibold text-foreground">
+              {product.name}
+            </span>
+            .
           </div>
         </DialogHeader>
         <div className="space-y-4 py-4">
@@ -144,10 +163,20 @@ const ActionsCell: React.FC<ActionsCellProps> = ({ product, onDelete, onStatusCh
           </div>
         </div>
         <DialogFooter className="gap-2">
-          <Button variant="outline" size="sm" onClick={() => setIsOpen(false)} disabled={isSaving}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setIsOpen(false)}
+            disabled={isSaving}
+          >
             Cancel
           </Button>
-          <Button size="sm" onClick={handleSave} disabled={isSaving} className="min-w-[100px]">
+          <Button
+            size="sm"
+            onClick={handleSave}
+            disabled={isSaving}
+            className="min-w-[100px]"
+          >
             {isSaving ? (
               <>
                 <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent mr-2" />
@@ -165,7 +194,7 @@ const ActionsCell: React.FC<ActionsCellProps> = ({ product, onDelete, onStatusCh
 
 export const columns = (
   onDelete?: (id: string) => void,
-  onStatusChange?: (id: string, status: string) => void
+  onStatusChange?: (id: string, status: string) => void,
 ): ColumnDef<ProductListing>[] => [
   {
     id: "select",
@@ -214,7 +243,9 @@ export const columns = (
           >
             {name}
           </Link>
-          <span className="font-mono text-xs text-muted-foreground">{slug}</span>
+          <span className="font-mono text-xs text-muted-foreground">
+            {slug}
+          </span>
         </div>
       );
     },
@@ -238,13 +269,18 @@ export const columns = (
         : null;
 
       const fmt = (n: number) =>
-        new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(n);
+        new Intl.NumberFormat("en-IN", {
+          style: "currency",
+          currency: "INR",
+        }).format(n);
 
       return (
         <div className="flex flex-col gap-0.5">
           <span className="font-medium text-foreground">{fmt(price)}</span>
           {originalPrice && (
-            <span className="text-xs text-muted-foreground line-through">{fmt(originalPrice)}</span>
+            <span className="text-xs text-muted-foreground line-through">
+              {fmt(originalPrice)}
+            </span>
           )}
         </div>
       );
@@ -258,7 +294,10 @@ export const columns = (
       const style = STATUS_STYLES[status] ?? STATUS_STYLES.DRAFT;
 
       return (
-        <Badge variant="outline" className={`${style} capitalize text-[10px] px-2 py-0.5 font-semibold`}>
+        <Badge
+          variant="outline"
+          className={`${style} capitalize text-[10px] px-2 py-0.5 font-semibold`}
+        >
           {status.toLowerCase()}
         </Badge>
       );
@@ -273,22 +312,34 @@ export const columns = (
       return (
         <div className="flex flex-wrap gap-1">
           {forListing && (
-            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 text-[10px] px-1.5 py-0">
+            <Badge
+              variant="outline"
+              className="bg-green-50 text-green-700 border-green-200 text-[10px] px-1.5 py-0"
+            >
               Listed
             </Badge>
           )}
           {isNew && (
-            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-[10px] px-1.5 py-0">
+            <Badge
+              variant="outline"
+              className="bg-blue-50 text-blue-700 border-blue-200 text-[10px] px-1.5 py-0"
+            >
               New
             </Badge>
           )}
           {isFeatured && (
-            <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 text-[10px] px-1.5 py-0">
+            <Badge
+              variant="outline"
+              className="bg-amber-50 text-amber-700 border-amber-200 text-[10px] px-1.5 py-0"
+            >
               Featured
             </Badge>
           )}
           {isSale && (
-            <Badge variant="outline" className="bg-rose-50 text-rose-700 border-rose-200 text-[10px] px-1.5 py-0">
+            <Badge
+              variant="outline"
+              className="bg-rose-50 text-rose-700 border-rose-200 text-[10px] px-1.5 py-0"
+            >
               Sale
             </Badge>
           )}
@@ -300,7 +351,17 @@ export const columns = (
     },
   },
   {
+    id: "published",
+    header: "Published At",
+    cell: ({ row }) => {
+      const publishedAt = row.original.createdAt as Date;
+
+      return <span>{new Date(publishedAt).toLocaleDateString()}</span>;
+    },
+  },
+  {
     id: "actions",
+    header: "Actions",
     cell: ({ row }) => (
       <ActionsCell
         product={row.original}
