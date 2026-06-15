@@ -1,11 +1,9 @@
 "use client";
 
 import * as React from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { Heart, ShoppingBag, Star } from "lucide-react";
 import { useGetProductListingQuery } from "@/services/api/products/products-api";
-import type { ProductListing } from "@/services/api/products/products-api.types";
+import { ShopProductCard } from "@/app/shop/_components/shop-product-card";
+import type { ShopProduct } from "@/app/shop/_components/shop-types";
 
 const fallbackProducts = [
   {
@@ -90,15 +88,44 @@ const fallbackProducts = [
   },
 ];
 
-function formatPrice(price: string) {
-  const numeric = Number(price);
-  if (!Number.isFinite(numeric)) return price;
+function mapStaticToShopProduct(staticProd: (typeof fallbackProducts)[number]): ShopProduct {
+  const colors = [];
+  const brandLower = staticProd.brand.toLowerCase();
+  const titleLower = staticProd.title.toLowerCase();
 
-  return new Intl.NumberFormat("en-IN", {
-    currency: "INR",
-    maximumFractionDigits: 2,
-    style: "currency",
-  }).format(numeric);
+  if (brandLower === "gold" || titleLower.includes("gold")) {
+    colors.push({ id: "gold", name: "Gold", hex: "#c29958" });
+  } else if (brandLower === "silver" || titleLower.includes("silver")) {
+    colors.push({ id: "silver", name: "Silver", hex: "#e5e5e5" });
+  } else if (brandLower === "diamond" || titleLower.includes("diamond")) {
+    colors.push({ id: "platinum", name: "Platinum", hex: "#e1e4e6" });
+    colors.push({ id: "gold", name: "Gold", hex: "#c29958" });
+  } else {
+    colors.push({ id: "gold", name: "Gold", hex: "#c29958" });
+    colors.push({ id: "silver", name: "Silver", hex: "#e5e5e5" });
+  }
+
+  return {
+    id: staticProd.slug,
+    name: staticProd.title,
+    slug: staticProd.slug,
+    excerpt: staticProd.excerpt,
+    price: staticProd.price.replace("₹", "").replace(",", ""),
+    originalPrice: staticProd.oldPrice ? staticProd.oldPrice.replace("₹", "").replace(",", "") : "",
+    isNew: true,
+    isFeatured: false,
+    isSale: !!staticProd.oldPrice,
+    offerEnds: null,
+    forListing: true,
+    categoryId: "fallback",
+    brand: {
+      name: staticProd.brand,
+    },
+    colors,
+    variants: [
+      { id: `${staticProd.slug}-variant`, stock: 25 },
+    ],
+  };
 }
 
 function SectionTitle({ subtitle, title }: { subtitle: string; title: string }) {
@@ -112,111 +139,13 @@ function SectionTitle({ subtitle, title }: { subtitle: string; title: string }) 
   );
 }
 
-function ProductCard({
-  product,
-  staticProduct,
-}: {
-  product?: ProductListing;
-  staticProduct?: (typeof fallbackProducts)[number];
-}) {
-  const image = staticProduct?.image ?? "/corano/product/product-1.jpg";
-  const title = product?.name ?? staticProduct?.title ?? "Perfect Diamond Jewelry";
-  const excerpt =
-    product?.excerpt ??
-    staticProduct?.excerpt ??
-    "A refined Zenvoraa piece designed for everyday elegance.";
-  const price = product ? formatPrice(product.price) : staticProduct?.price ?? "₹5,000";
-  const oldPrice = product?.originalPrice
-    ? formatPrice(product.originalPrice)
-    : staticProduct?.oldPrice;
-  const href = product
-    ? `/shop/${product.slug}`
-    : `/shop/${staticProduct?.slug ?? "perfect-diamond-jewelry"}`;
-  const rating = staticProduct?.rating ?? "4.8";
-
-  return (
-    <article className="group flex h-full flex-col bg-transparent font-[var(--font-corano)] pb-4">
-      <div className="relative overflow-hidden bg-[#fbfaf8] aspect-square">
-        <Link href={href} className="relative block w-full h-full">
-          <Image
-            src={image}
-            alt={title}
-            fill
-            sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-            className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-          />
-        </Link>
-        <div className="absolute left-3 top-3 flex flex-col gap-1.5 z-10">
-          <span className="bg-stone-900/90 backdrop-blur-[2px] px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-white shadow-sm">
-            New
-          </span>
-          {oldPrice && (
-            <span className="bg-[#c29958]/95 backdrop-blur-[2px] px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-white shadow-sm">
-              Sale
-            </span>
-          )}
-        </div>
-
-        {/* Wishlist Button */}
-        <div className="absolute right-3 top-3 z-10">
-          <button
-            type="button"
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-white/95 backdrop-blur-[2px] text-stone-700 shadow-sm border border-stone-100/50 transition-all duration-300 hover:bg-[#c29958] hover:text-white hover:border-[#c29958] hover:scale-105"
-            aria-label="Add to wishlist"
-          >
-            <Heart className="h-3.5 w-3.5" />
-          </button>
-        </div>
-
-        {/* Slide-Up View Product */}
-        <Link
-          href={href}
-          className="absolute inset-x-0 bottom-0 flex h-10 translate-y-full items-center justify-center gap-1.5 bg-stone-900/90 backdrop-blur-[2px] text-[10px] font-bold uppercase tracking-widest text-white transition-all duration-300 hover:bg-[#c29958] group-hover:translate-y-0 z-10"
-        >
-          <ShoppingBag className="h-3.5 w-3.5" />
-          View Product
-        </Link>
-      </div>
-
-      <div className="flex flex-1 flex-col pt-4 text-left">
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#c29958]">
-          {staticProduct?.brand ?? "Zenvoraa"}
-        </p>
-        <h3 className="mt-1.5 text-[15px] font-serif font-medium text-stone-850 leading-snug transition-colors duration-300 group-hover:text-[#c29958] line-clamp-1">
-          <Link href={href}>{title}</Link>
-        </h3>
-
-        <p className="mt-2 text-xs leading-relaxed text-stone-400 line-clamp-2 min-h-[32px]">
-          {excerpt}
-        </p>
-
-        <div className="mt-3 flex items-center justify-between border-t border-stone-100/60 pt-3">
-          <div className="flex items-baseline gap-2">
-            <span className="text-sm font-bold text-stone-850 tracking-wide">{price}</span>
-            {oldPrice && (
-              <span className="text-[11px] text-stone-400 line-through font-light">{oldPrice}</span>
-            )}
-          </div>
-          <div className="flex items-center gap-1 text-[#c29958]">
-            <Star className="h-3 w-3 fill-current stroke-current" />
-            <span className="text-[11px] font-bold text-stone-500 font-mono">{rating}</span>
-          </div>
-        </div>
-      </div>
-    </article>
-  );
-}
-
 export function ProductCatalog() {
   const [activeTab, setActiveTab] = React.useState("All");
   const { data, isLoading } = useGetProductListingQuery({ limit: 12, page: 1 });
   const displayProducts = data?.data.items.slice(0, 12) ?? [];
 
-  // Implement functional tab filtering based on text contents
   const filteredProducts = React.useMemo(() => {
     const products = displayProducts.length > 0 ? displayProducts : [];
-    
-    // If loading or empty API results, fallback to static mock products
     const listToFilter = products.length > 0 ? products : fallbackProducts;
 
     if (activeTab === "All") return listToFilter.slice(0, 8);
@@ -225,7 +154,9 @@ export function ProductCatalog() {
       .filter((product) => {
         const productName = "name" in product ? product.name : product.title;
         const productExcerpt = product.excerpt || "";
-        const brand = "brand" in product ? product.brand : "Zenvoraa";
+        const brand = product.brand
+          ? (typeof product.brand === "string" ? product.brand : product.brand.name)
+          : "Zenvoraa";
         const content = `${productName} ${productExcerpt} ${brand}`.toLowerCase();
         return content.includes(activeTab.toLowerCase());
       })
@@ -269,9 +200,21 @@ export function ProductCatalog() {
           <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-4">
             {filteredProducts.map((product) => {
               if ("id" in product) {
-                return <ProductCard key={product.id} product={product} />;
+                return (
+                  <ShopProductCard
+                    key={product.id}
+                    product={product}
+                    viewMode="grid"
+                  />
+                );
               } else {
-                return <ProductCard key={product.image} staticProduct={product} />;
+                return (
+                  <ShopProductCard
+                    key={product.slug}
+                    product={mapStaticToShopProduct(product)}
+                    viewMode="grid"
+                  />
+                );
               }
             })}
           </div>

@@ -477,7 +477,7 @@ export default function ReviewsModerationPage() {
                 <span className="font-semibold text-amber-600">{selectedReview.rating} Stars</span>
               </p>
               <div className="bg-stone-50 dark:bg-stone-900 p-3 border rounded text-[11px] text-stone-550 italic leading-snug line-clamp-3">
-                "{selectedReview.comment}"
+                &quot;{selectedReview.comment}&quot;
               </div>
               <p className="text-[10px] text-stone-400 leading-normal">
                 Altering this database item completely removes it from storefront product review sections. This action cannot be undone.

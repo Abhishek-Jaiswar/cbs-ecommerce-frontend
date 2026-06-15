@@ -1,10 +1,11 @@
 "use client";
 
+import * as React from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ProductListing } from "@/services/api/products/products-api.types";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, ArrowUpDown, Pencil, Trash, Eye, Copy } from "lucide-react";
+import { MoreHorizontal, ArrowUpDown, Pencil, Trash, Eye, Copy, RefreshCw } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,6 +15,21 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import Link from "next/link";
 
 const STATUS_STYLES: Record<string, string> = {
@@ -23,7 +39,134 @@ const STATUS_STYLES: Record<string, string> = {
   ARCHIVED: "bg-red-50 text-red-600 border-red-200",
 };
 
-export const columns = (onDelete?: (id: string) => void): ColumnDef<ProductListing>[] => [
+interface ActionsCellProps {
+  product: ProductListing;
+  onDelete?: (id: string) => void;
+  onStatusChange?: (id: string, status: string) => void;
+}
+
+const ActionsCell: React.FC<ActionsCellProps> = ({ product, onDelete, onStatusChange }) => {
+  const [status, setStatus] = React.useState<string>(product.status ?? "DRAFT");
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [isSaving, setIsSaving] = React.useState(false);
+
+  const handleSave = async () => {
+    if (onStatusChange) {
+      setIsSaving(true);
+      try {
+        await onStatusChange(product.id, status);
+        setIsOpen(false);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsSaving(false);
+      }
+    }
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="h-8 w-8 p-0 hover:bg-accent">
+            <span className="sr-only">Open menu</span>
+            <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-[160px]">
+          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenuItem
+            onClick={() => navigator.clipboard.writeText(product.id)}
+            className="cursor-pointer"
+          >
+            <Copy className="mr-2 h-4 w-4 text-muted-foreground" />
+            Copy ID
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem asChild className="cursor-pointer">
+            <Link href={`/shop/${product.slug}`} target="_blank">
+              <Eye className="mr-2 h-4 w-4 text-muted-foreground" />
+              View Public
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild className="cursor-pointer">
+            <Link href={`/dashboard/products/${product.id}`}>
+              <Pencil className="mr-2 h-4 w-4 text-muted-foreground" />
+              Edit Product
+            </Link>
+          </DropdownMenuItem>
+
+          {onStatusChange && (
+            <DialogTrigger asChild>
+              <DropdownMenuItem className="cursor-pointer" onSelect={(e) => e.preventDefault()}>
+                <RefreshCw className="mr-2 h-4 w-4 text-muted-foreground" />
+                Change Status
+              </DropdownMenuItem>
+            </DialogTrigger>
+          )}
+
+          {onDelete && (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => onDelete(product.id)}
+                className="text-destructive focus:text-destructive cursor-pointer"
+              >
+                <Trash className="mr-2 h-4 w-4" />
+                Delete
+              </DropdownMenuItem>
+            </>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <DialogContent className="sm:max-w-[400px] bg-card text-foreground border-border">
+        <DialogHeader>
+          <DialogTitle>Change Product Status</DialogTitle>
+          <div className="text-xs text-muted-foreground mt-1">
+            Update the catalog visibility for <span className="font-semibold text-foreground">{product.name}</span>.
+          </div>
+        </DialogHeader>
+        <div className="space-y-4 py-4">
+          <div className="space-y-2">
+            <label className="text-xs font-semibold">Status Selection</label>
+            <Select value={status} onValueChange={setStatus}>
+              <SelectTrigger className="w-full bg-background border-input text-foreground">
+                <SelectValue placeholder="Choose Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ACTIVE">Active</SelectItem>
+                <SelectItem value="DRAFT">Draft</SelectItem>
+                <SelectItem value="INACTIVE">Inactive</SelectItem>
+                <SelectItem value="ARCHIVED">Archived</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+        <DialogFooter className="gap-2">
+          <Button variant="outline" size="sm" onClick={() => setIsOpen(false)} disabled={isSaving}>
+            Cancel
+          </Button>
+          <Button size="sm" onClick={handleSave} disabled={isSaving} className="min-w-[100px]">
+            {isSaving ? (
+              <>
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent mr-2" />
+                Saving...
+              </>
+            ) : (
+              "Save Status"
+            )}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export const columns = (
+  onDelete?: (id: string) => void,
+  onStatusChange?: (id: string, status: string) => void
+): ColumnDef<ProductListing>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -158,54 +301,12 @@ export const columns = (onDelete?: (id: string) => void): ColumnDef<ProductListi
   },
   {
     id: "actions",
-    cell: ({ row }) => {
-      const product = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0 hover:bg-accent">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-[160px]">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(product.id)}
-              className="cursor-pointer"
-            >
-              <Copy className="mr-2 h-4 w-4 text-muted-foreground" />
-              Copy ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild className="cursor-pointer">
-              <Link href={`/shop/${product.slug}`} target="_blank">
-                <Eye className="mr-2 h-4 w-4 text-muted-foreground" />
-                View Public
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild className="cursor-pointer">
-              <Link href={`/dashboard/products/${product.id}`}>
-                <Pencil className="mr-2 h-4 w-4 text-muted-foreground" />
-                Edit Product
-              </Link>
-            </DropdownMenuItem>
-            {onDelete && (
-              <>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={() => onDelete(product.id)}
-                  className="text-destructive focus:text-destructive cursor-pointer"
-                >
-                  <Trash className="mr-2 h-4 w-4" />
-                  Delete
-                </DropdownMenuItem>
-              </>
-            )}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
+    cell: ({ row }) => (
+      <ActionsCell
+        product={row.original}
+        onDelete={onDelete}
+        onStatusChange={onStatusChange}
+      />
+    ),
   },
 ];

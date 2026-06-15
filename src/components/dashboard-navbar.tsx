@@ -2,6 +2,7 @@
 
 import React from "react";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
@@ -40,6 +41,9 @@ import {
   Settings,
   HelpCircle,
 } from "lucide-react";
+import { useAppDispatch } from "@/store/hooks";
+import { logout } from "@/store/features/auth/auth.slice";
+import { useLogoutMutation } from "@/services/api/auth/auth-api";
 
 interface DashboardNavbarProps {
   user: {
@@ -52,6 +56,18 @@ interface DashboardNavbarProps {
 
 export function DashboardNavbar({ user, breadcrumbs }: DashboardNavbarProps) {
   const pathname = usePathname();
+  const dispatch = useAppDispatch();
+  const [logoutApi] = useLogoutMutation();
+
+  const handleLogout = async () => {
+    try {
+      await logoutApi().unwrap();
+    } catch (err) {
+      console.error("Failed to log out", err);
+    } finally {
+      dispatch(logout());
+    }
+  };
 
   const resolvedBreadcrumbs = React.useMemo(() => {
     if (breadcrumbs && breadcrumbs.length > 0) {
@@ -215,28 +231,18 @@ export function DashboardNavbar({ user, breadcrumbs }: DashboardNavbarProps) {
             </DropdownMenuLabel>
             <DropdownMenuSeparator className="my-1" />
             <DropdownMenuGroup>
-              <DropdownMenuItem className="cursor-pointer gap-2 rounded-lg py-2">
-                <Sparkles className="h-4 w-4 text-violet-500" />
-                <span>Upgrade to Pro</span>
+              <DropdownMenuItem className="cursor-pointer gap-2 rounded-lg py-2" asChild>
+                <Link href="/dashboard/profile">
+                  <User className="h-4 w-4 text-muted-foreground" />
+                  <span>Profile Settings</span>
+                </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator className="my-1" />
-            <DropdownMenuGroup>
-              <DropdownMenuItem className="cursor-pointer gap-2 rounded-lg py-2">
-                <User className="h-4 w-4 text-muted-foreground" />
-                <span>Profile Settings</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer gap-2 rounded-lg py-2">
-                <CreditCard className="h-4 w-4 text-muted-foreground" />
-                <span>Billing & Subscription</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer gap-2 rounded-lg py-2">
-                <Settings className="h-4 w-4 text-muted-foreground" />
-                <span>Preferences</span>
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator className="my-1" />
-            <DropdownMenuItem className="cursor-pointer gap-2 rounded-lg py-2 text-destructive focus:bg-destructive/10 focus:text-destructive">
+            <DropdownMenuItem 
+              onClick={handleLogout}
+              className="cursor-pointer gap-2 rounded-lg py-2 text-destructive focus:bg-destructive/10 focus:text-destructive"
+            >
               <LogOut className="h-4 w-4" />
               <span>Log out</span>
             </DropdownMenuItem>

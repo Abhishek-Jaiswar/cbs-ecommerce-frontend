@@ -71,6 +71,7 @@ export const addressesApi = baseApi.injectEndpoints({
       invalidatesTags: ["Addresses"],
     }),
   }),
+  overrideExisting: true,
 });
 
 export const {

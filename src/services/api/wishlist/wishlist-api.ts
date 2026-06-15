@@ -72,6 +72,7 @@ export const wishlistApi = baseApi.injectEndpoints({
       invalidatesTags: ["Wishlist"],
     }),
   }),
+  overrideExisting: true,
 });
 
 export const {

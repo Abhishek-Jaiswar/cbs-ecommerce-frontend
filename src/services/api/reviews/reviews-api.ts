@@ -76,6 +76,7 @@ export const reviewsApi = baseApi.injectEndpoints({
       invalidatesTags: ["Reviews"],
     }),
   }),
+  overrideExisting: true,
 });
 
 export const {

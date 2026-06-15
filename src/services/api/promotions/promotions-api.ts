@@ -147,6 +147,7 @@ export const promotionsApi = baseApi.injectEndpoints({
       invalidatesTags: [{ type: "Offers", id: "LIST" }],
     }),
   }),
+  overrideExisting: true,
 });
 
 export const {

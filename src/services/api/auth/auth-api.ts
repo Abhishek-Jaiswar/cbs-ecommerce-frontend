@@ -131,6 +131,7 @@ export const authApi = baseApi.injectEndpoints({
       invalidatesTags: ["Users"],
     }),
   }),
+  overrideExisting: true,
 });
 
 export const {
