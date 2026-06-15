@@ -1,8 +1,9 @@
 import { MetadataRoute } from "next";
+import { getApiUrl, fetchWithTimeout } from "@/lib/utils";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://zenvoraa.com";
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://api.zenvora.com/api/v1";
+  const apiUrl = getApiUrl();
 
   // 1. Static Pages
   const staticRoutes = [
@@ -16,7 +17,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // 2. Dynamic Products
   let productEntries: MetadataRoute.Sitemap = [];
   try {
-    const res = await fetch(`${apiUrl}/products?limit=100`, {
+    const res = await fetchWithTimeout(`${apiUrl}/products?limit=100`, {
       next: { revalidate: 3600 }, // Cache on server for 1 hour
     });
     const result = await res.json();
@@ -33,7 +34,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // 3. Dynamic Categories
   let categoryEntries: MetadataRoute.Sitemap = [];
   try {
-    const res = await fetch(`${apiUrl}/categories?limit=100`, {
+    const res = await fetchWithTimeout(`${apiUrl}/categories?limit=100`, {
       next: { revalidate: 3600 }, // Cache on server for 1 hour
     });
     const result = await res.json();

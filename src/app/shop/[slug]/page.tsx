@@ -1,6 +1,7 @@
 import React from "react";
 import ProductDetails from "./product-details";
 import { Metadata } from "next";
+import { getApiUrl, fetchWithTimeout } from "@/lib/utils";
 
 type PageProps = {
   params: Promise<{
@@ -9,15 +10,15 @@ type PageProps = {
 };
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://zenvoraa.com";
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.zenvora.com/api/v1";
 
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const { slug } = await params;
+  const API_URL = getApiUrl();
 
   try {
-    const res = await fetch(`${API_URL}/products/slug/${slug}`);
+    const res = await fetchWithTimeout(`${API_URL}/products/slug/${slug}`);
     const result = await res.json();
     const product = result?.data;
 
@@ -68,11 +69,12 @@ export async function generateMetadata({
 
 const Page = async ({ params }: PageProps) => {
   const { slug } = await params;
+  const API_URL = getApiUrl();
 
   let productSchema = null;
 
   try {
-    const res = await fetch(`${API_URL}/products/slug/${slug}`);
+    const res = await fetchWithTimeout(`${API_URL}/products/slug/${slug}`);
     const result = await res.json();
     const product = result?.data;
 

@@ -5,6 +5,33 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+export function getApiUrl(): string {
+  const defaultUrl = "https://api.zenvora.com/api/v1";
+  let apiUrl = process.env.NEXT_PUBLIC_API_URL || defaultUrl;
+
+  if (typeof window === "undefined" && (!apiUrl.startsWith("http://") && !apiUrl.startsWith("https://"))) {
+    // Server-side environment and relative path -> prepend backend URL
+    const backendUrl = process.env.BACKEND_API_URL || "http://localhost:8000";
+    apiUrl = `${backendUrl.replace(/\/$/, "")}${apiUrl}`;
+  }
+  return apiUrl;
+}
+
+export async function fetchWithTimeout(url: string, options: RequestInit = {}, timeoutMs: number = 5000): Promise<Response> {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    });
+    return response;
+  } finally {
+    clearTimeout(id);
+  }
+}
+
 export function getProductImage(slug: string): string {
   const s = slug.toLowerCase();
   if (s.includes("ring") || s.includes("band")) {

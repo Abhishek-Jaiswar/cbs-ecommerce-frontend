@@ -1,6 +1,7 @@
 import { ShopBreadcrumb } from "./_components/shop-breadcrumb";
 import { ShopCatalog } from "./_components/shop-catalog";
 import { Metadata } from "next";
+import { getApiUrl, fetchWithTimeout } from "@/lib/utils";
 
 type ShopPageProps = {
   searchParams?: Promise<{
@@ -37,8 +38,8 @@ export async function generateMetadata({
   }
 
   try {
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.zenvora.com/api/v1";
-    const res = await fetch(`${API_URL}/categories/slug/${categorySlug}`);
+    const API_URL = getApiUrl();
+    const res = await fetchWithTimeout(`${API_URL}/categories/slug/${categorySlug}`);
     const result = await res.json();
     const category = result?.data;
 
