@@ -43,6 +43,24 @@ export default function RootLayout({
       className={`h-full antialiased font-sans ${geistSans.variable}`}
       suppressHydrationWarning
     >
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "name": "ZenVora",
+              "url": "https://zenvoraa-shop.vercel.app", // Placeholder frontend URL, matches config
+              "potentialAction": {
+                "@type": "SearchAction",
+                "target": "https://zenvoraa-shop.vercel.app/shop?search={search_term_string}",
+                "query-input": "required name=search_term_string",
+              },
+            }),
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col">
         <StoreProvider>
           <AuthProvider>
