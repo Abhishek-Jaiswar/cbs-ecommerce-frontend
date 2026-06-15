@@ -20,6 +20,7 @@ import CouponField from "./_components/coupon-field";
 import PaymentSelector from "./_components/payment-selector";
 import CheckoutSummary from "./_components/checkout-summary";
 import { Loader2, ArrowLeft, MapPin, Plus, Check } from "lucide-react";
+import { getUtmData, clearUtmData, trackEvent } from "@/lib/analytics";
 
 // Load Razorpay script dynamically
 const loadRazorpayScript = (): Promise<boolean> => {
@@ -49,6 +50,11 @@ declare global {
 export default function CheckoutPage() {
   const router = useRouter();
   const { isAuthenticated } = useAppSelector((state) => state.auth);
+
+  // Track begin_checkout event
+  useEffect(() => {
+    trackEvent("begin_checkout");
+  }, []);
 
   // API hooks
   const { data: cartRes, isLoading: isCartLoading } = useGetCartQuery(undefined, {
@@ -265,12 +271,30 @@ export default function CheckoutPage() {
         couponCode: string | null;
         addressId?: string;
         shippingAddress?: typeof addressValues;
+        utmSource?: string | null;
+        utmMedium?: string | null;
+        utmCampaign?: string | null;
+        utmTerm?: string | null;
+        utmContent?: string | null;
       }
+
+      // Retrieve active UTM parameters
+      const utm = getUtmData();
+      const utmParams = utm
+        ? {
+            utmSource: utm.utm_source || null,
+            utmMedium: utm.utm_medium || null,
+            utmCampaign: utm.utm_campaign || null,
+            utmTerm: utm.utm_term || null,
+            utmContent: utm.utm_content || null,
+          }
+        : {};
 
       const orderPayload: OrderPayload = {
         paymentMethod: paymentProvider === "RAZORPAY" ? "CARD" : "COD",
         paymentProvider,
         couponCode: appliedCoupon,
+        ...utmParams,
         ...(activeAddressId
           ? { addressId: activeAddressId }
           : { shippingAddress: addressValues }),
@@ -287,6 +311,8 @@ export default function CheckoutPage() {
 
       // Handle COD path
       if (paymentProvider === "COD") {
+        trackEvent("purchase", { orderId: order.id, revenue: total, items: items.length });
+        clearUtmData();
         router.push(`/checkout/success?orderId=${order.id}`);
         return;
       }
@@ -324,6 +350,8 @@ export default function CheckoutPage() {
               }).unwrap();
 
               if (verifyRes.success) {
+                trackEvent("purchase", { orderId: order.id, revenue: total, items: items.length });
+                clearUtmData();
                 router.push(`/checkout/success?orderId=${order.id}`);
               } else {
                 setGlobalError("Payment verification failed. Please contact support.");

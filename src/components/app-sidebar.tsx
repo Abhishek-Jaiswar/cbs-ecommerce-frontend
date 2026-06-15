@@ -94,6 +94,10 @@ const data = {
           title: "Payments",
           url: "/dashboard/payments",
         },
+        {
+          title: "Sales & ROI Reports",
+          url: "/dashboard/sales-reports",
+        },
       ],
     },
     {

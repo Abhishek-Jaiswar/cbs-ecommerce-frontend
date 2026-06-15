@@ -26,6 +26,7 @@ import { useGetProductReviewsQuery, useCreateReviewMutation } from "@/services/a
 import { useAppSelector } from "@/store/hooks";
 import { useRouter } from "next/navigation";
 import { ShopProductCard } from "../_components/shop-product-card";
+import { trackEvent } from "@/lib/analytics";
 
 type Params = { slug: string };
 
@@ -201,6 +202,17 @@ export default function ProductDetails({ slug }: Params) {
     }
   }, [isAuthenticated, user]);
 
+  // Track view_item event when product loads
+  useEffect(() => {
+    if (product) {
+      trackEvent("view_item", {
+        productId: product.id,
+        name: product.name,
+        price: product.price,
+      });
+    }
+  }, [product]);
+
   const galleryImages = useMemo(() => {
     if (!product?.images?.length)
       return [{ url: getProductImage(slug), altText: product?.name ?? "Jewelry", colorId: null }];
@@ -252,6 +264,12 @@ export default function ProductDetails({ slug }: Params) {
       } else {
         await addToCart({ variantId: activeVariant.id, quantity }).unwrap();
       }
+      trackEvent("add_to_cart", {
+        productId: product?.id,
+        variantId: activeVariant.id,
+        quantity,
+        price: activeVariant.price || product?.price,
+      });
     }
     catch (err) { console.error("Failed to add to bag", err); }
   };

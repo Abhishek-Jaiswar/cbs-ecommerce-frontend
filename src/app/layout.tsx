@@ -5,6 +5,7 @@ import { Metadata } from "next";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { StoreProvider } from "@/store/store-provider";
 import { AuthProvider } from "@/components/auth/auth-provider";
+import { UtmTracker } from "@/components/utm/utm-tracker";
 
 const geistSans = Geist({
   subsets: ["latin"],
@@ -46,6 +47,7 @@ export default function RootLayout({
         <StoreProvider>
           <AuthProvider>
             <TooltipProvider>
+              <UtmTracker />
               <HeaderFooterWrapper>
                 {children}
               </HeaderFooterWrapper>
