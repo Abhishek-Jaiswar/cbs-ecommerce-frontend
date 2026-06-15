@@ -2,6 +2,19 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, CalendarDays, Clock, User } from "lucide-react";
 import { mockBlogPosts } from "@/data/blogs";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Blogs & Styling Guides | ZenVora Handcrafted Jewelry",
+  description:
+    "Read ZenVora's blogs, bridal jewellery guides, styling tips, and artificial jewellery trends to complete your look with confidence.",
+  openGraph: {
+    title: "Blogs & Styling Guides | ZenVora Handcrafted Jewelry",
+    description:
+      "Read ZenVora's blogs, bridal jewellery guides, styling tips, and artificial jewellery trends to complete your look with confidence.",
+    type: "website",
+  },
+};
 
 export default function BlogPage() {
   const featuredPost = mockBlogPosts[0];

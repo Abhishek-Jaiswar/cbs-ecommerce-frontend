@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Metadata } from "next";
 import {
   BadgeCheck,
   Gem,
@@ -8,6 +9,18 @@ import {
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "About Us | ZenVora Premium Handcrafted Jewelry",
+  description:
+    "Learn about ZenVora's journey, our commitment to affordable luxury, and our passion for designing premium handcrafted artificial jewelry for every occasion.",
+  openGraph: {
+    title: "About Us | ZenVora Premium Handcrafted Jewelry",
+    description:
+      "Learn about ZenVora's journey, our commitment to affordable luxury, and our passion for designing premium handcrafted artificial jewelry for every occasion.",
+    type: "website",
+  },
+};
 
 const values = [
   {

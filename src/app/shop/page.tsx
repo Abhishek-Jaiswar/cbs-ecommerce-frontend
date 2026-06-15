@@ -1,5 +1,18 @@
 import { ShopBreadcrumb } from "./_components/shop-breadcrumb";
 import { ShopCatalog } from "./_components/shop-catalog";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Shop Premium Handcrafted Jewelry | ZenVora Catalog",
+  description:
+    "Browse our curated artificial jewelry collections. Shop elegant designer rings, necklaces, earrings, bracelets, and complete sets at ZenVora.",
+  openGraph: {
+    title: "Shop Premium Handcrafted Jewelry | ZenVora Catalog",
+    description:
+      "Browse our curated artificial jewelry collections. Shop elegant designer rings, necklaces, earrings, bracelets, and complete sets at ZenVora.",
+    type: "website",
+  },
+};
 
 type ShopPageProps = {
   searchParams?: Promise<{
