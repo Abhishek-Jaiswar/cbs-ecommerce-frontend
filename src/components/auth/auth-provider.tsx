@@ -15,13 +15,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const cachedUserStr = localStorage.getItem("user");
         if (cachedUserStr) {
           const cachedUser = JSON.parse(cachedUserStr);
-          console.debug("AuthProvider: Hydrated cached session from localStorage", cachedUser);
           dispatch(setCredentials(cachedUser));
         } else {
           dispatch(setLoading(true)); // No cache, show loader until verified
         }
       } catch (e) {
-        console.error("AuthProvider: Failed to load cached session", e);
         dispatch(setLoading(true));
       }
     }
@@ -38,10 +36,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (typeof window === "undefined") return;
 
     if (data?.success && data?.data) {
-      console.debug("AuthProvider: Background verification success. Syncing credentials", data.data);
       dispatch(setCredentials(data.data));
     } else if (error) {
-      console.warn("AuthProvider: Background verification failed (expired/revoked session). Clearing cache", error);
       dispatch(logout());
     }
   }, [data, error, dispatch]);

@@ -2,7 +2,7 @@ import { MetadataRoute } from "next";
 import { getApiUrl, fetchWithTimeout } from "@/lib/utils";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://zenvoraa.com";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://zenvoraa.in";
   const apiUrl = getApiUrl();
 
   // 1. Static Pages

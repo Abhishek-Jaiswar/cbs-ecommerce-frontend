@@ -232,10 +232,10 @@ export default function PrivacyPolicyPage() {
             <Mail className="h-8 w-8 text-[#c8a96e]" aria-hidden="true" />
             <h3 className="mt-5 text-2xl font-bold">Contact privacy support</h3>
             <a
-              href="mailto:privacy@zenvoraa.com"
+              href="mailto:privacy@zenvoraa.in"
               className="mt-5 inline-flex text-2xl font-bold text-white transition hover:text-[#c8a96e] sm:text-3xl"
             >
-              privacy@zenvoraa.com
+              privacy@zenvoraa.in
             </a>
             <p className="mt-4 text-sm leading-7 text-white/70">
               Use this email for privacy-related requests, concerns, or data

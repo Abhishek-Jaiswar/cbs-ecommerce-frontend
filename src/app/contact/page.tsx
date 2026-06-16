@@ -17,8 +17,8 @@ import type { LucideIcon } from "lucide-react";
 const supportChannels = [
   {
     label: "Email",
-    value: "support@zenvoraa.com",
-    href: "mailto:support@zenvoraa.com",
+    value: "support@zenvoraa.in",
+    href: "mailto:support@zenvoraa.in",
     icon: Mail,
   },
   {

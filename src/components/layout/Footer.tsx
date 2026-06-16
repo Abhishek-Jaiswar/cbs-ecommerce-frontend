@@ -31,8 +31,14 @@ const Footer = () => {
       <div className="mx-auto max-w-[1170px] px-4 py-16 lg:py-20">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
           <div>
-            <Link href="/" className="inline-block text-2xl font-black tracking-[0.18em] text-[#222222]">
-              Zenvoraa
+            <Link href="/" className="inline-block">
+              <Image
+                src="/footer-logo.png"
+                alt="ZenVoraa Logo"
+                width={270}
+                height={180}
+                className="h-24 w-auto object-contain"
+              />
             </Link>
             <p className="mt-6 max-w-xs text-sm leading-7">
               Discover refined jewelry, timeless styling, and carefully crafted pieces designed for everyday elegance and memorable occasions.

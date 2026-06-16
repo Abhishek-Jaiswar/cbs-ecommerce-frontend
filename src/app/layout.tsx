@@ -12,7 +12,7 @@ const geistSans = Geist({
   variable: "--font-sans",
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://zenvoraa.com";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://zenvoraa.in";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

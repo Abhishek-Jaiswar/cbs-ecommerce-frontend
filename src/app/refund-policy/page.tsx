@@ -33,7 +33,7 @@ const policyHighlights = [
 ];
 
 const returnSteps = [
-  "Email returns@zenvoraa.com with your order number.",
+  "Email returns@zenvoraa.in with your order number.",
   "Attach clear product photos and the mandatory unboxing video.",
   "Our team reviews the request and confirms eligibility.",
   "If approved, we arrange replacement or begin the refund process.",
@@ -167,7 +167,7 @@ export default function ReturnRefundPage() {
             </div>
 
             <a
-              href="mailto:returns@zenvoraa.com"
+              href="mailto:returns@zenvoraa.in"
               className="mt-8 inline-flex h-12 items-center justify-center gap-2 rounded-md bg-[#c8a96e] px-6 text-sm font-bold uppercase tracking-[0.16em] text-white transition hover:bg-[#b5943d]"
             >
               <Mail className="h-4 w-4" aria-hidden="true" />

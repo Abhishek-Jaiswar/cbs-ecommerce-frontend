@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -73,9 +74,16 @@ const Navbar = () => {
         <div className="mx-auto flex h-20 max-w-[1170px] items-center justify-between px-4">
           <Link
             href="/"
-            className="shrink-0 text-2xl font-black tracking-[0.18em] text-[#222222]"
+            className="shrink-0 flex items-center"
           >
-            Zenvoraa
+            <Image
+              src="/nav-logo.png"
+              alt="ZenVoraa Logo"
+              width={160}
+              height={66}
+              className="h-10 w-auto object-contain"
+              priority
+            />
           </Link>
 
           <DesktopNav
