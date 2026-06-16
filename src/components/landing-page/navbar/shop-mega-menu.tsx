@@ -101,7 +101,7 @@ export default function ShopMegaMenu({
           className="group/banner relative block h-[190px] overflow-hidden bg-[#f7f2ea]"
         >
           <Image
-            src="/corano/banner/img1-static-menu.jpg"
+            src="/corano/banner/img1-static-menu.png"
             alt="Wedding rings"
             fill
             sizes="50vw"
@@ -123,7 +123,7 @@ export default function ShopMegaMenu({
           className="group/banner relative block h-[190px] overflow-hidden bg-[#f7f2ea]"
         >
           <Image
-            src="/corano/banner/img2-static-menu.jpg"
+            src="/corano/banner/img2-static-menu.png"
             alt="Zenvoraa jewellery"
             fill
             sizes="50vw"
