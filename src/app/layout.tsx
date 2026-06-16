@@ -44,9 +44,9 @@ export const metadata: Metadata = {
     url: siteUrl,
     images: [
       {
-        url: "/og-image.jpg",
-        width: 1200,
-        height: 630,
+        url: "/logo.png",
+        width: 1959,
+        height: 803,
         alt: "ZenVoraa Handcrafted Premium Jewelry",
       },
     ],
@@ -57,7 +57,7 @@ export const metadata: Metadata = {
     title: "ZenVoraa | Handcrafted Premium Jewelry",
     description:
       "Shop premium artificial jewelry collections including rings, necklaces, earrings, bracelets, and more.",
-    images: ["/og-image.jpg"],
+    images: ["/logo.png"],
   },
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "",
