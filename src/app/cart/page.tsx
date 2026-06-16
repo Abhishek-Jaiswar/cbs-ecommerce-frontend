@@ -167,7 +167,7 @@ export default function CartPage() {
   const remaining = shippingThreshold - subtotal;
 
   return (
-    <div className="min-h-screen bg-stone-50/50 py-12 px-4 sm:px-6 lg:px-8 font-[var(--font-corano)]">
+    <div className="min-h-screen bg-stone-50/50 py-12 px-4 sm:px-6 lg:px-8 font-[var(--font-zenvoraa)]">
       <div className="mx-auto max-w-5xl">
         <div className="mb-10 text-center sm:text-left">
           <h1 className="text-3xl font-serif text-stone-850 font-medium tracking-wide">

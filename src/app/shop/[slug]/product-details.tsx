@@ -298,7 +298,7 @@ export default function ProductDetails({ slug }: Params) {
   // ─── Loading ──────────────────────────────────────────────────────────────
   if (isLoading) {
     return (
-      <div className="flex-1 bg-[#f9f5f0] py-10 min-h-screen font-(--font-corano)">
+      <div className="flex-1 bg-[#f9f5f0] py-10 min-h-screen font-(--font-zenvoraa)">
         <div className="mx-auto max-w-[1170px] px-4">
           <div className="h-3 bg-[#e8e2d9] w-52 rounded animate-pulse mb-7" />
           <div className="bg-white border border-[#e4dfd7] p-6 animate-pulse">
@@ -326,7 +326,7 @@ export default function ProductDetails({ slug }: Params) {
   // ─── Error ────────────────────────────────────────────────────────────────
   if (isError || !product) {
     return (
-      <div className="flex-1 bg-[#f9f5f0] py-24 text-center font-(--font-corano)">
+      <div className="flex-1 bg-[#f9f5f0] py-24 text-center font-(--font-zenvoraa)">
         <div className="mx-auto max-w-sm px-4">
           <AlertTriangle className="h-10 w-10 text-amber-500 mx-auto mb-4" />
           <h2 className="text-lg font-serif text-[#222222]">Design Not Found</h2>
@@ -346,7 +346,7 @@ export default function ProductDetails({ slug }: Params) {
   const isInStock = !!activeVariant && activeVariant.stock > 0;
 
   return (
-    <div className="flex-1 bg-[#f9f5f0] min-h-screen font-(--font-corano)">
+    <div className="flex-1 bg-[#f9f5f0] min-h-screen font-(--font-zenvoraa)">
       <div className="mx-auto max-w-[1170px] px-4 py-8">
 
         {/* Breadcrumbs */}

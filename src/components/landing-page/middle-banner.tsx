@@ -11,7 +11,7 @@ export function MiddleBanner() {
           className="group relative block min-h-[250px] overflow-hidden bg-[#f7f2ea]"
         >
           <Image
-            src="/corano/banner/img1-middle.jpg"
+            src="/corano/banner/img-wedding-collection.png"
             alt="Beautiful bridal collection"
             fill
             sizes="100vw"

@@ -5,8 +5,8 @@ import { mockBlogPosts } from "@/data/blogs";
 
 function SectionTitle({ subtitle, title }: { subtitle: string; title: string }) {
   return (
-    <div className="mb-10 text-center font-[var(--font-corano)]">
-      <h2 className="text-3xl font-bold capitalize text-[#222222] sm:text-4xl">
+    <div className="mb-10 text-center font-[var(--font-zenvoraa)]">
+      <h2 className="text-3xl font-serif font-medium capitalize text-[#222222] sm:text-4xl tracking-wide">
         {title}
       </h2>
       <p className="mt-3 text-sm text-[#777777]">{subtitle}</p>
@@ -18,7 +18,7 @@ export function LatestBlogs() {
   const blogs = React.useMemo(() => mockBlogPosts.slice(0, 3), []);
 
   return (
-    <section className="pb-16 bg-white font-[var(--font-corano)]">
+    <section className="pb-16 bg-white font-[var(--font-zenvoraa)]">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionTitle title="latest blogs" subtitle="There are latest blog posts" />
         <div className="grid gap-7 md:grid-cols-3">

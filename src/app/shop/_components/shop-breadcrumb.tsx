@@ -3,7 +3,7 @@ import { Home } from "lucide-react";
 
 export function ShopBreadcrumb() {
   return (
-    <div className="border-b border-[#eee8df] bg-[#f7f2ea] font-[var(--font-corano)]">
+    <div className="border-b border-[#eee8df] bg-[#f7f2ea] font-[var(--font-zenvoraa)]">
       <div className="mx-auto max-w-[1170px] px-4 py-7">
         <nav aria-label="Breadcrumb">
           <ol className="flex items-center gap-3 text-sm text-[#777777]">

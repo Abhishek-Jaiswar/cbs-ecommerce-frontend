@@ -67,7 +67,7 @@ const Navbar = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[#e5e0d8] bg-white font-[var(--font-corano)] text-[#222222]">
+    <header className="sticky top-0 z-50 border-b border-[#e5e0d8] bg-white font-[var(--font-zenvoraa)] text-[#222222]">
       <AnnouncementBar announcements={activeAnnouncements} />
 
       <div className="bg-white">

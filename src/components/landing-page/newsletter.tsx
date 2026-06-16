@@ -16,7 +16,7 @@ export function Newsletter() {
   };
 
   return (
-    <section className="py-20 bg-[#fbf9f6] border-t border-b border-[#eee8df]/65 font-[var(--font-corano)]">
+    <section className="py-20 bg-[#fbf9f6] border-t border-b border-[#eee8df]/65 font-[var(--font-zenvoraa)]">
       <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
         
         {subscribed ? (

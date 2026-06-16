@@ -5,7 +5,7 @@ import { HelpCircle, ShoppingBag } from "lucide-react";
 
 export default function NotFound() {
   return (
-    <div className="flex-1 flex min-h-[70vh] w-full flex-col items-center justify-center p-6 text-center bg-[#f9f5f0] font-[var(--font-corano)] text-[#222222]">
+    <div className="flex-1 flex min-h-[70vh] w-full flex-col items-center justify-center p-6 text-center bg-[#f9f5f0] font-[var(--font-zenvoraa)] text-[#222222]">
       <div className="relative flex max-w-md w-full flex-col items-center p-8 border border-[#e4dfd7] bg-white shadow-sm overflow-hidden">
         
         <div className="mb-6 flex h-14 w-14 items-center justify-center bg-[#f9f5f0] border border-[#e4dfd7] text-[#c29958]">

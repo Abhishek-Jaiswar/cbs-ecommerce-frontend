@@ -61,7 +61,7 @@ export default function DesktopActions({
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="end"
-            className="w-56 rounded-none border-t-2 border-[#c29958] bg-white p-2 font-[var(--font-corano)] shadow-md"
+            className="w-56 rounded-none border-t-2 border-[#c29958] bg-white p-2 font-[var(--font-zenvoraa)] shadow-md"
           >
             {isAuthenticated && user ? (
               <>

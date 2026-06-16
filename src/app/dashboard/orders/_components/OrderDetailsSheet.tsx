@@ -210,7 +210,7 @@ export const OrderDetailsSheet: React.FC<OrderDetailsSheetProps> = ({
   if (isDetailsLoading && !activeOrder) {
     return (
       <Sheet open={isOpen} onOpenChange={onOpenChange}>
-        <SheetContent className="w-full !w-full sm:!max-w-5xl overflow-y-auto h-full max-h-screen p-4 sm:p-6 bg-white dark:bg-stone-950 font-[var(--font-corano)] border-stone-200 dark:border-stone-850 shadow-lg flex flex-col justify-between">
+        <SheetContent className="w-full !w-full sm:!max-w-5xl overflow-y-auto h-full max-h-screen p-4 sm:p-6 bg-white dark:bg-stone-950 font-[var(--font-zenvoraa)] border-stone-200 dark:border-stone-850 shadow-lg flex flex-col justify-between">
           <div className="space-y-6">
             <SheetHeader className="pb-4 border-b">
               <div className="h-6 w-48 bg-stone-200 dark:bg-stone-800 animate-pulse rounded" />
@@ -239,7 +239,7 @@ export const OrderDetailsSheet: React.FC<OrderDetailsSheetProps> = ({
 
   return (
     <Sheet open={isOpen} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full !w-full sm:!max-w-5xl overflow-y-auto h-full max-h-screen p-4 sm:p-6 bg-white dark:bg-stone-950 font-[var(--font-corano)] border-stone-200 dark:border-stone-850 shadow-lg flex flex-col justify-between">
+      <SheetContent className="w-full !w-full sm:!max-w-5xl overflow-y-auto h-full max-h-screen p-4 sm:p-6 bg-white dark:bg-stone-950 font-[var(--font-zenvoraa)] border-stone-200 dark:border-stone-850 shadow-lg flex flex-col justify-between">
         <div>
           <SheetHeader className="pb-4 border-b">
             <div className="flex justify-between items-start flex-wrap gap-2">

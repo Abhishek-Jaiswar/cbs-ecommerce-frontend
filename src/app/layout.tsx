@@ -1,5 +1,5 @@
 import "./globals.css";
-import { Geist } from "next/font/google";
+import { Geist, Cormorant_Garamond } from "next/font/google";
 import HeaderFooterWrapper from "@/components/layout/header-footer-wrapper";
 import { Metadata } from "next";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,6 +10,13 @@ import { UtmTracker } from "@/components/utm/utm-tracker";
 const geistSans = Geist({
   subsets: ["latin"],
   variable: "--font-sans",
+});
+
+const cormorantGaramond = Cormorant_Garamond({
+  subsets: ["latin"],
+  variable: "--font-serif",
+  weight: ["300", "400", "500", "600", "700"],
+  style: ["normal", "italic"],
 });
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://zenvoraa.in";
@@ -72,7 +79,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`h-full antialiased font-sans ${geistSans.variable}`}
+      className={`h-full antialiased font-sans ${geistSans.variable} ${cormorantGaramond.variable}`}
       suppressHydrationWarning
     >
       <head>
@@ -99,7 +106,7 @@ export default function RootLayout({
                 "logo": `${siteUrl}/logo.png`,
                 "sameAs": [
                   "https://www.facebook.com/ZenVoraa",
-                  "https://www.instagram.com/ZenVoraa",
+                  "https://www.instagram.com/zenv.oraa/",
                   "https://twitter.com/ZenVoraa",
                 ],
               },

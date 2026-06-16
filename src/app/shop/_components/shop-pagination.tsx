@@ -16,7 +16,7 @@ export function ShopPagination({
   if (totalPages <= 1) return null;
 
   return (
-    <nav className="mt-12 flex justify-center font-[var(--font-corano)]" aria-label="Product pagination">
+    <nav className="mt-12 flex justify-center font-[var(--font-zenvoraa)]" aria-label="Product pagination">
       <ul className="flex items-center gap-2">
         <li>
           <button

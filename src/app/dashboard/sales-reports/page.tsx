@@ -487,7 +487,7 @@ export default function SalesReportsPage() {
           <DialogHeader>
             <DialogTitle className="font-serif font-medium text-stone-950">Update Campaign Budget</DialogTitle>
             <DialogDescription className="text-xs text-stone-500">
-              Input the advertising spend (cost) for the campaign <span className="font-bold">"{editingCampaign?.campaignName}"</span> to recalculate ROI.
+              Input the advertising spend (cost) for the campaign <span className="font-bold">&ldquo;{editingCampaign?.campaignName}&rdquo;</span> to recalculate ROI.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">

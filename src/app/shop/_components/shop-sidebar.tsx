@@ -71,7 +71,7 @@ function PriceRangeSlider({
 
   const getPercent = useCallback(
     (val: number) => Math.round(((val - min) / (max - min)) * 100),
-    [min, max]
+    [min, max],
   );
 
   useEffect(() => {
@@ -143,10 +143,7 @@ function PriceRangeSlider({
         />
 
         <div className="relative w-full h-1 bg-[#eee8df] rounded">
-          <div
-            ref={range}
-            className="absolute h-1 bg-[#c29958] rounded"
-          />
+          <div ref={range} className="absolute h-1 bg-[#c29958] rounded" />
         </div>
       </div>
 
@@ -159,7 +156,10 @@ function PriceRangeSlider({
             max={max}
             value={minVal}
             onChange={(e) => {
-              const val = Math.min(Math.max(Number(e.target.value), min), maxVal - 1);
+              const val = Math.min(
+                Math.max(Number(e.target.value), min),
+                maxVal - 1,
+              );
               setMinVal(val);
               minValRef.current = val;
               onChange([val, maxVal]);
@@ -176,7 +176,10 @@ function PriceRangeSlider({
             max={max}
             value={maxVal}
             onChange={(e) => {
-              const val = Math.max(Math.min(Number(e.target.value), max), minVal + 1);
+              const val = Math.max(
+                Math.min(Number(e.target.value), max),
+                minVal + 1,
+              );
               setMaxVal(val);
               maxValRef.current = val;
               onChange([minVal, val]);
@@ -227,7 +230,9 @@ function CategoryRow({
           }`}
         >
           <span>{category.name}</span>
-          <span className={`text-[10px] ml-1.5 transition-colors ${isSelected ? "text-[#c29958]" : "text-[#aaa] group-hover:text-[#888]"}`}>
+          <span
+            className={`text-[10px] ml-1.5 transition-colors ${isSelected ? "text-[#c29958]" : "text-[#aaa] group-hover:text-[#888]"}`}
+          >
             ({count})
           </span>
         </button>
@@ -256,11 +261,15 @@ function CategoryRow({
                   type="button"
                   onClick={() => onCategoryChange(sub.id)}
                   className={`text-left text-xs transition-colors hover:text-[#c29958] w-full py-1 flex items-center justify-between pr-2 ${
-                    isSubSelected ? "text-[#c29958] font-semibold" : "text-[#666]"
+                    isSubSelected
+                      ? "text-[#c29958] font-semibold"
+                      : "text-[#666]"
                   }`}
                 >
                   <span>{sub.name}</span>
-                  <span className={`text-[9px] ${isSubSelected ? "text-[#c29958]" : "text-[#bbb]"}`}>
+                  <span
+                    className={`text-[9px] ${isSubSelected ? "text-[#c29958]" : "text-[#bbb]"}`}
+                  >
                     ({subCount})
                   </span>
                 </button>
@@ -315,10 +324,17 @@ export function ShopSidebar({
       minPrice > 0 ||
       maxPrice < absoluteMaxPrice
     );
-  }, [selectedCategoryId, selectedBrandIds, selectedTagIds, minPrice, maxPrice, absoluteMaxPrice]);
+  }, [
+    selectedCategoryId,
+    selectedBrandIds,
+    selectedTagIds,
+    minPrice,
+    maxPrice,
+    absoluteMaxPrice,
+  ]);
 
   return (
-    <aside className="space-y-7 font-[var(--font-corano)] select-none">
+    <aside className="space-y-7 font-[var(--font-zenvoraa)] select-none">
       {/* Header and Reset Filters */}
       <div className="flex items-center justify-between pb-3 border-b border-[#eee8df]">
         <h4 className="text-sm font-bold uppercase tracking-wider text-[#222]">
@@ -413,7 +429,9 @@ export function ShopSidebar({
                             : "border-[#ded7cc] group-hover:border-[#c29958] bg-white"
                         }`}
                       >
-                        {isChecked && <Check className="w-2.5 h-2.5 text-white stroke-[3.5px]" />}
+                        {isChecked && (
+                          <Check className="w-2.5 h-2.5 text-white stroke-[3.5px]" />
+                        )}
                       </div>
                       <input
                         type="checkbox"
@@ -426,11 +444,15 @@ export function ShopSidebar({
                         }}
                         className="sr-only"
                       />
-                      <span className={`transition-colors ${isChecked ? "text-[#222] font-semibold" : "text-[#555]"}`}>
+                      <span
+                        className={`transition-colors ${isChecked ? "text-[#222] font-semibold" : "text-[#555]"}`}
+                      >
                         {brand.name}
                       </span>
                     </div>
-                    <span className={`text-[10px] transition-colors ${isChecked ? "text-[#222] font-semibold" : "text-[#aaa]"}`}>
+                    <span
+                      className={`text-[10px] transition-colors ${isChecked ? "text-[#222] font-semibold" : "text-[#aaa]"}`}
+                    >
                       ({count})
                     </span>
                   </label>
@@ -471,7 +493,9 @@ export function ShopSidebar({
                             : "border-[#ded7cc] group-hover:border-[#c29958] bg-white"
                         }`}
                       >
-                        {isChecked && <Check className="w-2.5 h-2.5 text-white stroke-[3.5px]" />}
+                        {isChecked && (
+                          <Check className="w-2.5 h-2.5 text-white stroke-[3.5px]" />
+                        )}
                       </div>
                       <input
                         type="checkbox"
@@ -484,11 +508,15 @@ export function ShopSidebar({
                         }}
                         className="sr-only"
                       />
-                      <span className={`transition-colors ${isChecked ? "text-[#222] font-semibold" : "text-[#555]"}`}>
+                      <span
+                        className={`transition-colors ${isChecked ? "text-[#222] font-semibold" : "text-[#555]"}`}
+                      >
                         #{tag.name}
                       </span>
                     </div>
-                    <span className={`text-[10px] transition-colors ${isChecked ? "text-[#222] font-semibold" : "text-[#aaa]"}`}>
+                    <span
+                      className={`text-[10px] transition-colors ${isChecked ? "text-[#222] font-semibold" : "text-[#aaa]"}`}
+                    >
                       ({count})
                     </span>
                   </label>
@@ -500,9 +528,12 @@ export function ShopSidebar({
       )}
 
       {/* Banner */}
-      <Link href="/shop" className="group block overflow-hidden mt-2 pt-2 border-t border-[#eee8df]">
+      <Link
+        href="/shop"
+        className="group block overflow-hidden mt-2 pt-2 border-t border-[#eee8df]"
+      >
         <Image
-          src="/corano/sidebar-banner.jpg"
+          src="/corano//banner/promotional-banner-p-3.png"
           alt="Zenvoraa jewelry promotion"
           width={270}
           height={376}

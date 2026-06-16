@@ -9,6 +9,7 @@ import {
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
+import { ScrollReveal } from "@/components/ui/scroll-reveal";
 
 export const metadata: Metadata = {
   title: "About Us | ZenVora Premium Handcrafted Jewelry",
@@ -66,7 +67,7 @@ const milestones = [
 
 export default function AboutPage() {
   return (
-    <main className="overflow-hidden bg-[#fbfaf7] font-[var(--font-corano)] text-[#222222]">
+    <main className="overflow-hidden bg-[#fbfaf7] font-[var(--font-zenvoraa)] text-[#222222]">
       <section className="relative bg-[#111111] text-white">
         <div className="absolute inset-0">
           <Image
@@ -85,7 +86,7 @@ export default function AboutPage() {
             <span className="text-xs font-bold uppercase tracking-[0.35em] text-[#c8a96e]">
               About ZenVoraa
             </span>
-            <h1 className="mt-5 text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl">
+            <h1 className="mt-5 text-4xl font-serif font-medium leading-tight sm:text-5xl lg:text-6xl tracking-wide">
               Jewellery made for moments that deserve a little more shine.
             </h1>
             <p className="mt-6 max-w-xl text-base leading-8 text-white/75 sm:text-lg">
@@ -145,155 +146,161 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="py-20 sm:py-24">
-        <div className="mx-auto grid max-w-7xl gap-12 px-4 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
-            <div className="border border-[#eee8df] bg-white p-3 shadow-sm">
-              <div className="relative aspect-[4/3] overflow-hidden">
-                <Image
-                  src="/corano/banner/img5-middle.jpg"
-                  alt="Jewellery styled for special occasions"
-                  fill
-                  sizes="(min-width: 1024px) 38vw, 100vw"
-                  className="object-cover"
-                />
+      <ScrollReveal animation="slide-up">
+        <section className="py-20 sm:py-24">
+          <div className="mx-auto grid max-w-7xl gap-12 px-4 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+              <div className="border border-[#eee8df] bg-white p-3 shadow-sm">
+                <div className="relative aspect-[4/3] overflow-hidden">
+                  <Image
+                    src="/corano/banner/img5-middle.jpg"
+                    alt="Jewellery styled for special occasions"
+                    fill
+                    sizes="(min-width: 1024px) 38vw, 100vw"
+                    className="object-cover"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="border border-[#eee8df] bg-white p-2 shadow-sm">
+                  <div className="relative aspect-square overflow-hidden">
+                    <Image
+                      src="/corano/product/product-3.jpg"
+                      alt="Elegant ring"
+                      fill
+                      sizes="240px"
+                      className="object-cover"
+                    />
+                  </div>
+                </div>
+                <div className="border border-[#eee8df] bg-white p-2 shadow-sm">
+                  <div className="relative aspect-square overflow-hidden">
+                    <Image
+                      src="/corano/product/product-10.jpg"
+                      alt="Statement jewellery piece"
+                      fill
+                      sizes="240px"
+                      className="object-cover"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="border border-[#eee8df] bg-white p-2 shadow-sm">
-                <div className="relative aspect-square overflow-hidden">
-                  <Image
-                    src="/corano/product/product-3.jpg"
-                    alt="Elegant ring"
-                    fill
-                    sizes="240px"
-                    className="object-cover"
-                  />
-                </div>
+
+            <div className="flex flex-col justify-center">
+              <span className="text-xs font-bold uppercase tracking-[0.3em] text-[#c29958]">
+                Our Story
+              </span>
+              <h2 className="mt-4 max-w-2xl text-3xl font-serif font-medium leading-tight sm:text-4xl lg:text-5xl tracking-wide">
+                Designed to make everyday dressing feel personal.
+              </h2>
+              <div className="mt-7 space-y-5 text-sm leading-8 text-stone-600 sm:text-base">
+                <p>
+                  At <span className="font-semibold text-[#222222]">ZenVoraa</span>,
+                  we believe jewellery should feel expressive, polished, and easy
+                  to wear. Our collections are curated for women who want style
+                  that moves naturally from daily plans to celebrations.
+                </p>
+                <p>
+                  We work with trusted manufacturers and suppliers to source
+                  artificial jewellery that balances fashion, finish, durability,
+                  and value. Each collection is chosen with real occasions in mind:
+                  workdays, weddings, gifting, festive looks, and everything in
+                  between.
+                </p>
+                <p>
+                  Whether you are choosing statement necklaces, elegant earrings,
+                  trendy rings, bridal sets, or everyday accessories, ZenVoraa is
+                  built to help you complete the look with confidence.
+                </p>
               </div>
-              <div className="border border-[#eee8df] bg-white p-2 shadow-sm">
-                <div className="relative aspect-square overflow-hidden">
-                  <Image
-                    src="/corano/product/product-10.jpg"
-                    alt="Statement jewellery piece"
-                    fill
-                    sizes="240px"
-                    className="object-cover"
-                  />
-                </div>
+
+              <div className="mt-9 grid gap-4 sm:grid-cols-4">
+                {milestones.map((item, index) => (
+                  <div key={item} className="border-l border-[#e7dccb] pl-4">
+                    <p className="text-sm font-bold text-[#c29958]">
+                      0{index + 1}
+                    </p>
+                    <p className="mt-2 text-sm font-semibold text-[#222222]">
+                      {item}
+                    </p>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
+        </section>
+      </ScrollReveal>
 
-          <div className="flex flex-col justify-center">
-            <span className="text-xs font-bold uppercase tracking-[0.3em] text-[#c29958]">
-              Our Story
-            </span>
-            <h2 className="mt-4 max-w-2xl text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">
-              Designed to make everyday dressing feel personal.
-            </h2>
-            <div className="mt-7 space-y-5 text-sm leading-8 text-stone-600 sm:text-base">
-              <p>
-                At <span className="font-semibold text-[#222222]">ZenVoraa</span>,
-                we believe jewellery should feel expressive, polished, and easy
-                to wear. Our collections are curated for women who want style
-                that moves naturally from daily plans to celebrations.
-              </p>
-              <p>
-                We work with trusted manufacturers and suppliers to source
-                artificial jewellery that balances fashion, finish, durability,
-                and value. Each collection is chosen with real occasions in mind:
-                workdays, weddings, gifting, festive looks, and everything in
-                between.
-              </p>
-              <p>
-                Whether you are choosing statement necklaces, elegant earrings,
-                trendy rings, bridal sets, or everyday accessories, ZenVoraa is
-                built to help you complete the look with confidence.
+      <ScrollReveal animation="slide-up">
+        <section className="border-y border-[#eee8df] bg-white py-20">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="mx-auto max-w-2xl text-center">
+              <span className="text-xs font-bold uppercase tracking-[0.3em] text-[#c29958]">
+                Why Choose Us
+              </span>
+              <h2 className="mt-4 text-3xl font-serif font-medium sm:text-4xl tracking-wide">
+                The ZenVoraa experience
+              </h2>
+              <p className="mt-4 text-sm leading-7 text-stone-500">
+                A thoughtful blend of trend, quality, affordability, and service
+                so your jewellery feels beautiful from cart to occasion.
               </p>
             </div>
 
-            <div className="mt-9 grid gap-4 sm:grid-cols-4">
-              {milestones.map((item, index) => (
-                <div key={item} className="border-l border-[#e7dccb] pl-4">
-                  <p className="text-sm font-bold text-[#c29958]">
-                    0{index + 1}
-                  </p>
-                  <p className="mt-2 text-sm font-semibold text-[#222222]">
-                    {item}
+            <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {values.map(({ title, description, icon: Icon }) => (
+                <div
+                  key={title}
+                  className="border border-[#eee8df] bg-[#fbfaf7] p-7 transition hover:-translate-y-1 hover:border-[#c8a96e] hover:shadow-md"
+                >
+                  <Icon className="h-7 w-7 text-[#c29958]" aria-hidden="true" />
+                  <h3 className="mt-5 text-lg font-bold text-[#222222]">
+                    {title}
+                  </h3>
+                  <p className="mt-3 text-sm leading-7 text-stone-500">
+                    {description}
                   </p>
                 </div>
               ))}
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </ScrollReveal>
 
-      <section className="border-y border-[#eee8df] bg-white py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center">
-            <span className="text-xs font-bold uppercase tracking-[0.3em] text-[#c29958]">
-              Why Choose Us
-            </span>
-            <h2 className="mt-4 text-3xl font-bold sm:text-4xl">
-              The ZenVoraa experience
-            </h2>
-            <p className="mt-4 text-sm leading-7 text-stone-500">
-              A thoughtful blend of trend, quality, affordability, and service
-              so your jewellery feels beautiful from cart to occasion.
-            </p>
-          </div>
+      <ScrollReveal animation="slide-up">
+        <section className="bg-[#f6f1ea] py-20 sm:py-24">
+          <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-[1fr_0.85fr] lg:px-8">
+            <div className="max-w-3xl">
+              <span className="text-xs font-bold uppercase tracking-[0.3em] text-[#9f7b3d]">
+                Our Mission
+              </span>
+              <h2 className="mt-4 text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">
+                To make beautiful jewellery accessible to every woman.
+              </h2>
+              <p className="mt-6 text-base leading-8 text-stone-600">
+                We want every customer to find jewellery that feels true to her:
+                expressive, comfortable, affordable, and ready for the moments
+                she wants to remember.
+              </p>
+            </div>
 
-          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {values.map(({ title, description, icon: Icon }) => (
-              <div
-                key={title}
-                className="border border-[#eee8df] bg-[#fbfaf7] p-7 transition hover:-translate-y-1 hover:border-[#c8a96e] hover:shadow-md"
+            <div className="border border-[#ded0bd] bg-[#111111] p-8 text-white shadow-lg">
+              <Sparkles className="h-8 w-8 text-[#c8a96e]" aria-hidden="true" />
+              <p className="mt-6 text-2xl font-semibold leading-9">
+                Thank you for choosing ZenVoraa. We are excited to be part of
+                your style journey.
+              </p>
+              <Link
+                href="/shop"
+                className="mt-8 inline-flex h-11 items-center justify-center rounded-md bg-white px-6 text-sm font-bold uppercase tracking-[0.16em] text-[#111111] transition hover:bg-[#c8a96e] hover:text-white"
               >
-                <Icon className="h-7 w-7 text-[#c29958]" aria-hidden="true" />
-                <h3 className="mt-5 text-lg font-bold text-[#222222]">
-                  {title}
-                </h3>
-                <p className="mt-3 text-sm leading-7 text-stone-500">
-                  {description}
-                </p>
-              </div>
-            ))}
+                Explore Now
+              </Link>
+            </div>
           </div>
-        </div>
-      </section>
-
-      <section className="bg-[#f6f1ea] py-20 sm:py-24">
-        <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-[1fr_0.85fr] lg:px-8">
-          <div className="max-w-3xl">
-            <span className="text-xs font-bold uppercase tracking-[0.3em] text-[#9f7b3d]">
-              Our Mission
-            </span>
-            <h2 className="mt-4 text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">
-              To make beautiful jewellery accessible to every woman.
-            </h2>
-            <p className="mt-6 text-base leading-8 text-stone-600">
-              We want every customer to find jewellery that feels true to her:
-              expressive, comfortable, affordable, and ready for the moments
-              she wants to remember.
-            </p>
-          </div>
-
-          <div className="border border-[#ded0bd] bg-[#111111] p-8 text-white shadow-lg">
-            <Sparkles className="h-8 w-8 text-[#c8a96e]" aria-hidden="true" />
-            <p className="mt-6 text-2xl font-semibold leading-9">
-              Thank you for choosing ZenVoraa. We are excited to be part of
-              your style journey.
-            </p>
-            <Link
-              href="/shop"
-              className="mt-8 inline-flex h-11 items-center justify-center rounded-md bg-white px-6 text-sm font-bold uppercase tracking-[0.16em] text-[#111111] transition hover:bg-[#c8a96e] hover:text-white"
-            >
-              Explore Now
-            </Link>
-          </div>
-        </div>
-      </section>
+        </section>
+      </ScrollReveal>
     </main>
   );
 }

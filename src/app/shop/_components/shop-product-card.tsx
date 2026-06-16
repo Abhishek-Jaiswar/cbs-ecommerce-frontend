@@ -48,7 +48,7 @@ export function ShopProductCard({ product, viewMode }: ShopProductCardProps) {
 
   if (viewMode === "list") {
     return (
-      <article className="group grid gap-8 border-b border-stone-100 pb-8 font-[var(--font-corano)] md:grid-cols-[240px_1fr] bg-transparent">
+      <article className="group grid gap-8 border-b border-stone-100 pb-8 font-[var(--font-zenvoraa)] md:grid-cols-[240px_1fr] bg-transparent">
         <Link href={`/shop/${product.slug}`} className="relative block aspect-square overflow-hidden bg-[#fbfaf8]">
           <Image
             src={productImage}
@@ -113,7 +113,7 @@ export function ShopProductCard({ product, viewMode }: ShopProductCardProps) {
   }
 
   return (
-    <article className="group flex h-full flex-col bg-transparent font-[var(--font-corano)] pb-4">
+    <article className="group flex h-full flex-col bg-transparent font-[var(--font-zenvoraa)] pb-4">
       {/* Image Container */}
       <div className="relative overflow-hidden bg-[#fbfaf8] aspect-square">
         <Link href={`/shop/${product.slug}`} className="relative block w-full h-full">

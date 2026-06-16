@@ -13,24 +13,25 @@ import {
   Send,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { ScrollReveal } from "@/components/ui/scroll-reveal";
 
 const supportChannels = [
   {
     label: "Email",
-    value: "support@zenvoraa.in",
-    href: "mailto:support@zenvoraa.in",
+    value: "info@zenvoraa.in",
+    href: "mailto:info@zenvoraa.in",
     icon: Mail,
   },
   {
     label: "Phone",
-    value: "+91 XXXXX XXXXX",
-    href: "tel:+91XXXXXXXXXX",
+    value: "+91-9909992725",
+    href: "tel:+919909992725",
     icon: Phone,
   },
   {
     label: "WhatsApp",
-    value: "+91 XXXXX XXXXX",
-    href: "https://wa.me/91XXXXXXXXXX",
+    value: "+91-9909992725",
+    href: "https://wa.me/919909992725",
     icon: MessageCircle,
   },
 ];
@@ -51,14 +52,14 @@ export default function ContactPage() {
   };
 
   return (
-    <main className="overflow-hidden bg-[#fbfaf7] font-[var(--font-corano)] text-[#222222]">
+    <main className="overflow-hidden bg-[#fbfaf7] font-[var(--font-zenvoraa)] text-[#222222]">
       <section className="border-b border-[#eee8df] bg-[#111111] text-white">
         <div className="mx-auto grid min-h-[430px] max-w-7xl items-center gap-10 px-4 py-20 sm:px-6 lg:grid-cols-[1fr_0.8fr] lg:px-8">
           <div className="max-w-3xl">
             <span className="text-xs font-bold uppercase tracking-[0.35em] text-[#c8a96e]">
               Contact ZenVoraa
             </span>
-            <h1 className="mt-5 text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl">
+            <h1 className="mt-5 text-4xl font-serif font-medium leading-tight sm:text-5xl lg:text-6xl tracking-wide">
               We are here to help with every detail.
             </h1>
             <p className="mt-6 max-w-2xl text-base leading-8 text-white/75 sm:text-lg">
@@ -80,149 +81,153 @@ export default function ContactPage() {
         </div>
       </section>
 
-      <section className="py-16 sm:py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-5 md:grid-cols-3">
-            {supportChannels.map(({ label, value, href, icon: Icon }) => (
-              <a
-                key={label}
-                href={href}
-                className="group border border-[#eee8df] bg-white p-7 shadow-sm transition hover:-translate-y-1 hover:border-[#c8a96e] hover:shadow-md"
-              >
-                <Icon
-                  className="h-7 w-7 text-[#c29958]"
-                  aria-hidden="true"
-                />
-                <h2 className="mt-5 text-sm font-bold uppercase tracking-[0.22em] text-stone-500">
-                  {label}
-                </h2>
-                <p className="mt-3 text-lg font-bold text-[#222222] transition group-hover:text-[#c29958]">
-                  {value}
-                </p>
-              </a>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="pb-20">
-        <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[0.88fr_1.12fr] lg:px-8">
-          <div className="space-y-5">
-            <div className="border border-[#eee8df] bg-white p-8 shadow-sm">
-              <span className="text-xs font-bold uppercase tracking-[0.3em] text-[#c29958]">
-                Support Desk
-              </span>
-              <h2 className="mt-4 text-3xl font-bold leading-tight">
-                Tell us what you need and we will guide you from there.
-              </h2>
-              <div className="mt-8 space-y-4">
-                {quickHelp.map((item) => (
-                  <div
-                    key={item}
-                    className="flex items-start gap-3 text-sm leading-7 text-stone-600"
-                  >
-                    <CheckCircle2 className="mt-1 h-5 w-5 shrink-0 text-[#c29958]" />
-                    <span>{item}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="grid gap-5 sm:grid-cols-2">
-              <InfoCard
-                icon={Clock3}
-                title="Business Hours"
-                lines={["Monday - Saturday", "10:00 AM - 7:00 PM", "Sunday closed"]}
-              />
-              <InfoCard
-                icon={MapPin}
-                title="Registered Address"
-                lines={["ZenVoraa", "[Your Business Address]", "Mumbai, Maharashtra"]}
-              />
-            </div>
-          </div>
-
-          <div className="border border-[#eee8df] bg-white p-6 shadow-lg sm:p-8 lg:p-10">
-            {!submitted ? (
-              <>
-                <span className="text-xs font-bold uppercase tracking-[0.3em] text-[#c29958]">
-                  Send A Message
-                </span>
-                <h2 className="mt-4 text-3xl font-bold leading-tight">
-                  We would love to hear from you.
-                </h2>
-                <p className="mt-3 text-sm leading-7 text-stone-500">
-                  Fill out the form and our team will contact you shortly.
-                </p>
-
-                <form onSubmit={handleSubmit} className="mt-8 space-y-5">
-                  <div className="grid gap-5 sm:grid-cols-2">
-                    <Field label="Full Name">
-                      <input
-                        required
-                        name="name"
-                        placeholder="Your name"
-                        className="h-12 w-full border border-[#ded6ca] bg-[#fbfaf7] px-4 text-sm outline-none transition placeholder:text-stone-400 focus:border-[#c8a96e] focus:bg-white"
-                      />
-                    </Field>
-                    <Field label="Email Address">
-                      <input
-                        required
-                        name="email"
-                        type="email"
-                        placeholder="you@example.com"
-                        className="h-12 w-full border border-[#ded6ca] bg-[#fbfaf7] px-4 text-sm outline-none transition placeholder:text-stone-400 focus:border-[#c8a96e] focus:bg-white"
-                      />
-                    </Field>
-                  </div>
-
-                  <Field label="Subject">
-                    <input
-                      name="subject"
-                      placeholder="How can we help?"
-                      className="h-12 w-full border border-[#ded6ca] bg-[#fbfaf7] px-4 text-sm outline-none transition placeholder:text-stone-400 focus:border-[#c8a96e] focus:bg-white"
-                    />
-                  </Field>
-
-                  <Field label="Message">
-                    <textarea
-                      required
-                      name="message"
-                      rows={6}
-                      placeholder="Share your question or request"
-                      className="w-full resize-none border border-[#ded6ca] bg-[#fbfaf7] px-4 py-3 text-sm leading-7 outline-none transition placeholder:text-stone-400 focus:border-[#c8a96e] focus:bg-white"
-                    />
-                  </Field>
-
-                  <button
-                    type="submit"
-                    className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-md bg-[#c8a96e] px-6 text-sm font-bold uppercase tracking-[0.16em] text-white transition hover:bg-[#b5943d]"
-                  >
-                    <Send className="h-4 w-4" aria-hidden="true" />
-                    Send Message
-                  </button>
-                </form>
-              </>
-            ) : (
-              <div className="flex min-h-[460px] flex-col items-center justify-center text-center">
-                <CheckCircle2 className="h-16 w-16 text-[#c29958]" />
-                <h2 className="mt-6 text-4xl font-bold">Thank you!</h2>
-                <p className="mt-4 max-w-md text-sm leading-7 text-stone-500">
-                  Thank you for reaching out. We will get back to you soon with
-                  the next best step.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setSubmitted(false)}
-                  className="mt-8 inline-flex h-12 items-center justify-center rounded-md bg-[#111111] px-6 text-sm font-bold uppercase tracking-[0.16em] text-white transition hover:bg-[#c8a96e]"
+      <ScrollReveal animation="slide-up">
+        <section className="py-16 sm:py-20">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="grid gap-5 md:grid-cols-3">
+              {supportChannels.map(({ label, value, href, icon: Icon }) => (
+                <a
+                  key={label}
+                  href={href}
+                  className="group border border-[#eee8df] bg-white p-7 shadow-sm transition hover:-translate-y-1 hover:border-[#c8a96e] hover:shadow-md"
                 >
-                  Send Another Message
-                </button>
-              </div>
-            )}
+                  <Icon
+                    className="h-7 w-7 text-[#c29958]"
+                    aria-hidden="true"
+                  />
+                  <h2 className="mt-5 text-sm font-bold uppercase tracking-[0.22em] text-stone-500">
+                    {label}
+                  </h2>
+                  <p className="mt-3 text-lg font-bold text-[#222222] transition group-hover:text-[#c29958]">
+                    {value}
+                  </p>
+                </a>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </ScrollReveal>
+
+      <ScrollReveal animation="slide-up">
+        <section className="pb-20">
+          <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[0.88fr_1.12fr] lg:px-8">
+            <div className="space-y-5">
+              <div className="border border-[#eee8df] bg-white p-8 shadow-sm">
+                <span className="text-xs font-bold uppercase tracking-[0.3em] text-[#c29958]">
+                  Support Desk
+                </span>
+                <h2 className="mt-4 text-3xl font-serif font-medium leading-tight tracking-wide">
+                  Tell us what you need and we will guide you from there.
+                </h2>
+                <div className="mt-8 space-y-4">
+                  {quickHelp.map((item) => (
+                    <div
+                      key={item}
+                      className="flex items-start gap-3 text-sm leading-7 text-stone-600"
+                    >
+                      <CheckCircle2 className="mt-1 h-5 w-5 shrink-0 text-[#c29958]" />
+                      <span>{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="grid gap-5 sm:grid-cols-2">
+                <InfoCard
+                  icon={Clock3}
+                  title="Business Hours"
+                  lines={["Monday - Saturday", "10:00 AM - 7:00 PM", "Sunday closed"]}
+                />
+                <InfoCard
+                  icon={MapPin}
+                  title="Registered Address"
+                  lines={["ZenVoraa", "Bhayander (W)", "Mumbai, Maharashtra"]}
+                />
+              </div>
+            </div>
+
+            <div className="border border-[#eee8df] bg-white p-6 shadow-lg sm:p-8 lg:p-10">
+              {!submitted ? (
+                <>
+                  <span className="text-xs font-bold uppercase tracking-[0.3em] text-[#c29958]">
+                    Send A Message
+                  </span>
+                  <h2 className="mt-4 text-3xl font-serif font-medium leading-tight tracking-wide">
+                    We would love to hear from you.
+                  </h2>
+                  <p className="mt-3 text-sm leading-7 text-stone-500">
+                    Fill out the form and our team will contact you shortly.
+                  </p>
+
+                  <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+                    <div className="grid gap-5 sm:grid-cols-2">
+                      <Field label="Full Name">
+                        <input
+                          required
+                          name="name"
+                          placeholder="Your name"
+                          className="h-12 w-full border border-[#ded6ca] bg-[#fbfaf7] px-4 text-sm outline-none transition placeholder:text-stone-400 focus:border-[#c8a96e] focus:bg-white"
+                        />
+                      </Field>
+                      <Field label="Email Address">
+                        <input
+                          required
+                          name="email"
+                          type="email"
+                          placeholder="you@example.com"
+                          className="h-12 w-full border border-[#ded6ca] bg-[#fbfaf7] px-4 text-sm outline-none transition placeholder:text-stone-400 focus:border-[#c8a96e] focus:bg-white"
+                        />
+                      </Field>
+                    </div>
+
+                    <Field label="Subject">
+                      <input
+                        name="subject"
+                        placeholder="How can we help?"
+                        className="h-12 w-full border border-[#ded6ca] bg-[#fbfaf7] px-4 text-sm outline-none transition placeholder:text-stone-400 focus:border-[#c8a96e] focus:bg-white"
+                      />
+                    </Field>
+
+                    <Field label="Message">
+                      <textarea
+                        required
+                        name="message"
+                        rows={6}
+                        placeholder="Share your question or request"
+                        className="w-full resize-none border border-[#ded6ca] bg-[#fbfaf7] px-4 py-3 text-sm leading-7 outline-none transition placeholder:text-stone-400 focus:border-[#c8a96e] focus:bg-white"
+                      />
+                    </Field>
+
+                    <button
+                      type="submit"
+                      className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-md bg-[#c8a96e] px-6 text-sm font-bold uppercase tracking-[0.16em] text-white transition hover:bg-[#b5943d]"
+                    >
+                      <Send className="h-4 w-4" aria-hidden="true" />
+                      Send Message
+                    </button>
+                  </form>
+                </>
+              ) : (
+                <div className="flex min-h-[460px] flex-col items-center justify-center text-center">
+                  <CheckCircle2 className="h-16 w-16 text-[#c29958]" />
+                  <h2 className="mt-6 text-4xl font-bold">Thank you!</h2>
+                  <p className="mt-4 max-w-md text-sm leading-7 text-stone-500">
+                    Thank you for reaching out. We will get back to you soon with
+                    the next best step.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setSubmitted(false)}
+                    className="mt-8 inline-flex h-12 items-center justify-center rounded-md bg-[#111111] px-6 text-sm font-bold uppercase tracking-[0.16em] text-white transition hover:bg-[#c8a96e]"
+                  >
+                    Send Another Message
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      </ScrollReveal>
     </main>
   );
 }
