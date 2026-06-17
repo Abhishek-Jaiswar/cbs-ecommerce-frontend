@@ -71,6 +71,7 @@ export const BasicInfoStep = React.forwardRef<BasicInfoStepRef, BasicInfoStepPro
     const [tagIds, setTagIds] = React.useState<string[]>([]);
     const [price, setPrice] = React.useState("");
     const [originalPrice, setOriginalPrice] = React.useState("");
+    const [costPrice, setCostPrice] = React.useState("0");
     const [isNew, setIsNew] = React.useState(true);
     const [isSale, setIsSale] = React.useState(false);
     const [isFeatured, setIsFeatured] = React.useState(false);
@@ -124,6 +125,7 @@ export const BasicInfoStep = React.forwardRef<BasicInfoStepRef, BasicInfoStepPro
           if (draft.tagIds) setTagIds(draft.tagIds);
           if (draft.price) setPrice(draft.price);
           if (draft.originalPrice) setOriginalPrice(draft.originalPrice);
+          if (draft.costPrice) setCostPrice(draft.costPrice);
           if (draft.isNew !== undefined) setIsNew(draft.isNew);
           if (draft.isSale !== undefined) setIsSale(draft.isSale);
           if (draft.isFeatured !== undefined) setIsFeatured(draft.isFeatured);
@@ -155,6 +157,7 @@ export const BasicInfoStep = React.forwardRef<BasicInfoStepRef, BasicInfoStepPro
         tagIds,
         price,
         originalPrice,
+        costPrice,
         isNew,
         isSale,
         isFeatured,
@@ -165,7 +168,8 @@ export const BasicInfoStep = React.forwardRef<BasicInfoStepRef, BasicInfoStepPro
         name.trim() !== "" ||
         slug.trim() !== "" ||
         categoryId !== "" ||
-        price !== "";
+        price !== "" ||
+        costPrice !== "0";
 
       try {
         if (hasContent) {
@@ -188,6 +192,7 @@ export const BasicInfoStep = React.forwardRef<BasicInfoStepRef, BasicInfoStepPro
       tagIds,
       price,
       originalPrice,
+      costPrice,
       isNew,
       isSale,
       isFeatured,
@@ -211,6 +216,7 @@ export const BasicInfoStep = React.forwardRef<BasicInfoStepRef, BasicInfoStepPro
           setTagIds([]);
           setPrice("");
           setOriginalPrice("");
+          setCostPrice("0");
           setIsNew(true);
           setIsSale(false);
           setIsFeatured(false);
@@ -235,7 +241,8 @@ export const BasicInfoStep = React.forwardRef<BasicInfoStepRef, BasicInfoStepPro
         categoryId,
         tagIds,
         price: parseFloat(price),
-        originalPrice: originalPrice ? parseFloat(originalPrice) : null,
+        originalPrice: parseFloat(originalPrice),
+        costPrice: parseFloat(costPrice || "0"),
         isNew,
         isSale,
         isFeatured,
@@ -339,29 +346,48 @@ export const BasicInfoStep = React.forwardRef<BasicInfoStepRef, BasicInfoStepPro
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div className="space-y-2">
-                      <label className="text-xs font-semibold text-foreground">Retail Price (₹) *</label>
+                      <label className="text-xs font-semibold text-foreground">Cost Price (₹) *</label>
                       <Input
                         type="number"
                         step="0.01"
-                        value={price}
-                        onChange={(e) => setPrice(e.target.value)}
-                        placeholder="2999"
+                        value={costPrice}
+                        onChange={(e) => setCostPrice(e.target.value)}
+                        placeholder="e.g. 1500"
                         className="bg-background border-input text-sm"
+                        min="0"
                         required
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-xs font-semibold text-foreground">Original Price (₹)</label>
+                      <label className="text-xs font-semibold text-foreground">MRP (₹) *</label>
                       <Input
                         type="number"
                         step="0.01"
                         value={originalPrice}
                         onChange={(e) => setOriginalPrice(e.target.value)}
-                        placeholder="Optional"
+                        placeholder="e.g. 3999"
                         className="bg-background border-input text-sm"
+                        min="0.01"
+                        required
                       />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-semibold text-foreground">Selling Price (₹) *</label>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        value={price}
+                        onChange={(e) => setPrice(e.target.value)}
+                        placeholder="e.g. 2999"
+                        className={`bg-background border-input text-sm ${price && originalPrice && parseFloat(price) > parseFloat(originalPrice) ? "border-destructive focus-visible:ring-destructive" : ""}`}
+                        min="0.01"
+                        required
+                      />
+                      {price && originalPrice && parseFloat(price) > parseFloat(originalPrice) && (
+                        <p className="text-[10px] text-destructive font-medium mt-1">Must be ≤ MRP</p>
+                      )}
                     </div>
                   </div>
 
@@ -521,14 +547,22 @@ export const BasicInfoStep = React.forwardRef<BasicInfoStepRef, BasicInfoStepPro
           </form>
         ) : (
           <CardContent className="p-6">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+            <div className="grid grid-cols-2 md:grid-cols-6 gap-4 text-sm">
               <div>
                 <span className="text-xs text-muted-foreground block">Product Name</span>
                 <span className="font-semibold">{name}</span>
               </div>
               <div>
-                <span className="text-xs text-muted-foreground block">Base Retail Price</span>
-                <span className="font-semibold font-mono">₹{parseFloat(price || "0").toLocaleString("en-IN")}</span>
+                <span className="text-xs text-muted-foreground block">Cost Price</span>
+                <span className="font-semibold font-mono">₹{parseFloat(costPrice || "0").toLocaleString("en-IN")}</span>
+              </div>
+              <div>
+                <span className="text-xs text-muted-foreground block">MRP</span>
+                <span className="font-semibold font-mono text-muted-foreground line-through">₹{parseFloat(originalPrice || "0").toLocaleString("en-IN")}</span>
+              </div>
+              <div>
+                <span className="text-xs text-muted-foreground block">Selling Price</span>
+                <span className="font-semibold font-mono text-primary">₹{parseFloat(price || "0").toLocaleString("en-IN")}</span>
               </div>
               <div>
                 <span className="text-xs text-muted-foreground block">Category</span>

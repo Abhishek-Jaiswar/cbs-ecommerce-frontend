@@ -98,6 +98,14 @@ const data = {
           title: "Sales & ROI Reports",
           url: "/dashboard/sales-reports",
         },
+        {
+          title: "Analytical Reports",
+          url: "/dashboard/reports",
+        },
+        {
+          title: "Download Center",
+          url: "/dashboard/reports/download-center",
+        },
       ],
     },
     {

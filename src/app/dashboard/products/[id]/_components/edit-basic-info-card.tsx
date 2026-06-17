@@ -34,6 +34,7 @@ export function EditBasicInfoCard({
   const [slug, setSlug] = React.useState("");
   const [price, setPrice] = React.useState("");
   const [originalPrice, setOriginalPrice] = React.useState("");
+  const [costPrice, setCostPrice] = React.useState("0");
   const [excerpt, setExcerpt] = React.useState("");
   const [description, setDescription] = React.useState("");
   const [categoryId, setCategoryId] = React.useState("");
@@ -60,6 +61,7 @@ export function EditBasicInfoCard({
       setSlug(product.slug);
       setPrice(String(product.price));
       setOriginalPrice(product.originalPrice ? String(product.originalPrice) : "");
+      setCostPrice(product.costPrice ? String(product.costPrice) : "0");
       setExcerpt(product.excerpt);
       setDescription(product.description);
       setIsSale(product.isSale);
@@ -98,7 +100,8 @@ export function EditBasicInfoCard({
       categoryId,
       tagIds,
       price: parseFloat(price),
-      originalPrice: originalPrice ? parseFloat(originalPrice) : null,
+      originalPrice: parseFloat(originalPrice),
+      costPrice: parseFloat(costPrice || "0"),
       isNew,
       isSale,
       isFeatured,
@@ -195,29 +198,48 @@ export function EditBasicInfoCard({
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div className="space-y-2">
-                      <label className="text-xs font-semibold text-foreground">Retail Price (₹) *</label>
+                      <label className="text-xs font-semibold text-foreground">Cost Price (₹) *</label>
                       <Input
                         type="number"
                         step="0.01"
-                        value={price}
-                        onChange={(e) => setPrice(e.target.value)}
-                        placeholder="2999"
+                        value={costPrice}
+                        onChange={(e) => setCostPrice(e.target.value)}
+                        placeholder="e.g. 1500"
                         className="bg-background border-input text-sm"
+                        min="0"
                         required
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-xs font-semibold text-foreground">Original Price (₹)</label>
+                      <label className="text-xs font-semibold text-foreground">MRP (₹) *</label>
                       <Input
                         type="number"
                         step="0.01"
                         value={originalPrice}
                         onChange={(e) => setOriginalPrice(e.target.value)}
-                        placeholder="Optional"
+                        placeholder="e.g. 3999"
                         className="bg-background border-input text-sm"
+                        min="0.01"
+                        required
                       />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-semibold text-foreground">Selling Price (₹) *</label>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        value={price}
+                        onChange={(e) => setPrice(e.target.value)}
+                        placeholder="e.g. 2999"
+                        className={`bg-background border-input text-sm ${price && originalPrice && parseFloat(price) > parseFloat(originalPrice) ? "border-destructive focus-visible:ring-destructive" : ""}`}
+                        min="0.01"
+                        required
+                      />
+                      {price && originalPrice && parseFloat(price) > parseFloat(originalPrice) && (
+                        <p className="text-[10px] text-destructive font-medium mt-1">Must be ≤ MRP</p>
+                      )}
                     </div>
                   </div>
 
@@ -366,14 +388,22 @@ export function EditBasicInfoCard({
           </form>
         ) : (
           <CardContent className="p-6">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+            <div className="grid grid-cols-2 md:grid-cols-6 gap-4 text-sm">
               <div>
                 <span className="text-xs text-muted-foreground block">Product Name</span>
                 <span className="font-semibold">{name}</span>
               </div>
               <div>
-                <span className="text-xs text-muted-foreground block">Base Retail Price</span>
-                <span className="font-semibold font-mono">₹{parseFloat(price || "0").toLocaleString("en-IN")}</span>
+                <span className="text-xs text-muted-foreground block">Cost Price</span>
+                <span className="font-semibold font-mono">₹{parseFloat(costPrice || "0").toLocaleString("en-IN")}</span>
+              </div>
+              <div>
+                <span className="text-xs text-muted-foreground block">MRP</span>
+                <span className="font-semibold font-mono text-muted-foreground line-through">₹{parseFloat(originalPrice || "0").toLocaleString("en-IN")}</span>
+              </div>
+              <div>
+                <span className="text-xs text-muted-foreground block">Selling Price</span>
+                <span className="font-semibold font-mono text-primary">₹{parseFloat(price || "0").toLocaleString("en-IN")}</span>
               </div>
               <div>
                 <span className="text-xs text-muted-foreground block">Category</span>

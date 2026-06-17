@@ -76,13 +76,18 @@ export function ShopProductCard({ product, viewMode }: ShopProductCardProps) {
             <span>SKU: {product.id.substring(0, 8).toUpperCase()}</span>
           </div>
 
-          <div className="mt-4 flex items-baseline gap-3">
+          <div className="mt-4 flex flex-wrap items-center gap-3">
             <span className="text-lg font-bold text-stone-850 tracking-wide">
               {formatPrice(product.price)}
             </span>
             {product.originalPrice && (
               <span className="text-sm text-stone-400 line-through font-light">
                 {formatPrice(product.originalPrice)}
+              </span>
+            )}
+            {product.appliedOffer && (
+              <span className="text-[9px] font-bold uppercase tracking-wider text-amber-700 bg-amber-50 border border-amber-100 px-2.5 py-0.5 rounded-sm select-none">
+                {product.appliedOffer.name}
               </span>
             )}
           </div>
@@ -131,6 +136,11 @@ export function ShopProductCard({ product, viewMode }: ShopProductCardProps) {
           {product.isNew && (
             <span className="bg-stone-900/90 backdrop-blur-[2px] px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-white shadow-sm">
               New
+            </span>
+          )}
+          {product.appliedOffer && (
+            <span className="bg-amber-600 backdrop-blur-[2px] px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-white shadow-sm">
+              Offer
             </span>
           )}
           {discount > 0 && (
@@ -229,38 +239,45 @@ export function ShopProductCard({ product, viewMode }: ShopProductCardProps) {
         </div>
 
         {/* Price and Non-breaking Add to Bag Row */}
-        <div className="mt-3 flex items-center justify-between border-t border-stone-100/60 pt-3">
-          <div className="flex items-baseline gap-1.5 min-w-0 flex-1 pr-2">
-            <span className="text-sm font-bold text-stone-850 tracking-tight shrink-0">{formatPrice(product.price)}</span>
-            {product.originalPrice && (
-              <span className="text-[10px] text-stone-400 line-through font-light truncate">
-                {formatPrice(product.originalPrice)}
-              </span>
+        <div className="mt-3 flex flex-col gap-2 border-t border-stone-100/60 pt-3">
+          {product.appliedOffer && (
+            <div className="text-[9px] font-bold text-amber-700 bg-amber-50/50 border border-amber-100/50 px-2 py-0.5 rounded-sm select-none self-start truncate max-w-full">
+              Offer: {product.appliedOffer.name}
+            </div>
+          )}
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-baseline gap-1.5 min-w-0 flex-1 pr-2">
+              <span className="text-sm font-bold text-stone-850 tracking-tight shrink-0">{formatPrice(product.price)}</span>
+              {product.originalPrice && (
+                <span className="text-[10px] text-stone-400 line-through font-light truncate">
+                  {formatPrice(product.originalPrice)}
+                </span>
+              )}
+            </div>
+            {firstAvailableVariant && (
+              <button
+                type="button"
+                disabled={isAddingToCart || isOutOfStock}
+                onClick={async (e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (!isAuthenticated) {
+                    router.push("/login");
+                    return;
+                  }
+                  try {
+                    await addToCart({ variantId: firstAvailableVariant.id, quantity: 1 }).unwrap();
+                  } catch (err) {
+                    console.error("Failed to add to cart", err);
+                  }
+                }}
+                className="flex items-center gap-1 border border-stone-900 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-stone-900 hover:bg-[#c29958] hover:border-[#c29958] hover:text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed select-none bg-transparent active:scale-[0.97] whitespace-nowrap shrink-0"
+              >
+                <ShoppingBag className="h-3 w-3" />
+                {isAddingToCart ? "Adding…" : isOutOfStock ? "Out" : "Add to Bag"}
+              </button>
             )}
           </div>
-          {firstAvailableVariant && (
-            <button
-              type="button"
-              disabled={isAddingToCart || isOutOfStock}
-              onClick={async (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (!isAuthenticated) {
-                  router.push("/login");
-                  return;
-                }
-                try {
-                  await addToCart({ variantId: firstAvailableVariant.id, quantity: 1 }).unwrap();
-                } catch (err) {
-                  console.error("Failed to add to cart", err);
-                }
-              }}
-              className="flex items-center gap-1 border border-stone-900 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-stone-900 hover:bg-[#c29958] hover:border-[#c29958] hover:text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed select-none bg-transparent active:scale-[0.97] whitespace-nowrap shrink-0"
-            >
-              <ShoppingBag className="h-3 w-3" />
-              {isAddingToCart ? "Adding…" : isOutOfStock ? "Out" : "Add to Bag"}
-            </button>
-          )}
         </div>
       </div>
     </article>

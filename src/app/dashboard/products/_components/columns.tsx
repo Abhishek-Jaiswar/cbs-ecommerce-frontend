@@ -267,6 +267,10 @@ export const columns = (
       const originalPrice = row.original.originalPrice
         ? parseFloat(row.original.originalPrice)
         : null;
+      const costPrice = row.original.costPrice
+        ? parseFloat(row.original.costPrice)
+        : null;
+      const profitMarginPercentage = row.original.profitMarginPercentage ?? null;
 
       const fmt = (n: number) =>
         new Intl.NumberFormat("en-IN", {
@@ -276,11 +280,23 @@ export const columns = (
 
       return (
         <div className="flex flex-col gap-0.5">
-          <span className="font-medium text-foreground">{fmt(price)}</span>
-          {originalPrice && (
-            <span className="text-xs text-muted-foreground line-through">
-              {fmt(originalPrice)}
-            </span>
+          <div className="flex items-center gap-2">
+            <span className="font-medium text-foreground">{fmt(price)}</span>
+            {originalPrice && originalPrice > price && (
+              <span className="text-xs text-muted-foreground line-through">
+                {fmt(originalPrice)}
+              </span>
+            )}
+          </div>
+          {costPrice !== null && (
+            <div className="text-[10px] text-muted-foreground flex flex-col gap-0.5">
+              <span>Cost: {fmt(costPrice)}</span>
+              {profitMarginPercentage !== null && (
+                <span className={profitMarginPercentage >= 30 ? "text-emerald-600 font-bold" : "text-amber-600 font-bold"}>
+                  Margin: {profitMarginPercentage}%
+                </span>
+              )}
+            </div>
           )}
         </div>
       );

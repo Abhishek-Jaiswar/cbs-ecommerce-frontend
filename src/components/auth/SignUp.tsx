@@ -10,9 +10,12 @@ import {
   useVerifyEmailOtpMutation,
   useRequestEmailOtpMutation,
 } from "@/services/api/auth/auth-api";
+import { useAppDispatch } from "@/store/hooks";
+import { setCredentials } from "@/store/features/auth/auth.slice";
 
 export default function SignupForm() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const [showPass, setShowPass] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -66,10 +69,16 @@ export default function SignupForm() {
     try {
       const res = await verifyEmail({ email, otp }).unwrap();
 
-      if (res.success) {
-        setStatusMessage({ type: "success", text: "Email verified successfully! Redirecting to login..." });
+      if (res.success && res.data) {
+        const userData = res.data;
+        dispatch(setCredentials(userData));
+        setStatusMessage({ type: "success", text: "Email verified successfully! Logging you in..." });
         setTimeout(() => {
-          router.push("/login");
+          if (userData.role === "ADMIN") {
+            router.push("/dashboard");
+          } else {
+            router.push("/");
+          }
         }, 2000);
       } else {
         setStatusMessage({ type: "error", text: res.message || "Invalid or expired code" });

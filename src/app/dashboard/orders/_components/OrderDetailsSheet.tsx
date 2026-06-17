@@ -308,8 +308,13 @@ export const OrderDetailsSheet: React.FC<OrderDetailsSheetProps> = ({
                               {item.name}
                             </h4>
                           )}
-                          <div className="text-[10px] text-stone-400 mt-0.5">
-                            {item.sku ? `SKU: ${item.sku} | ` : ""}Qty: {item.quantity} x ₹{parseFloat(item.unitPrice).toFixed(2)}
+                          <div className="text-[10px] text-stone-400 mt-0.5 flex flex-wrap items-center gap-1.5">
+                            <span>{item.sku ? `SKU: ${item.sku} | ` : ""}Qty: {item.quantity} x ₹{parseFloat(item.unitPrice).toFixed(2)}</span>
+                            {item.appliedOfferName && (
+                              <span className="text-[9px] font-bold uppercase tracking-wider text-amber-800 bg-amber-50 px-1.5 py-0.2 border border-amber-100/60 rounded-sm">
+                                {item.appliedOfferName}
+                              </span>
+                            )}
                           </div>
                         </div>
                         <div className="text-xs font-bold text-[#c29958] shrink-0">

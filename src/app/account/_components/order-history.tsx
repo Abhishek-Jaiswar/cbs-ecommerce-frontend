@@ -234,7 +234,14 @@ const OrderHistory: React.FC = () => {
                           {item.name}
                         </h4>
                       )}
-                      <p className="text-[10px] text-stone-400 mt-0.5">QTY: {item.quantity}</p>
+                      <div className="flex flex-wrap gap-2 items-center mt-1">
+                        <p className="text-[10px] text-stone-400">QTY: {item.quantity}</p>
+                        {(item as any).appliedOfferName && (
+                          <span className="text-[9px] font-bold uppercase tracking-wider text-amber-800 bg-amber-50 px-1.5 py-0.2 border border-amber-100/60 rounded-sm">
+                            {(item as any).appliedOfferName}
+                          </span>
+                        )}
+                      </div>
                       {item.sku && (
                         <p className="text-[9px] text-stone-400">SKU: {item.sku}</p>
                       )}
