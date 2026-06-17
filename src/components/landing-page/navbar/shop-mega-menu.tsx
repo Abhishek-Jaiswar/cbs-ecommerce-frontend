@@ -62,7 +62,7 @@ export default function ShopMegaMenu({
   return (
     <div
       className={cn(
-        "invisible fixed left-1/2 top-[125px] z-40 w-[min(1380px,calc(100vw-48px))] -translate-x-1/2 translate-y-3 border border-[#eee8df] bg-white px-9 py-9 opacity-0 shadow-[0_10px_30px_rgba(0,0,0,0.08)] transition-all duration-200 pointer-events-none",
+        "invisible absolute left-1/2 top-full z-40 w-[min(1380px,calc(100vw-48px))] -translate-x-1/2 translate-y-3 border border-[#eee8df] bg-white px-9 py-9 opacity-0 shadow-[0_10px_30px_rgba(0,0,0,0.08)] transition-all duration-200 pointer-events-none",
         isOpen && "visible translate-y-0 opacity-100 pointer-events-auto",
       )}
     >
@@ -101,7 +101,7 @@ export default function ShopMegaMenu({
           className="group/banner relative block h-[190px] overflow-hidden bg-[#f7f2ea]"
         >
           <Image
-            src="/corano/banner/img1-static-menu.jpg"
+            src="/corano/banner/img1-static-menu.png"
             alt="Wedding rings"
             fill
             sizes="50vw"
@@ -123,7 +123,7 @@ export default function ShopMegaMenu({
           className="group/banner relative block h-[190px] overflow-hidden bg-[#f7f2ea]"
         >
           <Image
-            src="/corano/banner/img2-static-menu.jpg"
+            src="/corano/banner/img2-static-menu.png"
             alt="Zenvoraa jewellery"
             fill
             sizes="50vw"

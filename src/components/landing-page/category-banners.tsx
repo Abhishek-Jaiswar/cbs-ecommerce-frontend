@@ -5,23 +5,23 @@ import Link from "next/link";
 const categoryBanners = [
   {
     align: "right",
-    image: "/corano/banner/img1-top.jpg",
+    image: "/corano/banner/category-wedr-ban-1.png",
     label: "Beautiful",
     title: "Wedding",
     titleAccent: "Rings",
     href: "/shop?category=wedding-rings",
   },
   {
-    align: "center",
-    image: "/corano/banner/img2-top.jpg",
+    align: "right",
+    image: "/corano/banner/category-earring-ban-2.png",
     label: "Earrings",
     title: "Tangerine Floral",
     titleAccent: "Earring",
     href: "/shop?category=earrings",
   },
   {
-    align: "center",
-    image: "/corano/banner/img3-top.jpg",
+    align: "right",
+    image: "/corano/banner/category-neckles-ban-3.png",
     label: "New Arrivals",
     title: "Pearl",
     titleAccent: "Necklaces",
@@ -29,7 +29,7 @@ const categoryBanners = [
   },
   {
     align: "right",
-    image: "/corano/banner/img4-top.jpg",
+    image: "/corano/banner/category-diamond-ban-4.png",
     label: "New Design",
     title: "Diamond",
     titleAccent: "Jewelry",
@@ -61,12 +61,12 @@ export function CategoryBanners() {
                   : "items-end text-right"
               }`}
             >
-              <p className="text-sm font-bold uppercase text-[#c29958]">
+              <p className="text-sm font-serif italic text-[#c29958] capitalize">
                 {banner.label}
               </p>
-              <h2 className="mt-2 text-3xl font-bold text-[#222222]">
+              <h2 className="mt-2 text-2xl sm:text-3xl font-serif font-medium text-[#222222] leading-tight tracking-wide">
                 {banner.title}
-                <span className="block">{banner.titleAccent}</span>
+                <span className="block font-serif">{banner.titleAccent}</span>
               </h2>
               <span className="mt-5 border-b border-[#222222] text-xs font-bold uppercase text-[#222222] transition-colors group-hover:border-[#c29958] group-hover:text-[#c29958]">
                 Shop Now

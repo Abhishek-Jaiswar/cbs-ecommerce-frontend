@@ -1,3 +1,6 @@
+"use client";
+
+import * as React from "react";
 import Link from "next/link";
 
 interface AnnouncementItem {
@@ -11,8 +14,39 @@ interface AnnouncementBarProps {
 }
 
 export default function AnnouncementBar({ announcements }: AnnouncementBarProps) {
+  const [isVisible, setIsVisible] = React.useState(true);
+  const lastScrollY = React.useRef(0);
+
+  React.useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      // Always show at the very top of the page
+      if (currentScrollY < 15) {
+        setIsVisible(true);
+      } else if (currentScrollY > lastScrollY.current + 10) {
+        // Scrolling down past threshold
+        setIsVisible(false);
+      } else if (currentScrollY < lastScrollY.current - 10) {
+        // Scrolling up past threshold
+        setIsVisible(true);
+      }
+      
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
-    <div className="hidden border-b border-[#efebe4] bg-white text-xs text-[#555555] lg:block">
+    <div
+      className={`hidden border-b border-[#efebe4] bg-white text-xs text-[#555555] lg:block transition-all duration-300 ease-in-out origin-top ${
+        isVisible 
+          ? "max-h-11 opacity-100 transform translate-y-0" 
+          : "max-h-0 opacity-0 pointer-events-none transform -translate-y-full overflow-hidden"
+      }`}
+    >
       <div className="mx-auto flex h-11 max-w-[1170px] items-center justify-between px-4">
         <p className="shrink-0 border-[#e5e0d8]">
           Welcome to Zenvoraa Jewelry online store

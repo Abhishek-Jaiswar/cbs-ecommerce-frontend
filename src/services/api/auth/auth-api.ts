@@ -47,7 +47,7 @@ export const authApi = baseApi.injectEndpoints({
     }),
 
     verifyEmailOtp: builder.mutation<
-      BaseResponse<{ email: string; verified: boolean }>,
+      BaseResponse<User & { verified: boolean }>,
       OtpVerifyPayload
     >({
       query: (payload) => ({

@@ -76,9 +76,13 @@ export default function DashboardOverviewPage() {
       {/* KPI CARDS GRID */}
       <KpiCards
         totalRevenue={stats.kpis.totalRevenue}
-        completedOrders={stats.kpis.completedOrders}
+        totalProfit={stats.kpis.totalProfit}
+        totalOrders={stats.kpis.totalOrders}
+        totalCustomers={stats.kpis.totalCustomers}
+        totalProducts={stats.kpis.totalProducts}
+        inventoryValue={stats.kpis.inventoryValue}
         avgOrderValue={stats.kpis.avgOrderValue}
-        activeCustomers={stats.kpis.activeCustomers}
+        profitMarginPercentage={stats.kpis.profitMarginPercentage}
       />
 
       {/* WIDE CHART FOR ORDERS */}

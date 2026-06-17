@@ -69,14 +69,14 @@ const customerResponsibilities = [
 
 export default function TermsConditionsPage() {
   return (
-    <main className="overflow-hidden bg-[#fbfaf7] font-[var(--font-corano)] text-[#222222]">
+    <main className="overflow-hidden bg-[#fbfaf7] font-[var(--font-zenvoraa)] text-[#222222]">
       <section className="border-b border-[#eee8df] bg-[#111111] text-white">
         <div className="mx-auto grid min-h-[430px] max-w-7xl items-center gap-10 px-4 py-20 sm:px-6 lg:grid-cols-[1fr_0.8fr] lg:px-8">
           <div className="max-w-3xl">
             <span className="text-xs font-bold uppercase tracking-[0.35em] text-[#c8a96e]">
               ZenVoraa Terms
             </span>
-            <h1 className="mt-5 text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl">
+            <h1 className="mt-5 text-4xl font-serif font-medium leading-tight sm:text-5xl lg:text-6xl tracking-wide">
               Terms & Conditions
             </h1>
             <p className="mt-6 max-w-2xl text-base leading-8 text-white/75 sm:text-lg">
@@ -138,7 +138,7 @@ export default function TermsConditionsPage() {
             <span className="text-xs font-bold uppercase tracking-[0.3em] text-[#c29958]">
               Core Terms
             </span>
-            <h2 className="mt-4 text-3xl font-bold sm:text-4xl">
+            <h2 className="mt-4 text-3xl font-serif font-medium sm:text-4xl tracking-wide">
               Important conditions for using ZenVoraa
             </h2>
             <p className="mt-4 text-sm leading-7 text-stone-500">
@@ -170,7 +170,7 @@ export default function TermsConditionsPage() {
             <span className="text-xs font-bold uppercase tracking-[0.3em] text-[#9f7b3d]">
               Customer Responsibilities
             </span>
-            <h2 className="mt-4 text-3xl font-bold leading-tight">
+            <h2 className="mt-4 text-3xl font-serif font-medium leading-tight tracking-wide">
               A smooth order starts with accurate details.
             </h2>
             <p className="mt-5 text-sm leading-7 text-stone-600">
@@ -199,7 +199,7 @@ export default function TermsConditionsPage() {
             <span className="text-xs font-bold uppercase tracking-[0.3em] text-[#c29958]">
               Governing Law
             </span>
-            <h2 className="mt-4 text-3xl font-bold leading-tight sm:text-4xl">
+            <h2 className="mt-4 text-3xl font-serif font-medium leading-tight sm:text-4xl tracking-wide">
               These terms are governed under Indian law.
             </h2>
             <p className="mt-5 max-w-2xl text-sm leading-7 text-stone-600">

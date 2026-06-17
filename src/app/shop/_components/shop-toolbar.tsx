@@ -38,7 +38,7 @@ export function ShopToolbar({
   const itemsPerPageOptions = [8, 12, 16, 24];
 
   return (
-    <div className="mb-8 border border-[#eee8df] bg-white px-5 py-4 font-[var(--font-corano)]">
+    <div className="mb-8 border border-[#eee8df] bg-white px-5 py-4 font-[var(--font-zenvoraa)]">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-5">
           <div className="flex items-center gap-2">

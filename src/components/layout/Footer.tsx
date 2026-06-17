@@ -21,18 +21,24 @@ const informationLinks = [
 const socialLinks = [
   { label: "Facebook", href: "#", icon: FaFacebookF },
   { label: "Twitter", href: "#", icon: FaTwitter },
-  { label: "Instagram", href: "#", icon: FaInstagram },
+  { label: "Instagram", href: "https://www.instagram.com/zenv.oraa/", icon: FaInstagram },
   { label: "Youtube", href: "#", icon: FaYoutube },
 ];
 
 const Footer = () => {
   return (
-    <footer className="mt-20 border-t border-[#eee8df] bg-[#f7f2ea] font-[var(--font-corano)] text-[#555555]">
+    <footer className="mt-10 border-t border-[#eee8df] bg-[#f7f2ea] font-[var(--font-zenvoraa)] text-[#555555]">
       <div className="mx-auto max-w-[1170px] px-4 py-16 lg:py-20">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
           <div>
-            <Link href="/" className="inline-block text-2xl font-black tracking-[0.18em] text-[#222222]">
-              Zenvoraa
+            <Link href="/" className="inline-block">
+              <Image
+                src="/footer-logo.png"
+                alt="ZenVoraa Logo"
+                width={270}
+                height={180}
+                className="h-24 w-auto object-contain"
+              />
             </Link>
             <p className="mt-6 max-w-xs text-sm leading-7">
               Discover refined jewelry, timeless styling, and carefully crafted pieces designed for everyday elegance and memorable occasions.
@@ -44,18 +50,18 @@ const Footer = () => {
             <ul className="space-y-4 text-sm leading-6">
               <li className="flex gap-3">
                 <Home className="mt-1 h-5 w-5 shrink-0 text-[#c29958]" />
-                <span>4710-4890 Breckinridge USA</span>
+                <span>Bhayander (W)</span>
               </li>
               <li className="flex gap-3">
                 <Mail className="mt-1 h-5 w-5 shrink-0 text-[#c29958]" />
-                <a href="mailto:demo@yourdomain.com" className="transition-colors hover:text-[#c29958]">
-                  demo@yourdomain.com
+                <a href="mailto:info@zenvoraa.in" className="transition-colors hover:text-[#c29958]">
+                  info@zenvoraa.in
                 </a>
               </li>
               <li className="flex gap-3">
                 <Phone className="mt-1 h-5 w-5 shrink-0 text-[#c29958]" />
-                <a href="tel:+012800456789987" className="transition-colors hover:text-[#c29958]">
-                  (012) 800 456 789-987
+                <a href="tel:+919909992725" className="transition-colors hover:text-[#c29958]">
+                  +91-9909992725
                 </a>
               </li>
             </ul>

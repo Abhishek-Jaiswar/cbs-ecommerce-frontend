@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import WhatsAppButton from "./whatsapp-button";
 import React from "react";
 
 export default function HeaderFooterWrapper({
@@ -22,6 +23,7 @@ export default function HeaderFooterWrapper({
       <Navbar />
       {children}
       <Footer />
+      <WhatsAppButton />
     </>
   );
 }

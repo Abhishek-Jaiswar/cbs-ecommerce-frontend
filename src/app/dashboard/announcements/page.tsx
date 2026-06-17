@@ -184,7 +184,7 @@ export default function AnnouncementsPage() {
   };
 
   return (
-    <div className="flex-1 space-y-6 p-6 md:p-10 bg-stone-50/50 dark:bg-stone-900/50 min-h-screen text-stone-900 dark:text-stone-100 font-[var(--font-corano)]">
+    <div className="flex-1 space-y-6 p-6 md:p-10 bg-stone-50/50 dark:bg-stone-900/50 min-h-screen text-stone-900 dark:text-stone-100 font-[var(--font-zenvoraa)]">
       {/* Header section */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="space-y-1">
@@ -345,7 +345,7 @@ export default function AnnouncementsPage() {
 
       {/* Create / Edit Dialog */}
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-        <DialogContent className="sm:max-w-[500px] font-[var(--font-corano)] rounded-none">
+        <DialogContent className="sm:max-w-[500px] font-[var(--font-zenvoraa)] rounded-none">
           <form onSubmit={handleSubmit}>
             <DialogHeader>
               <DialogTitle className="text-xl font-bold text-stone-950 dark:text-stone-50">
@@ -431,7 +431,7 @@ export default function AnnouncementsPage() {
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
-        <DialogContent className="sm:max-w-[400px] font-[var(--font-corano)] rounded-none">
+        <DialogContent className="sm:max-w-[400px] font-[var(--font-zenvoraa)] rounded-none">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold">Delete Announcement</DialogTitle>
             <DialogDescription className="text-stone-500">

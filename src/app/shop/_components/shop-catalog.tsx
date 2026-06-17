@@ -505,7 +505,7 @@ export function ShopCatalog({
 
         <div className="order-1 lg:order-2">
           {/* Elegant Search Input */}
-          <div className="mb-8 flex h-12 items-center border border-stone-200 bg-white px-4 font-[var(--font-corano)] focus-within:border-[#c29958] transition-colors shadow-sm">
+          <div className="mb-8 flex h-12 items-center border border-stone-200 bg-white px-4 font-[var(--font-zenvoraa)] focus-within:border-[#c29958] transition-colors shadow-sm">
             <Search className="mr-3 h-4 w-4 shrink-0 text-[#c29958]" />
             <input
               value={search}

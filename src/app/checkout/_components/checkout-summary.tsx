@@ -71,12 +71,22 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({
                       Size: {item.variant.size.value}
                     </span>
                   )}
+                  {(item.variant as any).appliedOffer && (
+                    <span className="bg-amber-50 text-amber-800 px-1 py-0.2 border border-amber-100 font-bold">
+                      Offer: {(item.variant as any).appliedOffer.name}
+                    </span>
+                  )}
                 </div>
               </div>
-              <div className="text-right shrink-0">
+              <div className="text-right shrink-0 flex flex-col items-end">
                 <span className="font-medium text-stone-900 text-xs">
                   ₹{(parseFloat(item.variant.price) * item.quantity).toFixed(2)}
                 </span>
+                {(item.variant as any).basePrice && Number((item.variant as any).basePrice) > Number(item.variant.price) && (
+                  <span className="text-[10px] text-stone-400 line-through font-light">
+                    ₹{(Number((item.variant as any).basePrice) * item.quantity).toFixed(2)}
+                  </span>
+                )}
               </div>
             </div>
           );

@@ -26,6 +26,7 @@ import { useGetProductReviewsQuery, useCreateReviewMutation } from "@/services/a
 import { useAppSelector } from "@/store/hooks";
 import { useRouter } from "next/navigation";
 import { ShopProductCard } from "../_components/shop-product-card";
+import { trackEvent } from "@/lib/analytics";
 
 type Params = { slug: string };
 
@@ -201,6 +202,17 @@ export default function ProductDetails({ slug }: Params) {
     }
   }, [isAuthenticated, user]);
 
+  // Track view_item event when product loads
+  useEffect(() => {
+    if (product) {
+      trackEvent("view_item", {
+        productId: product.id,
+        name: product.name,
+        price: product.price,
+      });
+    }
+  }, [product]);
+
   const galleryImages = useMemo(() => {
     if (!product?.images?.length)
       return [{ url: getProductImage(slug), altText: product?.name ?? "Jewelry", colorId: null }];
@@ -252,6 +264,12 @@ export default function ProductDetails({ slug }: Params) {
       } else {
         await addToCart({ variantId: activeVariant.id, quantity }).unwrap();
       }
+      trackEvent("add_to_cart", {
+        productId: product?.id,
+        variantId: activeVariant.id,
+        quantity,
+        price: activeVariant.price || product?.price,
+      });
     }
     catch (err) { console.error("Failed to add to bag", err); }
   };
@@ -280,7 +298,7 @@ export default function ProductDetails({ slug }: Params) {
   // ─── Loading ──────────────────────────────────────────────────────────────
   if (isLoading) {
     return (
-      <div className="flex-1 bg-[#f9f5f0] py-10 min-h-screen font-(--font-corano)">
+      <div className="flex-1 bg-[#f9f5f0] py-10 min-h-screen font-(--font-zenvoraa)">
         <div className="mx-auto max-w-[1170px] px-4">
           <div className="h-3 bg-[#e8e2d9] w-52 rounded animate-pulse mb-7" />
           <div className="bg-white border border-[#e4dfd7] p-6 animate-pulse">
@@ -308,7 +326,7 @@ export default function ProductDetails({ slug }: Params) {
   // ─── Error ────────────────────────────────────────────────────────────────
   if (isError || !product) {
     return (
-      <div className="flex-1 bg-[#f9f5f0] py-24 text-center font-(--font-corano)">
+      <div className="flex-1 bg-[#f9f5f0] py-24 text-center font-(--font-zenvoraa)">
         <div className="mx-auto max-w-sm px-4">
           <AlertTriangle className="h-10 w-10 text-amber-500 mx-auto mb-4" />
           <h2 className="text-lg font-serif text-[#222222]">Design Not Found</h2>
@@ -328,7 +346,7 @@ export default function ProductDetails({ slug }: Params) {
   const isInStock = !!activeVariant && activeVariant.stock > 0;
 
   return (
-    <div className="flex-1 bg-[#f9f5f0] min-h-screen font-(--font-corano)">
+    <div className="flex-1 bg-[#f9f5f0] min-h-screen font-(--font-zenvoraa)">
       <div className="mx-auto max-w-[1170px] px-4 py-8">
 
         {/* Breadcrumbs */}

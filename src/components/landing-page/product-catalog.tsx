@@ -130,8 +130,8 @@ function mapStaticToShopProduct(staticProd: (typeof fallbackProducts)[number]): 
 
 function SectionTitle({ subtitle, title }: { subtitle: string; title: string }) {
   return (
-    <div className="mb-10 text-center font-[var(--font-corano)]">
-      <h2 className="text-3xl font-bold capitalize text-[#222222] sm:text-4xl">
+    <div className="mb-10 text-center font-[var(--font-zenvoraa)]">
+      <h2 className="text-3xl font-serif font-medium capitalize text-[#222222] sm:text-4xl tracking-wide">
         {title}
       </h2>
       <p className="mt-3 text-sm text-[#777777]">{subtitle}</p>

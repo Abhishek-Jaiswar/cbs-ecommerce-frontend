@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, RefreshCw, KeyRound } from "lucide-react";
 import React, { useState } from "react";
@@ -9,9 +10,12 @@ import {
   useVerifyEmailOtpMutation,
   useRequestEmailOtpMutation,
 } from "@/services/api/auth/auth-api";
+import { useAppDispatch } from "@/store/hooks";
+import { setCredentials } from "@/store/features/auth/auth.slice";
 
 export default function SignupForm() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const [showPass, setShowPass] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -65,10 +69,16 @@ export default function SignupForm() {
     try {
       const res = await verifyEmail({ email, otp }).unwrap();
 
-      if (res.success) {
-        setStatusMessage({ type: "success", text: "Email verified successfully! Redirecting to login..." });
+      if (res.success && res.data) {
+        const userData = res.data;
+        dispatch(setCredentials(userData));
+        setStatusMessage({ type: "success", text: "Email verified successfully! Logging you in..." });
         setTimeout(() => {
-          router.push("/login");
+          if (userData.role === "ADMIN") {
+            router.push("/dashboard");
+          } else {
+            router.push("/");
+          }
         }, 2000);
       } else {
         setStatusMessage({ type: "error", text: res.message || "Invalid or expired code" });
@@ -101,7 +111,14 @@ export default function SignupForm() {
         {/* LOGO INDICATOR */}
         <div className="flex justify-center mb-6">
           <Link href="/" className="inline-flex items-center gap-2">
-            <span className="text-xl font-bold text-amber-500 tracking-wide">ZenVora</span>
+            <Image
+              src="/nav-logo.png"
+              alt="ZenVora Logo"
+              width={160}
+              height={66}
+              className="h-10 w-auto object-contain"
+              priority
+            />
           </Link>
         </div>
 

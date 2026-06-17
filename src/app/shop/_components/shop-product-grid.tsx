@@ -53,7 +53,7 @@ export function ShopProductGrid({
 
   if (products.length === 0) {
     return (
-      <div className="border border-[#eee8df] bg-white px-4 py-20 text-center font-[var(--font-corano)]">
+      <div className="border border-[#eee8df] bg-white px-4 py-20 text-center font-[var(--font-zenvoraa)]">
         <h2 className="text-2xl font-bold text-[#222222]">No matching products found</h2>
         <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-[#555555]">
           Try a different category, price range, or search term to discover more Zenvoraa pieces.

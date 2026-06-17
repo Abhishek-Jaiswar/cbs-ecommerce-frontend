@@ -2,17 +2,30 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, CalendarDays, Clock, User } from "lucide-react";
 import { mockBlogPosts } from "@/data/blogs";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Blogs & Styling Guides | ZenVora Handcrafted Jewelry",
+  description:
+    "Read ZenVora's blogs, bridal jewellery guides, styling tips, and artificial jewellery trends to complete your look with confidence.",
+  openGraph: {
+    title: "Blogs & Styling Guides | ZenVora Handcrafted Jewelry",
+    description:
+      "Read ZenVora's blogs, bridal jewellery guides, styling tips, and artificial jewellery trends to complete your look with confidence.",
+    type: "website",
+  },
+};
 
 export default function BlogPage() {
   const featuredPost = mockBlogPosts[0];
   const remainingPosts = mockBlogPosts.slice(1);
 
   return (
-    <main className="flex-1 bg-white font-[var(--font-corano)]">
+    <main className="flex-1 bg-white font-[var(--font-zenvoraa)]">
       <section className="border-b border-[#eee8df] bg-[#f7f2ea] py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-[#222222] sm:text-5xl">
+            <h1 className="text-4xl font-serif font-medium text-[#222222] sm:text-5xl tracking-wide">
               Blogs
             </h1>
             <div className="mt-4 flex justify-center gap-2 text-sm text-[#777777]">
@@ -51,7 +64,7 @@ export default function BlogPage() {
                 <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#c29958]">
                   Featured Article
                 </p>
-                <h2 className="mt-4 text-3xl font-bold leading-tight text-[#222222] sm:text-4xl">
+                <h2 className="mt-4 text-3xl font-serif font-medium leading-tight text-[#222222] sm:text-4xl tracking-wide">
                   {featuredPost.title}
                 </h2>
                 <div className="mt-5 flex flex-wrap gap-4 text-xs uppercase text-[#777777]">
@@ -84,7 +97,7 @@ export default function BlogPage() {
 
           <div className="pt-16">
             <div className="mb-10 text-center">
-              <h2 className="text-3xl font-bold capitalize text-[#222222]">
+              <h2 className="text-3xl font-serif font-medium capitalize text-[#222222] tracking-wide">
                 latest blogs
               </h2>
               <p className="mt-3 text-sm text-[#777777]">

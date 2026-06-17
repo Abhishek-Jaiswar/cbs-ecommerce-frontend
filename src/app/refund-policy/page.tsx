@@ -33,7 +33,7 @@ const policyHighlights = [
 ];
 
 const returnSteps = [
-  "Email returns@zenvoraa.com with your order number.",
+  "Email returns@zenvoraa.in with your order number.",
   "Attach clear product photos and the mandatory unboxing video.",
   "Our team reviews the request and confirms eligibility.",
   "If approved, we arrange replacement or begin the refund process.",
@@ -55,14 +55,14 @@ const nonReturnableItems = [
 
 export default function ReturnRefundPage() {
   return (
-    <main className="overflow-hidden bg-[#fbfaf7] font-[var(--font-corano)] text-[#222222]">
+    <main className="overflow-hidden bg-[#fbfaf7] font-[var(--font-zenvoraa)] text-[#222222]">
       <section className="border-b border-[#eee8df] bg-[#111111] text-white">
         <div className="mx-auto grid min-h-[430px] max-w-7xl items-center gap-10 px-4 py-20 sm:px-6 lg:grid-cols-[1fr_0.8fr] lg:px-8">
           <div className="max-w-3xl">
             <span className="text-xs font-bold uppercase tracking-[0.35em] text-[#c8a96e]">
               ZenVoraa Policy
             </span>
-            <h1 className="mt-5 text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl">
+            <h1 className="mt-5 text-4xl font-serif font-medium leading-tight sm:text-5xl lg:text-6xl tracking-wide">
               Return & Refund Policy
             </h1>
             <p className="mt-6 max-w-2xl text-base leading-8 text-white/75 sm:text-lg">
@@ -124,7 +124,7 @@ export default function ReturnRefundPage() {
             <span className="text-xs font-bold uppercase tracking-[0.3em] text-[#c29958]">
               Eligibility
             </span>
-            <h2 className="mt-4 text-3xl font-bold leading-tight">
+            <h2 className="mt-4 text-3xl font-serif font-medium leading-tight tracking-wide">
               Returns are accepted for delivery issues only.
             </h2>
             <p className="mt-5 text-sm leading-7 text-stone-500">
@@ -149,7 +149,7 @@ export default function ReturnRefundPage() {
             <span className="text-xs font-bold uppercase tracking-[0.3em] text-[#9f7b3d]">
               How To Initiate
             </span>
-            <h2 className="mt-4 text-3xl font-bold leading-tight">
+            <h2 className="mt-4 text-3xl font-serif font-medium leading-tight tracking-wide">
               A simple review process keeps requests clear.
             </h2>
 
@@ -167,7 +167,7 @@ export default function ReturnRefundPage() {
             </div>
 
             <a
-              href="mailto:returns@zenvoraa.com"
+              href="mailto:returns@zenvoraa.in"
               className="mt-8 inline-flex h-12 items-center justify-center gap-2 rounded-md bg-[#c8a96e] px-6 text-sm font-bold uppercase tracking-[0.16em] text-white transition hover:bg-[#b5943d]"
             >
               <Mail className="h-4 w-4" aria-hidden="true" />
@@ -185,7 +185,7 @@ export default function ReturnRefundPage() {
               <span className="mt-6 block text-xs font-bold uppercase tracking-[0.3em] text-[#c29958]">
                 Non-Returnable Items
               </span>
-              <h2 className="mt-4 text-3xl font-bold leading-tight">
+              <h2 className="mt-4 text-3xl font-serif font-medium leading-tight tracking-wide">
                 Some items cannot be returned for hygiene and usage reasons.
               </h2>
             </div>
@@ -211,7 +211,7 @@ export default function ReturnRefundPage() {
             <span className="text-xs font-bold uppercase tracking-[0.3em] text-[#9f7b3d]">
               Replacement First
             </span>
-            <h2 className="mt-4 text-3xl font-bold leading-tight sm:text-4xl">
+            <h2 className="mt-4 text-3xl font-serif font-medium leading-tight sm:text-4xl tracking-wide">
               Wherever possible, we offer a replacement before initiating a
               refund.
             </h2>

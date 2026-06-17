@@ -1,9 +1,13 @@
 export interface IDashboardOverviewData {
   kpis: {
     totalRevenue: string;
-    completedOrders: number;
+    totalProfit: string;
+    totalOrders: number;
+    totalCustomers: number;
+    totalProducts: number;
+    inventoryValue: string;
     avgOrderValue: string;
-    activeCustomers: number;
+    profitMarginPercentage: string;
   };
   orderTrendData: Array<{
     date: string;

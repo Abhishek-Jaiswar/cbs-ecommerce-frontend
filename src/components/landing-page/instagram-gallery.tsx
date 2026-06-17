@@ -32,7 +32,7 @@ const instagramPosts = [
 
 export function InstagramGallery() {
   return (
-    <section className="py-16 bg-white font-[var(--font-corano)]">
+    <section className="py-16 bg-white font-[var(--font-zenvoraa)]">
       <div className="mx-auto max-w-[1440px] px-4">
         {/* Title Block */}
         <div className="mb-10 text-center">
@@ -43,12 +43,12 @@ export function InstagramGallery() {
             Follow Us On Instagram
           </h2>
           <a
-            href="https://instagram.com"
+            href="https://www.instagram.com/zenv.oraa/"
             target="_blank"
             rel="noopener noreferrer"
             className="mt-2 text-sm text-[#c29958] font-bold hover:text-[#222222] transition-colors inline-block"
           >
-            @zenvoraa_jewelry
+            @zenv.oraa
           </a>
         </div>
 
@@ -57,7 +57,7 @@ export function InstagramGallery() {
           {instagramPosts.map((post, i) => (
             <a
               key={i}
-              href="https://instagram.com"
+              href="https://www.instagram.com/zenv.oraa/"
               target="_blank"
               rel="noopener noreferrer"
               className="group relative block aspect-square overflow-hidden bg-[#f7f2ea]"

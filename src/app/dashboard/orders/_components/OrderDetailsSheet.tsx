@@ -210,7 +210,7 @@ export const OrderDetailsSheet: React.FC<OrderDetailsSheetProps> = ({
   if (isDetailsLoading && !activeOrder) {
     return (
       <Sheet open={isOpen} onOpenChange={onOpenChange}>
-        <SheetContent className="w-full !w-full sm:!max-w-5xl overflow-y-auto h-full max-h-screen p-4 sm:p-6 bg-white dark:bg-stone-950 font-[var(--font-corano)] border-stone-200 dark:border-stone-850 shadow-lg flex flex-col justify-between">
+        <SheetContent className="w-full !w-full sm:!max-w-5xl overflow-y-auto h-full max-h-screen p-4 sm:p-6 bg-white dark:bg-stone-950 font-[var(--font-zenvoraa)] border-stone-200 dark:border-stone-850 shadow-lg flex flex-col justify-between">
           <div className="space-y-6">
             <SheetHeader className="pb-4 border-b">
               <div className="h-6 w-48 bg-stone-200 dark:bg-stone-800 animate-pulse rounded" />
@@ -239,7 +239,7 @@ export const OrderDetailsSheet: React.FC<OrderDetailsSheetProps> = ({
 
   return (
     <Sheet open={isOpen} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full !w-full sm:!max-w-5xl overflow-y-auto h-full max-h-screen p-4 sm:p-6 bg-white dark:bg-stone-950 font-[var(--font-corano)] border-stone-200 dark:border-stone-850 shadow-lg flex flex-col justify-between">
+      <SheetContent className="w-full !w-full sm:!max-w-5xl overflow-y-auto h-full max-h-screen p-4 sm:p-6 bg-white dark:bg-stone-950 font-[var(--font-zenvoraa)] border-stone-200 dark:border-stone-850 shadow-lg flex flex-col justify-between">
         <div>
           <SheetHeader className="pb-4 border-b">
             <div className="flex justify-between items-start flex-wrap gap-2">
@@ -308,8 +308,13 @@ export const OrderDetailsSheet: React.FC<OrderDetailsSheetProps> = ({
                               {item.name}
                             </h4>
                           )}
-                          <div className="text-[10px] text-stone-400 mt-0.5">
-                            {item.sku ? `SKU: ${item.sku} | ` : ""}Qty: {item.quantity} x ₹{parseFloat(item.unitPrice).toFixed(2)}
+                          <div className="text-[10px] text-stone-400 mt-0.5 flex flex-wrap items-center gap-1.5">
+                            <span>{item.sku ? `SKU: ${item.sku} | ` : ""}Qty: {item.quantity} x ₹{parseFloat(item.unitPrice).toFixed(2)}</span>
+                            {item.appliedOfferName && (
+                              <span className="text-[9px] font-bold uppercase tracking-wider text-amber-800 bg-amber-50 px-1.5 py-0.2 border border-amber-100/60 rounded-sm">
+                                {item.appliedOfferName}
+                              </span>
+                            )}
                           </div>
                         </div>
                         <div className="text-xs font-bold text-[#c29958] shrink-0">

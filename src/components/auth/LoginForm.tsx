@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import React, { useState } from "react";
@@ -57,7 +58,14 @@ export default function LoginForm() {
         {/* LOGO */}
         <div className="flex justify-center mb-6">
           <Link href="/" className="inline-flex items-center gap-2">
-            <span className="text-xl font-bold text-amber-500 tracking-wide">ZenVora</span>
+            <Image
+              src="/nav-logo.png"
+              alt="ZenVora Logo"
+              width={160}
+              height={66}
+              className="h-10 w-auto object-contain"
+              priority
+            />
           </Link>
         </div>
 

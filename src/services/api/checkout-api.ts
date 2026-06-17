@@ -17,6 +17,9 @@ export interface OrderItem {
   unitPrice: string;
   totalPrice: string;
   orderId: string;
+  appliedOfferId?: string | null;
+  appliedOfferName?: string | null;
+  offerDiscountAmount?: string;
 }
 
 export interface Payment {

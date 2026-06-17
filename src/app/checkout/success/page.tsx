@@ -142,7 +142,14 @@ function SuccessPageContent() {
                 <div key={item.id} className="flex justify-between items-center text-xs py-1.5 first:pt-0 last:pb-0">
                   <div className="min-w-0 pr-4">
                     <p className="font-semibold text-stone-800 truncate">{item.name}</p>
-                    <p className="text-[10px] text-stone-400 font-mono">QTY: {item.quantity}</p>
+                    <div className="flex gap-2 items-center mt-0.5">
+                      <p className="text-[10px] text-stone-400 font-mono">QTY: {item.quantity}</p>
+                      {(item as any).appliedOfferName && (
+                        <span className="text-[9px] font-bold uppercase tracking-wider text-amber-800 bg-amber-50 px-1 border border-amber-100/60 rounded-sm">
+                          {(item as any).appliedOfferName}
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <span className="font-bold text-stone-900 shrink-0">
                     ₹{parseFloat(item.totalPrice).toFixed(2)}

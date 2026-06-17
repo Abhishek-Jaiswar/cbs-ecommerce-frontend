@@ -9,6 +9,10 @@ export interface ProductListing {
   excerpt: string;
   price: string;
   originalPrice: string;
+  costPrice?: string;
+  discountPercentage?: number;
+  profitAmount?: number;
+  profitMarginPercentage?: number;
   isNew: boolean;
   isFeatured: boolean;
   isSale: boolean;
@@ -18,10 +22,17 @@ export interface ProductListing {
   status?: "ACTIVE" | "DRAFT" | "INACTIVE" | "ARCHIVED";
   brandId?: string;
   brand?: { name: string } | null;
-  createdAt?: string;
+  createdAt?: Date;
   productTags?: { tag: ITag }[];
   variants?: { id: string; stock: number }[];
   colors?: IProductColors[];
+  basePrice?: number | string;
+  appliedOffer?: {
+    id: string;
+    name: string;
+    discountType: "PERCENTAGE" | "FIXED_AMOUNT";
+    discountValue: number;
+  } | null;
 }
 
 export interface ProductListingParams {
@@ -92,6 +103,13 @@ export interface IVariants {
   sizeId?: string;
   createdAt: Date;
   updatedAt: Date;
+  basePrice?: number | string;
+  appliedOffer?: {
+    id: string;
+    name: string;
+    discountType: "PERCENTAGE" | "FIXED_AMOUNT";
+    discountValue: number;
+  } | null;
 }
 
 export interface IProductTags {
@@ -139,6 +157,10 @@ export interface IProductDetails {
   description: string;
   price: string;
   originalPrice: string;
+  costPrice?: string;
+  discountPercentage?: number;
+  profitAmount?: number;
+  profitMarginPercentage?: number;
   offerEnds: Date | null;
   isSale: boolean;
   isFeatured: boolean;
@@ -157,6 +179,13 @@ export interface IProductDetails {
 
   createdAt: Date;
   updatedAt: Date;
+  basePrice?: number | string;
+  appliedOffer?: {
+    id: string;
+    name: string;
+    discountType: "PERCENTAGE" | "FIXED_AMOUNT";
+    discountValue: number;
+  } | null;
 }
 
 export interface IProductDetailsResponse {
