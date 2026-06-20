@@ -7,7 +7,6 @@ import { CompanyLogo } from "@/components/company-logo";
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
@@ -20,21 +19,21 @@ import {
   Percent,
   LineChart,
   FileText,
+  Boxes,
 } from "lucide-react";
 
-// This is sample data mapped to our backend modules.
+// This is structured data mapped to our backend modules.
 const data = {
   user: {
     name: "shadcn",
     email: "m@example.com",
     avatar: "/avatars/shadcn.jpg",
   },
-  navMain: [
+  navCore: [
     {
       title: "Dashboard",
       url: "#",
       icon: <LineChart className="size-4" />,
-      isActive: true,
       items: [
         {
           title: "Overview",
@@ -60,10 +59,6 @@ const data = {
           url: "/dashboard/products/create",
         },
         {
-          title: "Inventory",
-          url: "/dashboard/inventory",
-        },
-        {
           title: "Categories",
           url: "/dashboard/categories",
         },
@@ -78,6 +73,33 @@ const data = {
         {
           title: "Media Library",
           url: "/dashboard/media",
+        },
+      ],
+    },
+    {
+      title: "Inventory & Supply",
+      url: "#",
+      icon: <Boxes className="size-4" />,
+      items: [
+        {
+          title: "Stock Levels",
+          url: "/dashboard/inventory",
+        },
+        {
+          title: "Audit Ledger",
+          url: "/dashboard/inventory/ledger",
+        },
+        {
+          title: "Purchase Orders",
+          url: "/dashboard/inventory/purchase-orders",
+        },
+        {
+          title: "Suppliers",
+          url: "/dashboard/inventory/suppliers",
+        },
+        {
+          title: "Warehouses",
+          url: "/dashboard/inventory/warehouses",
         },
       ],
     },
@@ -108,6 +130,8 @@ const data = {
         },
       ],
     },
+  ],
+  navMarketing: [
     {
       title: "Marketing",
       url: "#",
@@ -155,6 +179,19 @@ const data = {
       ],
     },
     {
+      title: "Content & Feedback",
+      url: "#",
+      icon: <MessageSquare className="size-4" />,
+      items: [
+        {
+          title: "Reviews",
+          url: "/dashboard/reviews",
+        },
+      ],
+    },
+  ],
+  navAdmin: [
+    {
       title: "User Management",
       url: "#",
       icon: <Users className="size-4" />,
@@ -166,17 +203,6 @@ const data = {
         {
           title: "Addresses",
           url: "/dashboard/addresses",
-        },
-      ],
-    },
-    {
-      title: "Content & Feedback",
-      url: "#",
-      icon: <MessageSquare className="size-4" />,
-      items: [
-        {
-          title: "Reviews",
-          url: "/dashboard/reviews",
         },
       ],
     },
@@ -201,9 +227,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <CompanyLogo />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain label="Core Operations" items={data.navCore} />
+        <NavMain label="Marketing & CMS" items={data.navMarketing} />
+        <NavMain label="Administration" items={data.navAdmin} />
       </SidebarContent>
-
       <SidebarRail />
     </Sidebar>
   );

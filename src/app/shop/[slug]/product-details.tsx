@@ -156,8 +156,9 @@ export default function ProductDetails({ slug }: Params) {
   const [imgFading, setImgFading] = useState(false);
   const [hoveredStar, setHoveredStar] = useState(0);
 
-  const selectedColor = selectedColorState || product?.colors?.[0]?.id || "";
-  const selectedSize = selectedSizeState || product?.sizes?.[0]?.id || "";
+  const defaultVariant = product?.variants?.[0];
+  const selectedColor = selectedColorState || defaultVariant?.color?.id || product?.colors?.[0]?.id || "";
+  const selectedSize = selectedSizeState || defaultVariant?.size?.id || product?.sizes?.[0]?.id || "";
 
   const setSelectedColor = useCallback((colorId: string) => {
     setSelectedColorState(colorId);
@@ -522,7 +523,7 @@ export default function ProductDetails({ slug }: Params) {
                     <Package2 className="h-3 w-3" /> SKU
                   </span>
                   <span className="font-mono font-semibold text-[#333]">
-                    {activeVariant ? activeVariant.sku : "— Select options —"}
+                    {activeVariant ? activeVariant.sku : selectedColor && selectedSize ? "Unavailable" : "— Select options —"}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
@@ -536,7 +537,11 @@ export default function ProductDetails({ slug }: Params) {
                       <span className="font-bold text-rose-500">Out of Stock</span>
                     )
                   ) : (
-                    <span className="text-[#aaa]">Select colour & size</span>
+                    selectedColor && selectedSize ? (
+                      <span className="font-bold text-rose-500">Unavailable</span>
+                    ) : (
+                      <span className="text-[#aaa]">Select colour & size</span>
+                    )
                   )}
                 </div>
               </div>
@@ -578,7 +583,7 @@ export default function ProductDetails({ slug }: Params) {
                       </svg>
                       {isAddingToCart ? "Adding…" : "Updating…"}
                     </span>
-                  ) : existingCartItem ? "Update Bag" : "Add to Bag"}
+                  ) : !activeVariant ? "Unavailable" : existingCartItem ? "Update Bag" : "Add to Bag"}
                 </Button>
 
                 {/* Wishlist */}

@@ -24,7 +24,15 @@ export interface ProductListing {
   brand?: { name: string } | null;
   createdAt?: Date;
   productTags?: { tag: ITag }[];
-  variants?: { id: string; stock: number }[];
+  variants?: {
+    id: string;
+    stock: number;
+    physicalQty?: number;
+    committedQty?: number;
+    onOrderQty?: number;
+    reorderPoint?: number;
+    preferredReorderQty?: number;
+  }[];
   colors?: IProductColors[];
   basePrice?: number | string;
   appliedOffer?: {
@@ -97,6 +105,11 @@ export interface IVariants {
   sku: string;
   price: string;
   stock: number;
+  physicalQty?: number;
+  committedQty?: number;
+  onOrderQty?: number;
+  reorderPoint?: number;
+  preferredReorderQty?: number;
   color: IProductColors | null;
   size: IProductSizes | null;
   colorId?: string;

@@ -490,76 +490,77 @@ export const OrderDetailsSheet: React.FC<OrderDetailsSheetProps> = ({
                 </div>
               </div>
 
-              <div className="bg-stone-50 dark:bg-stone-900/40 p-4 border border-stone-150 dark:border-stone-800 rounded-md space-y-4">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-stone-450 dark:text-stone-400 block border-b pb-1 flex items-center gap-1.5">
-                  Admin Action Center
-                </label>
+              {activeOrder.status !== "DELIVERED" && (
+                <div className="bg-stone-50 dark:bg-stone-900/40 p-4 border border-stone-150 dark:border-stone-800 rounded-md space-y-4">
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-stone-450 dark:text-stone-400 block border-b pb-1 flex items-center gap-1.5">
+                    Admin Action Center
+                  </label>
 
-                <div className="space-y-3">
-                  <div className="space-y-1">
-                    <span className="text-[10px] font-semibold text-stone-500 dark:text-stone-400">
-                      Update Fulfillment Status
-                    </span>
-                    <Select value={updateStatus} onValueChange={setUpdateStatus}>
-                      <SelectTrigger className="w-full bg-white dark:bg-stone-950 border-stone-200 dark:border-stone-800 text-xs rounded-none">
-                        <SelectValue placeholder="Select Status" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-white dark:bg-stone-950 border-stone-200 dark:border-stone-800 text-xs">
-                        <SelectItem value="PENDING">Pending</SelectItem>
-                        <SelectItem value="PROCESSING">Processing</SelectItem>
-                        <SelectItem value="SHIPPED">Shipped</SelectItem>
-                        <SelectItem value="DELIVERED">Delivered</SelectItem>
-                        <SelectItem value="CANCELLED">Cancelled</SelectItem>
-                        <SelectItem value="FAILED">Failed</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {updateStatus === "SHIPPED" && (
-                    <div className="space-y-1.5 pt-1">
-                      <span className="text-[10px] font-semibold text-stone-500 dark:text-stone-400 flex items-center gap-1.5">
-                        <Truck size={12} className="text-stone-450" />
-                        Carrier Tracking Number
+                  <div className="space-y-3">
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-semibold text-stone-500 dark:text-stone-400">
+                        Update Fulfillment Status
                       </span>
-                      <Input
-                        placeholder="e.g. ZVFD-9854721"
-                        value={trackingNumber}
-                        onChange={(e) => setTrackingNumber(e.target.value)}
-                        className="bg-white dark:bg-stone-950 border-stone-200 dark:border-stone-800 text-xs focus:border-[#c29958] rounded-none"
-                      />
+                      <Select value={updateStatus} onValueChange={setUpdateStatus}>
+                        <SelectTrigger className="w-full bg-white dark:bg-stone-950 border-stone-200 dark:border-stone-800 text-xs rounded-none">
+                          <SelectValue placeholder="Select Status" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white dark:bg-stone-950 border-stone-200 dark:border-stone-800 text-xs">
+                          <SelectItem value="PENDING">Pending</SelectItem>
+                          <SelectItem value="PROCESSING">Processing</SelectItem>
+                          <SelectItem value="SHIPPED">Shipped</SelectItem>
+                          <SelectItem value="DELIVERED">Delivered</SelectItem>
+                          <SelectItem value="CANCELLED">Cancelled</SelectItem>
+                          <SelectItem value="FAILED">Failed</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
-                  )}
 
-                  <Button
-                    disabled={isUpdating}
-                    onClick={handleUpdateStatus}
-                    className="w-full bg-stone-950 hover:bg-[#c29958] text-white dark:bg-[#c29958] dark:text-stone-950 dark:hover:bg-[#b0884b] text-xs h-9 rounded-none font-bold transition-colors flex items-center justify-center gap-2 mt-4"
-                  >
-                    {isUpdating ? (
-                      <>
-                        <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                        Saving Status...
-                      </>
-                    ) : (
-                      "Apply Status"
+                    {updateStatus === "SHIPPED" && (
+                      <div className="space-y-1.5 pt-1">
+                        <span className="text-[10px] font-semibold text-stone-500 dark:text-stone-400 flex items-center gap-1.5">
+                          <Truck size={12} className="text-stone-450" />
+                          Carrier Tracking Number
+                        </span>
+                        <Input
+                          placeholder="e.g. ZVFD-9854721"
+                          value={trackingNumber}
+                          onChange={(e) => setTrackingNumber(e.target.value)}
+                          className="bg-white dark:bg-stone-950 border-stone-200 dark:border-stone-800 text-xs focus:border-[#c29958] rounded-none"
+                        />
+                      </div>
                     )}
-                  </Button>
 
-                  {activeOrder.status !== "CANCELLED" &&
-                    activeOrder.status !== "DELIVERED" &&
-                    activeOrder.status !== "FAILED" && (
-                      <Button
-                        variant="outline"
-                        disabled={isCancelling}
-                        onClick={handleCancelOrder}
-                        className="w-full border-rose-200 hover:bg-rose-50 dark:border-rose-900/40 dark:hover:bg-rose-950/20 text-rose-600 text-xs h-9 rounded-none font-bold transition-colors flex items-center justify-center gap-2 mt-2"
-                      >
-                        <Trash2 size={12} />
-                        {isCancelling ? "Cancelling..." : "Cancel Order"}
-                      </Button>
-                    )}
+                    <Button
+                      disabled={isUpdating}
+                      onClick={handleUpdateStatus}
+                      className="w-full bg-stone-950 hover:bg-[#c29958] text-white dark:bg-[#c29958] dark:text-stone-950 dark:hover:bg-[#b0884b] text-xs h-9 rounded-none font-bold transition-colors flex items-center justify-center gap-2 mt-4"
+                    >
+                      {isUpdating ? (
+                        <>
+                          <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                          Saving Status...
+                        </>
+                      ) : (
+                        "Apply Status"
+                      )}
+                    </Button>
+
+                    {activeOrder.status !== "CANCELLED" &&
+                      activeOrder.status !== "FAILED" && (
+                        <Button
+                          variant="outline"
+                          disabled={isCancelling}
+                          onClick={handleCancelOrder}
+                          className="w-full border-rose-200 hover:bg-rose-50 dark:border-rose-900/40 dark:hover:bg-rose-950/20 text-rose-600 text-xs h-9 rounded-none font-bold transition-colors flex items-center justify-center gap-2 mt-2"
+                        >
+                          <Trash2 size={12} />
+                          {isCancelling ? "Cancelling..." : "Cancel Order"}
+                        </Button>
+                      )}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>

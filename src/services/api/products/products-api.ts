@@ -69,7 +69,7 @@ export const productApi = baseApi.injectEndpoints({
 
     getVariants: builder.query<any, { page: number; limit: number; search?: string; stockStatus?: string }>({
       query: (params) => ({
-        url: "/products/variants",
+        url: "/inventory",
         params,
       }),
       providesTags: ["ProductDetails", "Products"],
@@ -77,7 +77,7 @@ export const productApi = baseApi.injectEndpoints({
 
     updateVariant: builder.mutation<unknown, { variantId: string; body: { price: number | null; stock: number } }>({
       query: ({ variantId, body }) => ({
-        url: `/products/variants/${variantId}`,
+        url: `/inventory/${variantId}`,
         method: "PUT",
         body,
       }),
