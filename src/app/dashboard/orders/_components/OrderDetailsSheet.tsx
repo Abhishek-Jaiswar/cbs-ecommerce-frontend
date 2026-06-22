@@ -36,6 +36,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { OrderTrackingTimeline } from "./OrderTrackingTimeline";
+import { toast } from "sonner";
 
 interface OrderDetailsSheetProps {
   isOpen: boolean;
@@ -84,10 +85,12 @@ export const OrderDetailsSheet: React.FC<OrderDetailsSheetProps> = ({
         status: updateStatus,
         trackingNumber: updateStatus === "SHIPPED" ? trackingNumber : undefined,
       }).unwrap();
+      toast.success("Order status updated successfully");
       refetchOrders();
       refetchDetails();
     } catch (err) {
       console.error("Failed to update status", err);
+      toast.error("Failed to update status");
     }
   };
 
@@ -100,10 +103,12 @@ export const OrderDetailsSheet: React.FC<OrderDetailsSheetProps> = ({
     ) {
       try {
         await cancelOrderMutation(activeOrder.id).unwrap();
+        toast.success("Order cancelled successfully");
         refetchOrders();
         refetchDetails();
       } catch (err) {
         console.error("Failed to cancel order", err);
+        toast.error("Failed to cancel order");
       }
     }
   };

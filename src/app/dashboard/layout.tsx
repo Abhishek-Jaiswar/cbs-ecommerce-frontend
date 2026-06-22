@@ -10,6 +10,7 @@ import {
   SidebarProvider,
 } from "@/components/ui/sidebar";
 import { Lock } from "lucide-react";
+import { Toaster } from "sonner";
 
 export default function DashboardLayout({
   children,
@@ -65,6 +66,7 @@ export default function DashboardLayout({
 
   return (
     <SidebarProvider>
+      <Toaster position="top-right" richColors />
       <AppSidebar />
       <SidebarInset>
         <DashboardNavbar user={userProfile} />

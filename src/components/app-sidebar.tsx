@@ -55,25 +55,25 @@ const data = {
           url: "/dashboard/products",
         },
         {
-          title: "Create Product",
-          url: "/dashboard/products/create",
+          title: "Brands",
+          url: "/dashboard/brands",
         },
         {
           title: "Categories",
           url: "/dashboard/categories",
         },
         {
-          title: "Brands",
-          url: "/dashboard/brands",
-        },
-        {
           title: "Product Tags",
           url: "/dashboard/product-tags",
         },
         {
-          title: "Media Library",
-          url: "/dashboard/media",
+          title: "Create Product",
+          url: "/dashboard/products/create",
         },
+        // {
+        //   title: "Media Library",
+        //   url: "/dashboard/media",
+        // },
       ],
     },
     {
