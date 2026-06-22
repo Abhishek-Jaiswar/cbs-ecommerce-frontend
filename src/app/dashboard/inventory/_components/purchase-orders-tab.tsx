@@ -16,7 +16,26 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus, RefreshCw, ChevronLeft, ChevronRight, FileText, Loader2 } from "lucide-react";
+import {
+  Plus,
+  RefreshCw,
+  ChevronLeft,
+  ChevronRight,
+  FileText,
+  Loader2,
+  MoreHorizontal,
+  Send,
+  Trash2,
+  ArrowDownToLine,
+} from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 import {
   Dialog,
   DialogContent,
@@ -248,52 +267,66 @@ export function PurchaseOrdersTab({
                         <TableCell className="py-4 text-stone-400">
                           {new Date(po.createdAt).toLocaleDateString("en-IN")}
                         </TableCell>
-                        <TableCell className="py-4 text-center pr-6 flex justify-center gap-1.5">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            disabled={downloadingPoId === po.id}
-                            onClick={() => handleDownloadPoPdf(po.id, po.poNumber)}
-                            className="border-stone-200 text-stone-700 hover:bg-stone-50 dark:hover:bg-stone-900 h-7 w-7 p-0"
-                            title="Download PO PDF"
-                          >
-                            {downloadingPoId === po.id ? (
-                              <Loader2 size={12} className="animate-spin text-stone-500" />
-                            ) : (
-                              <FileText size={12} />
-                            )}
-                          </Button>
-                          {isDraft && (
-                            <>
+                        <TableCell className="py-4 text-center pr-6">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
                               <Button
-                                onClick={() => handleOpenSendDialog(po.id)}
-                                size="sm"
-                                className="bg-blue-600 hover:bg-blue-700 text-white font-bold h-7 px-2.5 text-[10px] uppercase"
-                              >
-                                Approve & Send
-                              </Button>
-                              <Button
-                                onClick={() => handleCancelPO(po.id)}
-                                size="sm"
                                 variant="ghost"
-                                className="text-rose-600 hover:bg-rose-50 hover:text-rose-700 h-7 px-2.5 text-[10px] uppercase"
+                                className="h-8 w-8 p-0 hover:bg-stone-100 dark:hover:bg-stone-900"
                               >
-                                Cancel
+                                <span className="sr-only">Open menu</span>
+                                <MoreHorizontal className="h-4 w-4" />
                               </Button>
-                            </>
-                          )}
-                          {canReceive && (
-                            <Button
-                              onClick={() => onReceivePoClick(po)}
-                              size="sm"
-                              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-7 px-2.5 text-[10px] uppercase"
-                            >
-                              Receive Items
-                            </Button>
-                          )}
-                          {!isDraft && !canReceive && (
-                            <span className="text-stone-400 italic text-[10px]">Closed</span>
-                          )}
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="bg-white dark:bg-stone-950 border-stone-200 dark:border-stone-800">
+                              <DropdownMenuLabel className="text-[10px] text-stone-400 font-bold uppercase tracking-wider">
+                                Actions
+                              </DropdownMenuLabel>
+                              <DropdownMenuSeparator className="border-stone-100 dark:border-stone-900" />
+                              
+                              <DropdownMenuItem
+                                onClick={() => handleDownloadPoPdf(po.id, po.poNumber)}
+                                disabled={downloadingPoId === po.id}
+                                className="cursor-pointer text-xs flex items-center gap-2 hover:bg-stone-50 dark:hover:bg-stone-900"
+                              >
+                                {downloadingPoId === po.id ? (
+                                  <Loader2 className="h-3.5 w-3.5 animate-spin text-stone-500" />
+                                ) : (
+                                  <FileText className="h-3.5 w-3.5" />
+                                )}
+                                Download PDF
+                              </DropdownMenuItem>
+
+                              {isDraft && (
+                                <>
+                                  <DropdownMenuItem
+                                    onClick={() => handleOpenSendDialog(po.id)}
+                                    className="cursor-pointer text-xs flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/20"
+                                  >
+                                    <Send className="h-3.5 w-3.5" />
+                                    Approve & Send
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    onClick={() => handleCancelPO(po.id)}
+                                    className="cursor-pointer text-xs flex items-center gap-2 text-rose-600 dark:text-rose-450 hover:bg-rose-50 dark:hover:bg-rose-950/20"
+                                  >
+                                    <Trash2 className="h-3.5 w-3.5" />
+                                    Cancel Order
+                                  </DropdownMenuItem>
+                                </>
+                              )}
+
+                              {canReceive && (
+                                <DropdownMenuItem
+                                  onClick={() => onReceivePoClick(po)}
+                                  className="cursor-pointer text-xs flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/20"
+                                >
+                                  <ArrowDownToLine className="h-3.5 w-3.5" />
+                                  Receive Items
+                                </DropdownMenuItem>
+                              )}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </TableCell>
                       </TableRow>
                     );
