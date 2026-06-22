@@ -103,7 +103,7 @@ export default function BlogPostsPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="flex-1 space-y-6 p-4 sm:p-6 md:p-10 bg-background text-foreground w-full">
       {/* Header section */}
       <div className="flex flex-col sm:flex-row gap-4 justify-between items-stretch sm:items-center">
         <div>

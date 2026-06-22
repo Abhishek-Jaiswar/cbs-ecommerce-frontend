@@ -136,7 +136,7 @@ export function PostForm({ post = null }: PostFormProps) {
   };
 
   return (
-    <form onSubmit={handleSave} className="space-y-6 max-w-5xl">
+    <form onSubmit={handleSave} className="space-y-6 w-full max-w-none">
       {/* Top Bar Actions */}
       <div className="flex items-center justify-between gap-4 border-b pb-4">
         <Button

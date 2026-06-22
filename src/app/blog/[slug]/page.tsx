@@ -2,9 +2,10 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CalendarDays, Clock, User, ArrowLeft, Share2 } from "lucide-react";
+import { CalendarDays, Clock, User, ArrowLeft } from "lucide-react";
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer";
 import { Metadata } from "next";
+import { ShareButton } from "./share-button";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -131,16 +132,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                 Back
               </Link>
               <div className="hidden lg:block h-px w-8 bg-stone-200 my-2" />
-              <button
-                className="inline-flex items-center gap-1.5 text-xs font-bold uppercase text-stone-500 hover:text-[#c29958] transition-colors bg-transparent border-0 cursor-pointer"
-                onClick={() => {
-                  navigator.clipboard.writeText(window.location.href);
-                  alert("Link copied to clipboard!");
-                }}
-              >
-                <Share2 className="h-3.5 w-3.5" />
-                Share
-              </button>
+              <ShareButton />
             </div>
 
             {/* Markdown Body Content */}

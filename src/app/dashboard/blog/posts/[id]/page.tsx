@@ -30,7 +30,7 @@ export default function EditBlogPostPage({ params }: EditBlogPostPageProps) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="flex-1 space-y-6 p-4 sm:p-6 md:p-10 bg-background text-foreground w-full">
       <div>
         <h2 className="text-lg font-bold text-stone-950 dark:text-stone-50">
           Edit Article
