@@ -46,8 +46,12 @@ export default function LoginForm() {
       }
     } catch (error: unknown) {
       const err = error as { data?: { message?: string } };
-      const msg = err?.data?.message || "Failed to log in. Please check your credentials.";
-      setErrorMessage(msg);
+      const msg = err?.data?.message;
+      const internalError = msg
+      setErrorMessage(
+        (internalError && "Internal Server error") ||
+          "Failed to log in. Please check your credentials.",
+      );
     }
   };
 

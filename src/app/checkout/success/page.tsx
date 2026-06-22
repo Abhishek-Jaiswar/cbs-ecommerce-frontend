@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useGetOrderByIdQuery } from "@/services/api/checkout-api";
-import { Loader2, CheckCircle2, ShoppingBag, ArrowRight, Truck } from "lucide-react";
+import { Loader2, CheckCircle2, ShoppingBag, ArrowRight, Truck, FileText } from "lucide-react";
 
 function SuccessPageContent() {
   const searchParams = useSearchParams();
@@ -59,6 +59,34 @@ function SuccessPageContent() {
   }
 
   const order = orderRes.data;
+  const [isDownloading, setIsDownloading] = React.useState(false);
+
+  const handleDownloadInvoice = async () => {
+    setIsDownloading(true);
+    try {
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/orders/${order.id}/invoice`;
+      const response = await fetch(url, {
+        credentials: "include",
+      });
+      if (!response.ok) {
+        throw new Error("Failed to download invoice");
+      }
+      const blob = await response.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = `invoice-${order.orderNumber}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(downloadUrl);
+    } catch (error) {
+      console.error(error);
+      alert("Failed to download invoice PDF. Please try again.");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   // Format delivery date (3-5 days from creation)
   const orderDate = new Date(order.createdAt);
@@ -194,9 +222,26 @@ function SuccessPageContent() {
 
             {/* Navigation CTAs */}
             <div className="flex flex-col gap-3 pt-2">
+              <button
+                onClick={handleDownloadInvoice}
+                disabled={isDownloading}
+                className="w-full bg-stone-900 text-white font-bold py-3.5 text-[11px] uppercase tracking-widest hover:bg-[#c29958] hover:text-stone-950 transition-colors duration-200 text-center flex items-center justify-center gap-1.5 disabled:opacity-50"
+              >
+                {isDownloading ? (
+                  <>
+                    <Loader2 size={12} className="animate-spin" />
+                    <span>Generating Invoice...</span>
+                  </>
+                ) : (
+                  <>
+                    <FileText size={12} />
+                    <span>Download Invoice</span>
+                  </>
+                )}
+              </button>
               <Link
                 href="/shop"
-                className="w-full bg-stone-950 text-white font-bold py-3.5 text-[11px] uppercase tracking-widest hover:bg-amber-500 hover:text-stone-950 transition-colors duration-200 text-center flex items-center justify-center gap-1.5"
+                className="w-full border border-stone-200 hover:border-stone-950 hover:bg-stone-50 text-stone-900 font-bold py-3.5 text-[11px] uppercase tracking-widest transition-colors duration-200 text-center flex items-center justify-center gap-1.5"
               >
                 Continue Shopping
                 <ArrowRight size={12} />

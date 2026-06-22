@@ -16,7 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus, RefreshCw, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, RefreshCw, ChevronLeft, ChevronRight, FileText, Loader2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -41,6 +41,34 @@ export function PurchaseOrdersTab({
 }: PurchaseOrdersTabProps) {
   const [poPage, setPoPage] = useState(1);
   const [poLimit] = useState(10);
+  const [downloadingPoId, setDownloadingPoId] = useState<string | null>(null);
+
+  const handleDownloadPoPdf = async (poId: string, poNumber: string) => {
+    setDownloadingPoId(poId);
+    try {
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/inventory/purchase-orders/${poId}/pdf`;
+      const response = await fetch(url, {
+        credentials: "include",
+      });
+      if (!response.ok) {
+        throw new Error("Failed to download PO PDF");
+      }
+      const blob = await response.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = `purchase-order-${poNumber}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(downloadUrl);
+    } catch (error) {
+      console.error(error);
+      alert("Failed to download Purchase Order PDF.");
+    } finally {
+      setDownloadingPoId(null);
+    }
+  };
 
   const {
     data: poRes,
@@ -221,6 +249,20 @@ export function PurchaseOrdersTab({
                           {new Date(po.createdAt).toLocaleDateString("en-IN")}
                         </TableCell>
                         <TableCell className="py-4 text-center pr-6 flex justify-center gap-1.5">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            disabled={downloadingPoId === po.id}
+                            onClick={() => handleDownloadPoPdf(po.id, po.poNumber)}
+                            className="border-stone-200 text-stone-700 hover:bg-stone-50 dark:hover:bg-stone-900 h-7 w-7 p-0"
+                            title="Download PO PDF"
+                          >
+                            {downloadingPoId === po.id ? (
+                              <Loader2 size={12} className="animate-spin text-stone-500" />
+                            ) : (
+                              <FileText size={12} />
+                            )}
+                          </Button>
                           {isDraft && (
                             <>
                               <Button
