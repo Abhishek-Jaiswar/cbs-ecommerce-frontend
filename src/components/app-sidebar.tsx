@@ -174,7 +174,7 @@ const data = {
         },
         {
           title: "Blog Tags",
-          url: "/dashboard/blog-tags",
+          url: "/dashboard/blog/tags",
         },
       ],
     },
