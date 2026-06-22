@@ -20,7 +20,8 @@ async function getLivePostBySlug(slug: string) {
     if (!response.ok) {
       return null;
     }
-    return await response.json();
+    const result = await response.json();
+    return result?.data || null;
   } catch (error) {
     console.error(`Failed to fetch live post for slug "${slug}":`, error);
     return null;

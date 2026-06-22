@@ -17,7 +17,11 @@ function SectionTitle({ subtitle, title }: { subtitle: string; title: string }) 
 }
 
 export function LatestBlogs() {
-  const { data, isLoading } = useGetBlogPostsQuery({ page: 1, limit: 3 });
+  const { data, isLoading, isError, error } = useGetBlogPostsQuery({ page: 1, limit: 3 });
+
+  React.useEffect(() => {
+    console.log("LatestBlogs hook status:", { data, isLoading, isError, error });
+  }, [data, isLoading, isError, error]);
 
   // Only show published articles
   const posts = React.useMemo(() => {

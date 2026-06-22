@@ -56,10 +56,8 @@ async function getLivePosts(): Promise<ParsedPost[]> {
     if (!response.ok) {
       return [];
     }
-    const data = await response.json();
-    const items = data?.items || [];
-
-    console.log(items);
+    const result = await response.json();
+    const items = result?.data?.items || [];
     
     
     // Only show published articles on storefront

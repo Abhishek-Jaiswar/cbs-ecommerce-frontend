@@ -17,7 +17,7 @@
   --border: oklch(0.922 0 0);
   --border-soft: #f3f4f6;
   --success: #059669;
-  --font-zenvoraa: "Lato", Arial, Helvetica, sans-serif;
+  --font-zenvoraa: var(--font-sans), "Lato", Arial, Helvetica, sans-serif;
   --font-serif: "Cormorant Garamond", Georgia, serif;
   --font-geist-sans: Arial, Helvetica, sans-serif;
   --font-geist-mono: "Courier New", Courier, monospace;
