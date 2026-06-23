@@ -83,7 +83,7 @@ export const blogApi = baseApi.injectEndpoints({
       providesTags: ["Blogs"],
     }),
 
-    createBlogPost: builder.mutation<IBlogPost, Partial<IBlogPost> & { tagIds?: string[] }>({
+    createBlogPost: builder.mutation<IBlogPost, FormData | (Partial<IBlogPost> & { tagIds?: string[] })>({
       query: (body) => ({
         url: "/blog-posts",
         method: "POST",
@@ -93,7 +93,7 @@ export const blogApi = baseApi.injectEndpoints({
       invalidatesTags: ["Blogs"],
     }),
 
-    updateBlogPost: builder.mutation<IBlogPost, { id: string; body: Partial<IBlogPost> & { tagIds?: string[] } }>({
+    updateBlogPost: builder.mutation<IBlogPost, { id: string; body: FormData | (Partial<IBlogPost> & { tagIds?: string[] }) }>({
       query: ({ id, body }) => ({
         url: `/blog-posts/${id}`,
         method: "PUT",

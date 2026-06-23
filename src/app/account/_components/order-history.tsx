@@ -249,7 +249,7 @@ const OrderHistory: React.FC = () => {
                     <div className="flex-1 min-w-0">
                       {item.productId ? (
                         <Link
-                          href={`/shop/${item.productId}`}
+                          href={`/shop/${item.product?.slug}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="font-serif text-stone-900 text-xs font-semibold truncate hover:underline hover:text-[#c29958] flex items-center gap-1"

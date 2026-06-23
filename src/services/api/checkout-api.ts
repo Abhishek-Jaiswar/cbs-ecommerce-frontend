@@ -20,6 +20,9 @@ export interface OrderItem {
   appliedOfferId?: string | null;
   appliedOfferName?: string | null;
   offerDiscountAmount?: string;
+  product?: {
+    slug: string;
+  } | null;
 }
 
 export interface Payment {
