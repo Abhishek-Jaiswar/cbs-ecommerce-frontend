@@ -25,6 +25,7 @@ export const authApi = baseApi.injectEndpoints({
         method: "POST",
         body: payload,
       }),
+      invalidatesTags: ["Users", "Cart", "Wishlist"],
     }),
 
     logout: builder.mutation<BaseResponse, void>({
@@ -32,10 +33,12 @@ export const authApi = baseApi.injectEndpoints({
         url: "/auth/logout",
         method: "POST",
       }),
+      invalidatesTags: ["Users", "Cart", "Wishlist"],
     }),
 
     me: builder.query<BaseResponse<User>, void>({
       query: () => "/auth/get-me",
+      providesTags: ["Users"],
     }),
 
     requestEmailOtp: builder.mutation<BaseResponse, OtpRequestPayload>({
@@ -109,6 +112,7 @@ export const authApi = baseApi.injectEndpoints({
       string
     >({
       query: (id) => `/auth/${id}`,
+      providesTags: ["Users"],
     }),
 
     updateUserRole: builder.mutation<

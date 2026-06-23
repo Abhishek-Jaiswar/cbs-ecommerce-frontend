@@ -9,12 +9,12 @@ import { UtmTracker } from "@/components/utm/utm-tracker";
 
 const geistSans = Geist({
   subsets: ["latin"],
-  variable: "--font-sans",
+  variable: "--font-geist-sans-custom",
 });
 
 const cormorantGaramond = Cormorant_Garamond({
   subsets: ["latin"],
-  variable: "--font-serif",
+  variable: "--font-cormorant-garamond-custom",
   weight: ["300", "400", "500", "600", "700"],
   style: ["normal", "italic"],
 });
@@ -114,7 +114,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col" suppressHydrationWarning={true}>
         <StoreProvider>
           <AuthProvider>
             <TooltipProvider>

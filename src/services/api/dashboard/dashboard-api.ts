@@ -5,6 +5,7 @@ export const dashboardApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getDashboardOverviewStats: builder.query<IDashboardStatsResponse, void>({
       query: () => "/dashboard/overview",
+      providesTags: ["Orders", "Products", "Users"],
     }),
     getUtmReports: builder.query<any, void>({
       query: () => "/dashboard/utm-reports",
@@ -12,6 +13,7 @@ export const dashboardApi = baseApi.injectEndpoints({
     }),
     getCampaignBudgets: builder.query<any, void>({
       query: () => "/dashboard/campaign-budgets",
+      providesTags: ["Orders"],
     }),
     upsertCampaignBudget: builder.mutation<any, { campaignName: string; budget: number; source?: string | null; medium?: string | null }>({
       query: (body) => ({
@@ -19,6 +21,7 @@ export const dashboardApi = baseApi.injectEndpoints({
         method: "POST",
         body,
       }),
+      invalidatesTags: ["Orders"],
     }),
   }),
   overrideExisting: true,

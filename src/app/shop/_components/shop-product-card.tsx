@@ -48,7 +48,7 @@ export function ShopProductCard({ product, viewMode }: ShopProductCardProps) {
 
   if (viewMode === "list") {
     return (
-      <article className="group grid gap-8 border-b border-stone-100 pb-8 font-[var(--font-zenvoraa)] md:grid-cols-[240px_1fr] bg-transparent">
+      <article className="group grid gap-8 border-b border-stone-100 pb-8 font-(--font-zenvoraa) md:grid-cols-[240px_1fr] bg-transparent">
         <Link href={`/shop/${product.slug}`} className="relative block aspect-square overflow-hidden bg-[#fbfaf8]">
           <Image
             src={productImage}
@@ -118,7 +118,7 @@ export function ShopProductCard({ product, viewMode }: ShopProductCardProps) {
   }
 
   return (
-    <article className="group flex h-full flex-col bg-transparent font-[var(--font-zenvoraa)] pb-4">
+    <article className="group flex h-full flex-col bg-transparent font-(--font-zenvoraa) pb-4">
       {/* Image Container */}
       <div className="relative overflow-hidden bg-[#fbfaf8] aspect-square">
         <Link href={`/shop/${product.slug}`} className="relative block w-full h-full">
@@ -197,12 +197,12 @@ export function ShopProductCard({ product, viewMode }: ShopProductCardProps) {
         </h3>
         
         {/* Product Excerpt */}
-        <p className="mt-2 text-xs leading-relaxed text-stone-400 line-clamp-2 min-h-[32px]">
+        <p className="mt-2 text-xs leading-relaxed text-stone-400 line-clamp-2 min-h-8">
           {product.excerpt}
         </p>
 
         {/* Stock Status Badges & Colors Row */}
-        <div className="mt-3 flex items-center justify-between min-h-[20px] select-none">
+        <div className="mt-3 flex items-center justify-between min-h-5 select-none">
           {/* Text-based status badges (No numbers) */}
           {totalStock === 0 ? (
             <span className="text-[9px] font-bold uppercase tracking-wider text-rose-700 bg-rose-50 border border-rose-100 px-2 py-0.5 rounded-sm">

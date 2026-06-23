@@ -4,7 +4,7 @@ export const reportsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getReportsHistory: builder.query<any, void>({
       query: () => "/reports/history",
-      providesTags: ["Reports" as any],
+      providesTags: ["Reports"],
     }),
     generateReport: builder.mutation<any, { reportType: string; filter: string; format: string; startDate?: string; endDate?: string }>({
       query: (body) => ({
@@ -12,7 +12,7 @@ export const reportsApi = baseApi.injectEndpoints({
         method: "POST",
         body,
       }),
-      invalidatesTags: ["Reports" as any],
+      invalidatesTags: ["Reports"],
     }),
     getReportPreview: builder.query<any, { reportType: string; filter: string; startDate?: string; endDate?: string }>({
       query: (params) => ({

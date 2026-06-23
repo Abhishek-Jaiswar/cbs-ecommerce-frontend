@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useGetMyOrdersQuery, useCancelOrderMutation } from "@/services/api/checkout-api";
-import { Loader2, ShoppingBag, Truck, Calendar, Trash2, X, CreditCard, ChevronDown, ChevronUp, Check, ExternalLink } from "lucide-react";
+import { Loader2, ShoppingBag, Truck, Calendar, Trash2, X, CreditCard, ChevronDown, ChevronUp, Check, ExternalLink, FileText } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 const OrderHistory: React.FC = () => {
@@ -19,6 +19,34 @@ const OrderHistory: React.FC = () => {
   
   // State to track expanded orders for detailed timeline/billing view
   const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
+  const [downloadingOrderId, setDownloadingOrderId] = useState<string | null>(null);
+
+  const handleDownloadInvoice = async (orderId: string, orderNumber: string) => {
+    setDownloadingOrderId(orderId);
+    try {
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/orders/${orderId}/invoice`;
+      const response = await fetch(url, {
+        credentials: "include",
+      });
+      if (!response.ok) {
+        throw new Error("Failed to download invoice");
+      }
+      const blob = await response.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = `invoice-${orderNumber}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(downloadUrl);
+    } catch (error) {
+      console.error(error);
+      alert("Failed to download invoice PDF. Please try again.");
+    } finally {
+      setDownloadingOrderId(null);
+    }
+  };
 
   const orders = ordersRes?.data?.items ?? [];
 
@@ -221,7 +249,7 @@ const OrderHistory: React.FC = () => {
                     <div className="flex-1 min-w-0">
                       {item.productId ? (
                         <Link
-                          href={`/shop/${item.productId}`}
+                          href={`/shop/${item.product?.slug}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="font-serif text-stone-900 text-xs font-semibold truncate hover:underline hover:text-[#c29958] flex items-center gap-1"
@@ -394,15 +422,37 @@ const OrderHistory: React.FC = () => {
                   )}
                 </div>
 
-                {isCancellable && (
+                <div className="flex items-center gap-2">
                   <button
-                    onClick={(e) => handleCancelClick(order.id, e)}
-                    className="border border-stone-200 hover:border-rose-600 hover:text-rose-600 font-bold px-3 py-1.5 text-[9px] uppercase tracking-wider transition-all duration-200 flex items-center gap-1 bg-white text-stone-600 shadow-sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDownloadInvoice(order.id, order.orderNumber);
+                    }}
+                    disabled={downloadingOrderId === order.id}
+                    className="border border-stone-200 hover:border-[#c29958] hover:text-[#c29958] font-bold px-3 py-1.5 text-[9px] uppercase tracking-wider transition-all duration-200 flex items-center gap-1 bg-white text-stone-600 shadow-sm disabled:opacity-50"
                   >
-                    <Trash2 size={12} />
-                    Cancel Order
+                    {downloadingOrderId === order.id ? (
+                      <>
+                        <Loader2 size={12} className="animate-spin text-[#c29958]" />
+                        <span>Downloading...</span>
+                      </>
+                    ) : (
+                      <>
+                        <FileText size={12} />
+                        <span>Download Invoice</span>
+                      </>
+                    )}
                   </button>
-                )}
+                  {isCancellable && (
+                    <button
+                      onClick={(e) => handleCancelClick(order.id, e)}
+                      className="border border-stone-200 hover:border-rose-600 hover:text-rose-600 font-bold px-3 py-1.5 text-[9px] uppercase tracking-wider transition-all duration-200 flex items-center gap-1 bg-white text-stone-600 shadow-sm"
+                    >
+                      <Trash2 size={12} />
+                      Cancel Order
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           );

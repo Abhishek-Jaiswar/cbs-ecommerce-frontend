@@ -1,0 +1,40 @@
+- [x] Database Schema Update
+    - [x] Update `server/prisma/schema.prisma` with advanced inventory fields, new models, and enums
+    - [x] Generate migration draft: `pnpm exec prisma migrate dev --create-only --name add_advanced_inventory`
+    - [x] Edit migration SQL to copy `stock` values to `physicalQty` before dropping the `stock` column
+    - [x] Execute migration: `pnpm exec prisma migrate dev`
+    - [x] Update `server/prisma/seed.ts` to use `physicalQty` instead of `stock`
+- [x] Core Ordering & Cart Logic Updates
+    - [x] Update `server/src/modules/cart/cart.service.ts` to check available stock (`physicalQty - committedQty`)
+    - [x] Update `server/src/modules/orders/order.service.ts` checkout check to use available stock
+    - [x] Update `server/src/modules/orders/order.repository.ts` to reserve stock on pending order creation (increment `committedQty`, log `ORDER_RESERVED`)
+    - [x] Update `server/src/modules/orders/order.service.ts` status change logic to decrement physical stock and committed stock on transition to `SHIPPED` (log `ORDER_SHIPPED`)
+    - [x] Update `server/src/modules/orders/order.repository.ts` to release stock on order cancellation (decrement `committedQty`, log `ORDER_CANCELLED`)
+    - [x] Clean up obsolete stock decrementing in `payment.repository.ts` and `order.repository.ts`
+- [x] Inventory Management Backend Module
+    - [x] Update `inventory.routes.ts` with PO, Supplier, Adjustments, and Transaction endpoints
+    - [x] Update `inventory.repository.ts` to implement database CRUD for POs, Suppliers, Warehouses, Adjustments, and Ledger queries
+    - [x] Update `inventory.service.ts` with business logic for stock adjustment, PO transition, goods receiving, and low stock checks
+    - [x] Update `inventory.controller.ts` with Zod validation and controller handlers for the new routes
+- [x] Codebase Cleanup & Reports
+    - [x] Update variant creation in `products.repository.ts` to write to `physicalQty` instead of `stock`
+    - [x] Update `dashboard.service.ts` to calculate inventory values using `physicalQty`
+    - [x] Update `reports.service.ts` to count and calculate inventory reports using `physicalQty` and `committedQty`
+- [x] Frontend Dashboard & UI
+    - [x] Create `client/src/services/api/inventory/inventory-api.ts` with advanced inventory RTK Query endpoints
+- [x] Code Splitting & Dedicated Routes
+    - [x] Separate legacy nested Inventory link from Products & Catalog in `app-sidebar.tsx`
+    - [x] Create standalone "Inventory & Supply" sidebar section with dedicated submenu links
+    - [x] Decompose page into separate tab and dialog components inside `client/src/app/dashboard/inventory/_components`
+    - [x] Create dedicated page route at `/dashboard/inventory` (Stock Levels)
+    - [x] Create dedicated page route at `/dashboard/inventory/ledger` (Audit Ledger)
+    - [x] Create dedicated page route at `/dashboard/inventory/purchase-orders` (Purchase Orders)
+    - [x] Create dedicated page route at `/dashboard/inventory/suppliers` (Suppliers)
+    - [x] Create dedicated page route at `/dashboard/inventory/warehouses` (Warehouses)
+- [x] Sidebar Grouping & Menu Bug Fixes
+    - [x] Group menus under Core Operations, Marketing & CMS, and Administration sections
+    - [x] Fix collapsible menu state to dynamically match current active URL paths
+    - [x] Replace `a href` tags with Next.js client `Link` components to prevent full page reloads
+- [x] Build & Verify
+    - [x] Run `pnpm build` on server and resolve any compilation/typing errors
+    - [x] Run `pnpm build` on client and resolve any compilation/typing errors

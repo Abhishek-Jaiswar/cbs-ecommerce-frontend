@@ -56,7 +56,7 @@ export const reviewsApi = baseApi.injectEndpoints({
         method: "POST",
         body,
       }),
-      invalidatesTags: ["Reviews"],
+      invalidatesTags: ["Reviews", "Products", "ProductDetails"],
     }),
     getAdminAllReviews: builder.query<BaseResponse<PaginatedResponse<Review>>, { page?: number; limit?: number; search?: string; rating?: number }>({
       query: ({ page = 1, limit = 10, search = "", rating }) => {
@@ -73,7 +73,7 @@ export const reviewsApi = baseApi.injectEndpoints({
         url: `/reviews/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["Reviews"],
+      invalidatesTags: ["Reviews", "Products", "ProductDetails"],
     }),
   }),
   overrideExisting: true,

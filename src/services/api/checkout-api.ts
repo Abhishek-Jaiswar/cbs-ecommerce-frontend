@@ -20,6 +20,9 @@ export interface OrderItem {
   appliedOfferId?: string | null;
   appliedOfferName?: string | null;
   offerDiscountAmount?: string;
+  product?: {
+    slug: string;
+  } | null;
 }
 
 export interface Payment {
@@ -94,7 +97,7 @@ export const checkoutApi = baseApi.injectEndpoints({
         method: "POST",
         body,
       }),
-      invalidatesTags: ["Cart", "Orders"],
+      invalidatesTags: ["Cart", "Orders", "Products", "ProductDetails", "Coupons", "Redemptions"],
     }),
     verifyPayment: builder.mutation<BaseResponse<Order>, any>({
       query: (body) => ({
@@ -102,7 +105,7 @@ export const checkoutApi = baseApi.injectEndpoints({
         method: "POST",
         body,
       }),
-      invalidatesTags: ["Cart", "Orders", "Payments"],
+      invalidatesTags: ["Cart", "Orders", "Payments", "Products", "ProductDetails", "Coupons", "Redemptions"],
     }),
     getMyOrders: builder.query<BaseResponse<PaginatedResponse<Order>>, { page?: number; limit?: number }>({
       query: (params) => ({
@@ -128,7 +131,7 @@ export const checkoutApi = baseApi.injectEndpoints({
         method: "PATCH",
         body,
       }),
-      invalidatesTags: ["Orders"],
+      invalidatesTags: ["Orders", "Products", "ProductDetails", "Transactions"],
     }),
     getPayments: builder.query<BaseResponse<PaginatedResponse<Payment>>, { page?: number; limit?: number }>({
       query: (params) => ({
@@ -142,7 +145,7 @@ export const checkoutApi = baseApi.injectEndpoints({
         url: `/orders/${orderId}/cancel`,
         method: "POST",
       }),
-      invalidatesTags: ["Orders", "Cart"],
+      invalidatesTags: ["Orders", "Cart", "Products", "ProductDetails", "Transactions", "Coupons", "Redemptions"],
     }),
   }),
   overrideExisting: true,

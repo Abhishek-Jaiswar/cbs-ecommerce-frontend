@@ -24,6 +24,91 @@ import {
   RotateCcw,
 } from "lucide-react";
 
+interface QuantitySelectorProps {
+  itemId: string;
+  quantity: number;
+  stock: number;
+  isUpdating: boolean;
+  onUpdate: (itemId: string, newQty: number) => void;
+}
+
+function QuantitySelector({ itemId, quantity, stock, isUpdating, onUpdate }: QuantitySelectorProps) {
+  const [val, setVal] = React.useState(String(quantity));
+
+  React.useEffect(() => {
+    setVal(String(quantity));
+  }, [quantity]);
+
+  const handleBlur = () => {
+    let parsed = parseInt(val, 10);
+    if (isNaN(parsed) || parsed < 1) {
+      parsed = 1;
+    } else if (parsed > stock) {
+      parsed = stock;
+    }
+    setVal(String(parsed));
+    if (parsed !== quantity) {
+      onUpdate(itemId, parsed);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.currentTarget.blur();
+    }
+  };
+
+  return (
+    <div className="flex items-center border border-stone-200 bg-stone-50 h-8 shrink-0">
+      <button
+        type="button"
+        disabled={quantity <= 1 || isUpdating}
+        onClick={() => {
+          const next = quantity - 1;
+          setVal(String(next));
+          onUpdate(itemId, next);
+        }}
+        className="w-8 h-full flex items-center justify-center text-stone-500 hover:bg-stone-100 transition-colors disabled:opacity-50"
+        aria-label="Decrease quantity"
+      >
+        <Minus size={11} />
+      </button>
+      {isUpdating ? (
+        <div className="w-8 h-full flex items-center justify-center bg-transparent">
+          <Loader2 className="h-3.5 w-3.5 animate-spin text-stone-500" />
+        </div>
+      ) : (
+        <input
+          type="text"
+          value={val}
+          onChange={(e) => {
+            const inputVal = e.target.value;
+            if (/^\d*$/.test(inputVal)) {
+              setVal(inputVal);
+            }
+          }}
+          onBlur={handleBlur}
+          onKeyDown={handleKeyDown}
+          className="w-8 h-full text-center text-xs font-semibold text-stone-800 bg-transparent border-none focus:outline-none font-mono"
+        />
+      )}
+      <button
+        type="button"
+        disabled={quantity >= stock || isUpdating}
+        onClick={() => {
+          const next = quantity + 1;
+          setVal(String(next));
+          onUpdate(itemId, next);
+        }}
+        className="w-8 h-full flex items-center justify-center text-stone-500 hover:bg-stone-100 transition-colors disabled:opacity-50"
+        aria-label="Increase quantity"
+      >
+        <Plus size={11} />
+      </button>
+    </div>
+  );
+}
+
 export default function CartPage() {
   const router = useRouter();
   const { isAuthenticated } = useAppSelector((state) => state.auth);
@@ -63,12 +148,7 @@ export default function CartPage() {
   // Grand Total
   const total = subtotal + shippingCost + taxCost;
 
-  const handleQuantityChange = async (
-    itemId: string,
-    currentQty: number,
-    change: number,
-  ) => {
-    const newQty = currentQty + change;
+  const handleQuantityChange = async (itemId: string, newQty: number) => {
     try {
       await updateQuantity({ cartItemId: itemId, quantity: newQty }).unwrap();
     } catch (err) {
@@ -261,37 +341,13 @@ export default function CartPage() {
                     {/* Quantity & Pricing Controls */}
                     <div className="flex items-center justify-between sm:justify-end gap-8 w-full sm:w-auto border-t sm:border-t-0 pt-4 sm:pt-0 border-stone-100">
                       {/* Quantity Selector */}
-                      <div className="flex items-center border border-stone-200 bg-stone-50 h-8 shrink-0">
-                        <button
-                          disabled={item.quantity <= 1 || isUpdating}
-                          onClick={() =>
-                            handleQuantityChange(item.id, item.quantity, -1)
-                          }
-                          className="w-8 h-full flex items-center justify-center text-stone-500 hover:bg-stone-100 transition-colors disabled:opacity-50"
-                          aria-label="Decrease quantity"
-                        >
-                          <Minus size={11} />
-                        </button>
-                        <span className="w-8 text-center text-xs font-semibold text-stone-800 flex items-center justify-center font-mono">
-                          {isUpdating ? (
-                            <Loader2 className="h-3.5 w-3.5 animate-spin text-stone-500" />
-                          ) : (
-                            item.quantity
-                          )}
-                        </span>
-                        <button
-                          disabled={
-                            item.quantity >= item.variant.stock || isUpdating
-                          }
-                          onClick={() =>
-                            handleQuantityChange(item.id, item.quantity, 1)
-                          }
-                          className="w-8 h-full flex items-center justify-center text-stone-500 hover:bg-stone-100 transition-colors disabled:opacity-50"
-                          aria-label="Increase quantity"
-                        >
-                          <Plus size={11} />
-                        </button>
-                      </div>
+                      <QuantitySelector
+                        itemId={item.id}
+                        quantity={item.quantity}
+                        stock={item.variant.stock}
+                        isUpdating={isUpdating}
+                        onUpdate={handleQuantityChange}
+                      />
 
                       {/* Price total */}
                       <div className="text-right min-w-[90px]">
