@@ -1,72 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface Props {
-  onChange: (
-    imageUrl: string,
-    imagePublicId: string
-  ) => void;
+  value?: string;
+  onChange: (file: File | null) => void;
 }
 
 export default function ImageUpload({
+  value,
   onChange,
 }: Props) {
-  const [preview, setPreview] =
-    useState("");
+  const [preview, setPreview] = useState("");
 
-  const [uploading, setUploading] =
-    useState(false);
-
-  const upload = async (
-    file: File
-  ) => {
-    try {
-      setUploading(true);
-
-      const formData =
-        new FormData();
-
-      formData.append(
-        "file",
-        file
-      );
-
-      const response =
-        await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/upload`,
-          {
-            method: "POST",
-            body: formData,
-            credentials: "include",
-          }
-        );
-
-      const data =
-        await response.json();
-
-      const imageUrl =
-        data.data?.imageUrl;
-
-      const imagePublicId =
-        data.data?.imagePublicId;
-
-      setPreview(imageUrl);
-
-      onChange(
-        imageUrl,
-        imagePublicId
-      );
-    } catch (error) {
-      console.error(error);
-
-      alert(
-        "Failed to upload image"
-      );
-    } finally {
-      setUploading(false);
+  useEffect(() => {
+    if (value) {
+      setPreview(value);
     }
-  };
+  }, [value]);
 
   return (
     <div className="space-y-4">
@@ -77,8 +28,7 @@ export default function ImageUpload({
         </label>
 
         <p className="text-sm text-gray-500">
-          Upload a promotional banner
-          for your landing page.
+          Upload a promotional banner for your landing page.
         </p>
       </div>
 
@@ -88,13 +38,12 @@ export default function ImageUpload({
         type="file"
         accept="image/*"
         className="hidden"
-        onChange={async (e) => {
-          const file =
-            e.target.files?.[0];
-
+        onChange={(e) => {
+          const file = e.target.files?.[0];
           if (!file) return;
 
-          await upload(file);
+          setPreview(URL.createObjectURL(file));
+          onChange(file);
         }}
       />
 
@@ -120,40 +69,25 @@ export default function ImageUpload({
           transition
           "
         >
-          {uploading ? (
-            <>
-              <div className="animate-spin text-4xl">
-                ⏳
-              </div>
+          <div className="text-6xl mb-4">
+            🖼️
+          </div>
 
-              <p className="mt-4 font-medium">
-                Uploading...
-              </p>
-            </>
-          ) : (
-            <>
-              <div className="text-6xl mb-4">
-                🖼️
-              </div>
+          <h3 className="text-lg font-semibold">
+            Upload Banner Image
+          </h3>
 
-              <h3 className="text-lg font-semibold">
-                Upload Banner Image
-              </h3>
+          <p className="text-sm text-gray-500 mt-2">
+            Click to browse files
+          </p>
 
-              <p className="text-sm text-gray-500 mt-2">
-                Click to browse files
-              </p>
+          <p className="text-xs text-gray-400 mt-3">
+            PNG, JPG, WEBP • Max 10MB
+          </p>
 
-              <p className="text-xs text-gray-400 mt-3">
-                PNG, JPG, WEBP • Max 10MB
-              </p>
-
-              <p className="text-xs text-gray-400">
-                Recommended:
-                1920 × 700 px
-              </p>
-            </>
-          )}
+          <p className="text-xs text-gray-400">
+            Recommended: 1920 × 700 px
+          </p>
         </label>
       )}
 
@@ -189,7 +123,7 @@ export default function ImageUpload({
               font-medium
               "
             >
-              Uploaded
+              Selected
             </div>
 
           </div>
@@ -213,9 +147,10 @@ export default function ImageUpload({
 
             <button
               type="button"
-              onClick={() =>
-                setPreview("")
-              }
+              onClick={() => {
+                setPreview("");
+                onChange(null);
+              }}
               className="
               px-4
               py-2

@@ -20,6 +20,7 @@ import {
   LineChart,
   FileText,
   Boxes,
+  LayoutTemplate,
 } from "lucide-react";
 
 // This is structured data mapped to our backend modules.
@@ -43,10 +44,17 @@ const data = {
           title: "Analytics",
           url: "/dashboard/analytics",
         },
+      ],
+    },
+    {
+      title: "LPM",
+      url: "#",
+      icon: <LayoutTemplate className="size-4" />,
+      items: [
         {
-          title: "Landing Pages",
+          title: "Hero Slider",
           url: "/dashboard/landing-pages",
-        }
+        },
       ],
     },
     {

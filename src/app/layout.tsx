@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { StoreProvider } from "@/store/store-provider";
 import { AuthProvider } from "@/components/auth/auth-provider";
 import { UtmTracker } from "@/components/utm/utm-tracker";
+import { OfferModal } from "@/components/landing-page/offer-modal";
 
 const geistSans = Geist({
   subsets: ["latin"],
@@ -122,6 +123,7 @@ export default function RootLayout({
               <HeaderFooterWrapper>
                 {children}
               </HeaderFooterWrapper>
+              <OfferModal />
             </TooltipProvider>
           </AuthProvider>
         </StoreProvider>

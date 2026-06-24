@@ -118,67 +118,32 @@ baseApi.injectEndpoints({
     BaseResponse<
       LandingPage
     >,
-
-    Partial<
-      LandingPage
-    >
+    FormData
   >({
-
-    query:
-    (body) => ({
-
-      url:
-      "/landing-pages",
-
-      method:
-      "POST",
-
-      body
-
+    query: (body) => ({
+      url: "/landing-pages",
+      method: "POST",
+      body,
     }),
-
-    invalidatesTags:
-    ["LandingPages"]
-
+    invalidatesTags: ["LandingPages"]
   }),
 
   updateLandingPage:
   builder.mutation<
-
     BaseResponse<
       LandingPage
     >,
-
     {
       id: string;
-
-      body:
-      Partial<
-        LandingPage
-      >;
+      body: FormData;
     }
-
   >({
-
-    query:
-    ({
-      id,
-      body
-    }) => ({
-
-      url:
-      `/landing-pages/${id}`,
-
-      method:
-      "PUT",
-
-      body
-
+    query: ({ id, body }) => ({
+      url: `/landing-pages/${id}`,
+      method: "PUT",
+      body,
     }),
-
-    invalidatesTags:
-    ["LandingPages"]
-
+    invalidatesTags: ["LandingPages"]
   }),
 
   deleteLandingPage:

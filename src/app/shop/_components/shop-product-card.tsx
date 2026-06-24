@@ -140,12 +140,12 @@ export function ShopProductCard({ product, viewMode }: ShopProductCardProps) {
           )}
           {product.appliedOffer && (
             <span className="bg-amber-600 backdrop-blur-[2px] px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-white shadow-sm">
-              Offer
+              {product.appliedOffer.name} {discount > 0 ? `• ${discount}% OFF` : ""}
             </span>
           )}
-          {discount > 0 && (
+          {!product.appliedOffer && discount > 0 && (
             <span className="bg-[#c29958]/95 backdrop-blur-[2px] px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-white shadow-sm">
-              {discount}%
+              {discount}% OFF
             </span>
           )}
         </div>
@@ -240,11 +240,7 @@ export function ShopProductCard({ product, viewMode }: ShopProductCardProps) {
 
         {/* Price and Non-breaking Add to Bag Row */}
         <div className="mt-3 flex flex-col gap-2 border-t border-stone-100/60 pt-3">
-          {product.appliedOffer && (
-            <div className="text-[9px] font-bold text-amber-700 bg-amber-50/50 border border-amber-100/50 px-2 py-0.5 rounded-sm select-none self-start truncate max-w-full">
-              Offer: {product.appliedOffer.name}
-            </div>
-          )}
+
           <div className="flex items-center justify-between w-full">
             <div className="flex items-baseline gap-1.5 min-w-0 flex-1 pr-2">
               <span className="text-sm font-bold text-stone-850 tracking-tight shrink-0">{formatPrice(product.price)}</span>
