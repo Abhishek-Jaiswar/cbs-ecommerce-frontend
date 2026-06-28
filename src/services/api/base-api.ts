@@ -27,6 +27,7 @@ export const baseApi = createApi({
     "Announcements",
     "Reports",
     "LandingPages",
+    "LandingCategories",
     "Suppliers",
     "Warehouses",
     "PurchaseOrders",

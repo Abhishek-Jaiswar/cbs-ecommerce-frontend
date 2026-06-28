@@ -55,6 +55,10 @@ const data = {
           title: "Hero Slider",
           url: "/dashboard/landing-pages",
         },
+        {
+          title: "Category Banners",
+          url: "/dashboard/landing-pages/category-banners",
+        },
       ],
     },
     {

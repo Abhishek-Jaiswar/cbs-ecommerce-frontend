@@ -1,9 +1,14 @@
+"use client";
+
 import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useGetActiveLandingCategoriesQuery } from "@/services/api/landing-pages/landing-category.api";
 
-const categoryBanners = [
+// Default fallback banners for slots 1-4
+const defaultBanners = [
   {
+    slot: 1,
     align: "right",
     image: "/corano/banner/category-wedr-ban-1.png",
     label: "Beautiful",
@@ -12,6 +17,7 @@ const categoryBanners = [
     href: "/shop?category=wedding-rings",
   },
   {
+    slot: 2,
     align: "right",
     image: "/corano/banner/category-earring-ban-2.png",
     label: "Earrings",
@@ -20,6 +26,7 @@ const categoryBanners = [
     href: "/shop?category=earrings",
   },
   {
+    slot: 3,
     align: "right",
     image: "/corano/banner/category-neckles-ban-3.png",
     label: "New Arrivals",
@@ -28,6 +35,7 @@ const categoryBanners = [
     href: "/shop?category=pearl-necklaces",
   },
   {
+    slot: 4,
     align: "right",
     image: "/corano/banner/category-diamond-ban-4.png",
     label: "New Design",
@@ -37,13 +45,56 @@ const categoryBanners = [
   },
 ];
 
+// Helper to split category name into title and titleAccent
+function formatTitle(name: string): { title: string; titleAccent: string } {
+  if (!name) return { title: "", titleAccent: "" };
+  const words = name.trim().split(/\s+/);
+  if (words.length <= 1) {
+    return { title: words[0], titleAccent: "" };
+  }
+  return {
+    title: words[0],
+    titleAccent: words.slice(1).join(" "),
+  };
+}
+
 export function CategoryBanners() {
+  const { data: activeCategoriesData } = useGetActiveLandingCategoriesQuery();
+  const activeBanners = activeCategoriesData?.data || [];
+
+  // Map slots 1-4
+  const slots = [1, 2, 3, 4];
+
+  const categoryBanners = slots.map((slotNum) => {
+    // Find active backend category for this slot
+    const backendBanner = activeBanners.find((b) => b.slot === slotNum);
+    const defaultBanner = defaultBanners.find((b) => b.slot === slotNum)!;
+
+    if (backendBanner) {
+      const { title, titleAccent } = formatTitle(
+        backendBanner.category?.name || backendBanner.label
+      );
+      return {
+        align: "right",
+        image: backendBanner.image,
+        label: backendBanner.label,
+        title,
+        titleAccent,
+        href: backendBanner.category?.slug
+          ? `/shop?category=${backendBanner.category.slug}`
+          : "/shop",
+      };
+    }
+
+    return defaultBanner;
+  });
+
   return (
     <section className="pb-16 bg-white">
       <div className="mx-auto grid max-w-7xl gap-5 px-4 sm:grid-cols-2 sm:px-6 lg:px-8">
-        {categoryBanners.map((banner) => (
+        {categoryBanners.map((banner, index) => (
           <Link
-            key={banner.image}
+            key={`${banner.image}-${index}`}
             href={banner.href}
             className="group relative block min-h-[250px] overflow-hidden bg-[#f7f2ea]"
           >
@@ -66,7 +117,9 @@ export function CategoryBanners() {
               </p>
               <h2 className="mt-2 text-2xl sm:text-3xl font-serif font-medium text-[#222222] leading-tight tracking-wide">
                 {banner.title}
-                <span className="block font-serif">{banner.titleAccent}</span>
+                {banner.titleAccent && (
+                  <span className="block font-serif">{banner.titleAccent}</span>
+                )}
               </h2>
               <span className="mt-5 border-b border-[#222222] text-xs font-bold uppercase text-[#222222] transition-colors group-hover:border-[#c29958] group-hover:text-[#c29958]">
                 Shop Now
