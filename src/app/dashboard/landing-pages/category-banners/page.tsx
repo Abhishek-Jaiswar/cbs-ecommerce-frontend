@@ -307,106 +307,108 @@ export default function CategoryBannersDashboard() {
 
       {/* Create / Edit Dialog */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="sm:max-w-lg bg-white border border-stone-200 rounded-2xl p-6 shadow-xl">
-          <DialogHeader>
+        <DialogContent className="sm:max-w-lg max-h-[90vh] bg-white border border-stone-200 rounded-2xl p-6 shadow-xl flex flex-col">
+          <DialogHeader className="shrink-0">
             <DialogTitle className="text-xl font-bold font-serif text-stone-900 border-b pb-3">
               {editingBanner ? `Edit Slot ${slot} Banner` : `Assign Slot ${targetSlot} Banner`}
             </DialogTitle>
           </DialogHeader>
 
-          <form onSubmit={handleSubmit} className="space-y-5 mt-4">
-            {errorMsg && (
-              <div className="bg-red-50 text-red-600 p-3.5 rounded-xl text-xs border border-red-200 font-medium">
-                {errorMsg}
-              </div>
-            )}
+          <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden mt-4">
+            <div className="flex-1 overflow-y-auto pr-1.5 space-y-5 pb-4">
+              {errorMsg && (
+                <div className="bg-red-50 text-red-600 p-3.5 rounded-xl text-xs border border-red-200 font-medium">
+                  {errorMsg}
+                </div>
+              )}
 
-            {/* Product Category Select */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-stone-600">
-                Target Product Category
-              </label>
-              <select
-                value={categoryId}
-                onChange={(e) => setCategoryId(e.target.value)}
-                className="w-full rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition duration-150"
-                required
-              >
-                <option value="">Select a category...</option>
-                {productCategories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </option>
-                ))}
-              </select>
-              <p className="text-[10px] text-stone-400">
-                Links this banner to the chosen category on the shop page.
-              </p>
-            </div>
-
-            {/* Label Input */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-stone-600">
-                Banner Label / Subtitle
-              </label>
-              <Input
-                value={label}
-                onChange={(e) => setLabel(e.target.value)}
-                placeholder="e.g. New Arrivals, Beautiful, 15% Off"
-                required
-                className="h-10 rounded-lg border-stone-200 focus-visible:ring-amber-500/20 focus-visible:ring-2 focus-visible:border-amber-500"
-              />
-              <p className="text-[10px] text-stone-400">
-                Small text displayed above the category name (e.g. "Beautiful").
-              </p>
-            </div>
-
-            {/* Slot Display */}
-            <div className="grid grid-cols-2 gap-4">
+              {/* Product Category Select */}
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-stone-600">
-                  Target Layout Slot
+                  Target Product Category
                 </label>
                 <select
-                  value={slot}
-                  onChange={(e) => setSlot(Number(e.target.value))}
-                  className="w-full rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 text-sm outline-none cursor-not-allowed"
-                  disabled
+                  value={categoryId}
+                  onChange={(e) => setCategoryId(e.target.value)}
+                  className="w-full rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition duration-150"
+                  required
                 >
-                  <option value={1}>Slot 1</option>
-                  <option value={2}>Slot 2</option>
-                  <option value={3}>Slot 3</option>
-                  <option value={4}>Slot 4</option>
+                  <option value="">Select a category...</option>
+                  {productCategories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </option>
+                  ))}
                 </select>
+                <p className="text-[10px] text-stone-400">
+                  Links this banner to the chosen category on the shop page.
+                </p>
               </div>
 
-              <div className="space-y-1.5 flex flex-col justify-end pb-2">
-                <div className="flex items-center space-x-2.5">
-                  <Switch
-                    checked={isActive}
-                    onCheckedChange={setIsActive}
-                    id="modal-active"
-                  />
-                  <label
-                    htmlFor="modal-active"
-                    className="text-xs font-semibold text-stone-600 cursor-pointer"
-                  >
-                    Active on website
+              {/* Label Input */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-stone-600">
+                  Banner Label / Subtitle
+                </label>
+                <Input
+                  value={label}
+                  onChange={(e) => setLabel(e.target.value)}
+                  placeholder="e.g. New Arrivals, Beautiful, 15% Off"
+                  required
+                  className="h-10 rounded-lg border-stone-200 focus-visible:ring-amber-500/20 focus-visible:ring-2 focus-visible:border-amber-500"
+                />
+                <p className="text-[10px] text-stone-400">
+                  Small text displayed above the category name (e.g. "Beautiful").
+                </p>
+              </div>
+
+              {/* Slot Display */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-stone-600">
+                    Target Layout Slot
                   </label>
+                  <select
+                    value={slot}
+                    onChange={(e) => setSlot(Number(e.target.value))}
+                    className="w-full rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 text-sm outline-none cursor-not-allowed"
+                    disabled
+                  >
+                    <option value={1}>Slot 1</option>
+                    <option value={2}>Slot 2</option>
+                    <option value={3}>Slot 3</option>
+                    <option value={4}>Slot 4</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1.5 flex flex-col justify-end pb-2">
+                  <div className="flex items-center space-x-2.5">
+                    <Switch
+                      checked={isActive}
+                      onCheckedChange={setIsActive}
+                      id="modal-active"
+                    />
+                    <label
+                      htmlFor="modal-active"
+                      className="text-xs font-semibold text-stone-600 cursor-pointer"
+                    >
+                      Active on website
+                    </label>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Image Upload */}
-            <div className="border-t border-stone-100 pt-4">
-              <ImageUpload
-                value={editingBanner?.image || ""}
-                onChange={setImageFile}
-              />
+              {/* Image Upload */}
+              <div className="border-t border-stone-100 pt-4">
+                <ImageUpload
+                  value={editingBanner?.image || ""}
+                  onChange={setImageFile}
+                />
+              </div>
             </div>
 
             {/* Footer buttons */}
-            <DialogFooter className="border-t border-stone-100 pt-4 flex gap-3 sm:justify-end">
+            <DialogFooter className="border-t border-stone-100 pt-4 flex gap-3 sm:justify-end shrink-0">
               <Button
                 type="button"
                 variant="outline"
