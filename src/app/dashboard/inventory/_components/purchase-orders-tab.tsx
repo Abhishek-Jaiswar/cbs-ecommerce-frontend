@@ -381,7 +381,7 @@ export function PurchaseOrdersTab({
               Approve & Send Purchase Order
             </DialogTitle>
             <DialogDescription className="text-xs text-stone-500 dark:text-stone-400">
-              Review order details, verify the supplier's contact email, and add custom notes before sending.
+              Review order details, verify the supplier&apos;s contact email, and add custom notes before sending.
             </DialogDescription>
           </DialogHeader>
 

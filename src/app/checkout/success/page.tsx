@@ -10,6 +10,7 @@ import { Loader2, CheckCircle2, ShoppingBag, ArrowRight, Truck, FileText } from 
 function SuccessPageContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get("orderId");
+  const [isDownloading, setIsDownloading] = React.useState(false);
 
   const { data: orderRes, isLoading, isError } = useGetOrderByIdQuery(orderId ?? "", {
     skip: !orderId,
@@ -59,7 +60,6 @@ function SuccessPageContent() {
   }
 
   const order = orderRes.data;
-  const [isDownloading, setIsDownloading] = React.useState(false);
 
   const handleDownloadInvoice = async () => {
     setIsDownloading(true);

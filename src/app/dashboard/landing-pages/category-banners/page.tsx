@@ -358,7 +358,7 @@ export default function CategoryBannersDashboard() {
                   className="h-10 rounded-lg border-stone-200 focus-visible:ring-amber-500/20 focus-visible:ring-2 focus-visible:border-amber-500"
                 />
                 <p className="text-[10px] text-stone-400">
-                  Small text displayed above the category name (e.g. "Beautiful").
+                  Small text displayed above the category name (e.g. &quot;Beautiful&quot;).
                 </p>
               </div>
 

@@ -111,7 +111,7 @@ export function CreatePoDialog({ open, onOpenChange, onSuccess }: CreatePoDialog
           <DialogHeader>
             <DialogTitle className="text-lg font-bold">Generate Purchase Order (PO)</DialogTitle>
             <DialogDescription className="text-xs text-stone-500">
-              Draft a vendor replenishment order. Approved orders automatically update 'On Order Qty'.
+              Draft a vendor replenishment order. Approved orders automatically update &apos;On Order Qty&apos;.
             </DialogDescription>
           </DialogHeader>
 
