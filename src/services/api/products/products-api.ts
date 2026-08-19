@@ -279,6 +279,79 @@ export const productApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Tags"],
     }),
+    searchProducts: builder.query<
+      {
+        status: string;
+        data: {
+          items: any[];
+          total: number;
+          page: number;
+          limit: number;
+          totalPages: number;
+          facets: {
+            categories: { id: string; name: string; slug: string; count: number }[];
+            brands: { id: string; name: string; count: number }[];
+            minPrice: number;
+            maxPrice: number;
+          };
+        };
+      },
+      {
+        q?: string;
+        page?: number;
+        limit?: number;
+        categoryId?: string;
+        brandId?: string;
+        minPrice?: number;
+        maxPrice?: number;
+        minRating?: number;
+        isSale?: boolean;
+        isFeatured?: boolean;
+        inStockOnly?: boolean;
+        sort?: string;
+      }
+    >({
+      query: (params) => {
+        const searchParams = new URLSearchParams();
+        if (params.q) searchParams.append("q", params.q);
+        if (params.page) searchParams.append("page", params.page.toString());
+        if (params.limit) searchParams.append("limit", params.limit.toString());
+        if (params.categoryId) searchParams.append("categoryId", params.categoryId);
+        if (params.brandId) searchParams.append("brandId", params.brandId);
+        if (params.minPrice !== undefined) searchParams.append("minPrice", params.minPrice.toString());
+        if (params.maxPrice !== undefined) searchParams.append("maxPrice", params.maxPrice.toString());
+        if (params.minRating !== undefined) searchParams.append("minRating", params.minRating.toString());
+        if (params.isSale) searchParams.append("isSale", "true");
+        if (params.isFeatured) searchParams.append("isFeatured", "true");
+        if (params.inStockOnly) searchParams.append("inStockOnly", "true");
+        if (params.sort) searchParams.append("sort", params.sort);
+
+        return `/search?${searchParams.toString()}`;
+      },
+      providesTags: ["Products"],
+    }),
+    getSearchSuggestions: builder.query<
+      {
+        status: string;
+        data: {
+          categories: { id: string; name: string; slug: string }[];
+          products: {
+            id: string;
+            name: string;
+            slug: string;
+            excerpt: string;
+            price: number;
+            originalPrice: number | null;
+            categoryName: string | null;
+            imageUrl: string | null;
+          }[];
+        };
+      },
+      string
+    >({
+      query: (q) => `/search/suggestions?q=${encodeURIComponent(q)}`,
+      providesTags: ["Products"],
+    }),
   }),
   overrideExisting: true,
 });
@@ -316,6 +389,8 @@ export const {
   useCreateProductTagMutation,
   useUpdateProductTagMutation,
   useDeleteProductTagMutation,
+  useSearchProductsQuery,
+  useGetSearchSuggestionsQuery,
 } = productApi;
 
 
