@@ -206,11 +206,14 @@ const Navbar = ({ overlay = false }: { overlay?: boolean }) => {
         <SheetContent
           side="left"
           showCloseButton={false}
+          aria-describedby={undefined}
           className="flex h-full w-[86vw] max-w-sm flex-col gap-0 overflow-y-auto border-r-0 bg-white p-0 font-zv-body"
         >
           <SheetHeader className="flex-row items-center justify-between border-b border-zv-bg p-zv-20">
-            <SheetTitle asChild>
-              <ZvLogo variant="wordmark" className="h-10 w-[118px]" alt="ZenVoraa" />
+            {/* Real title element (asChild would drop Radix's id on ZvLogo). */}
+            <SheetTitle>
+              <ZvLogo variant="wordmark" className="h-10 w-[118px]" alt="" />
+              <span className="sr-only">ZenVoraa menu</span>
             </SheetTitle>
             <SheetClose asChild>
               <button type="button" aria-label="Close menu" className="text-zv-primary">
