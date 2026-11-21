@@ -4,20 +4,38 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ==========================================================================
+   ZenVoraa design system (Figma: ZenVoraa / Style Guide, Nov 2026)
+   --------------------------------------------------------------------------
+   Used by the redesigned storefront pages: Home, Shop, Product.
+   Everything is namespaced `zv-` so it never collides with the shadcn tokens
+   below, which the dashboard and the untouched pages still rely on.
+
+   Pairing rule: names, titles and calls to action -> Cormorant Garamond
+   Italic (`font-zv-display`); information to read or scan -> Geist
+   (`font-zv-body`).
+   ========================================================================== */
 :root {
-  --brand: #c8a96e;
-  --brand-hover: #b5943d;
-  --product-bg: #f9f5f0;
-  --surface: #ffffff;
-  --surface-muted: #f9fafb;
-  --text-primary: #111827;
-  --text-secondary: #374151;
-  --text-muted: #6b7280;
-  --text-soft: #9ca3af;
-  --border: oklch(0.922 0 0);
-  --border-soft: #f3f4f6;
-  --success: #059669;
-  --font-zenvoraa: var(--font-geist-sans-custom), "Lato", Arial, Helvetica, sans-serif;
+  /* Colour: the 8 Figma variables */
+  --zv-primary: #96600c; /* buttons, borders, icons, accents. 5.3:1 on white */
+  --zv-hover: #5f3c05; /* primary hover, badge text, card hover glow */
+  --zv-gold: #c08a1e; /* icons, outlines, discount tag (3:1 - large text only) */
+  --zv-white: #ffffff;
+  --zv-bg: #f3ece0; /* footer, badges, shipping notice */
+  --zv-bg2: #8c7a62; /* 1px dividers (filters, product page) */
+  --zv-silver: #c0c0c0; /* metal swatch only, always outlined */
+  --zv-rose-gold: #b76e79; /* metal swatch only */
+
+  /* Colour: used in the file but not saved as Figma variables */
+  --zv-image-well: #e8e4db; /* warm grey behind product photos */
+  --zv-ink: #000000; /* default body text */
+  --zv-ink-brown: #241a0f; /* softer heading text */
+  --zv-bg-soft: #fbf8f3; /* Home "Trending Bestsellers" band */
+
+  /* Kept for the 37 files that set font-[var(--font-zenvoraa)] */
+  --font-zenvoraa: var(--font-geist-sans-custom), Arial, Helvetica, sans-serif;
+
+  /* shadcn/ui tokens (dashboard + untouched pages) - unchanged */
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -33,6 +51,7 @@
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
   --chart-1: oklch(0.87 0 0);
@@ -52,20 +71,66 @@
 }
 
 @theme inline {
+  /* ---- ZenVoraa: colours -> bg-zv-primary, text-zv-ink, border-zv-bg2 ... */
+  --color-zv-primary: var(--zv-primary);
+  --color-zv-hover: var(--zv-hover);
+  --color-zv-gold: var(--zv-gold);
+  --color-zv-white: var(--zv-white);
+  --color-zv-bg: var(--zv-bg);
+  --color-zv-bg2: var(--zv-bg2);
+  --color-zv-silver: var(--zv-silver);
+  --color-zv-rose-gold: var(--zv-rose-gold);
+  --color-zv-image-well: var(--zv-image-well);
+  --color-zv-ink: var(--zv-ink);
+  --color-zv-ink-brown: var(--zv-ink-brown);
+  --color-zv-bg-soft: var(--zv-bg-soft);
+
+  /* ---- ZenVoraa: font families -> font-zv-display, font-zv-body */
+  --font-zv-display: var(--font-cormorant-garamond-custom), Georgia, serif;
+  --font-zv-body: var(--font-geist-sans-custom), Arial, Helvetica, sans-serif;
+
+  /* ---- ZenVoraa: font sizes (+ line heights) -> text-zv-h1 ...
+     Prefer the composite `type-*` utilities further down, which also set
+     family, weight and style. */
+  --text-zv-display: 48px;
+  --text-zv-display--line-height: 1.4;
+  --text-zv-h1: 36px;
+  --text-zv-h1--line-height: 1.06;
+  --text-zv-h2: 30px;
+  --text-zv-h2--line-height: 1.1;
+  --text-zv-h3: 28px;
+  --text-zv-h3--line-height: 1.4;
+  --text-zv-h4: 24px;
+  --text-zv-h4--line-height: 1.4;
+  --text-zv-lg: 18px;
+  --text-zv-lg--line-height: 1.4;
+  --text-zv-base: 16px;
+  --text-zv-base--line-height: 1.4;
+  --text-zv-sm: 14px;
+  --text-zv-sm--line-height: 1.5;
+  --text-zv-xs: 12px;
+  --text-zv-xs--line-height: 1.4;
+
+  /* ---- ZenVoraa: spacing -> p-zv-10, gap-zv-20, px-zv-40 ... */
+  --spacing-zv-5: 5px; /* badge vertical padding */
+  --spacing-zv-10: 10px; /* button vertical padding, badge/review gaps */
+  --spacing-zv-20: 20px; /* mobile gutter, card padding, gap between buttons */
+  --spacing-zv-30: 30px; /* button horizontal padding */
+  --spacing-zv-40: 40px; /* desktop gutter, space above section titles */
+
+  /* ---- ZenVoraa: radius -> rounded-zv-tag, rounded-zv-xs.
+     The asymmetric leaf corner is a utility below (rounded-leaf). */
+  --radius-zv-leaf: 20px;
+  --radius-zv-tag: 10px;
+  --radius-zv-xs: 5px;
+
+  /* ---- ZenVoraa: shadow -> shadow-zv-card-hover */
+  --shadow-zv-card-hover: inset 0 0 20px var(--zv-hover);
+
+  /* ---- shadcn/ui mappings - unchanged */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-brand: var(--brand);
-  --color-brand-hover: var(--brand-hover);
-  --color-product-bg: var(--product-bg);
-  --color-surface: var(--surface);
-  --color-surface-muted: var(--surface-muted);
-  --color-text-primary: var(--text-primary);
-  --color-text-secondary: var(--text-secondary);
-  --color-text-muted: var(--text-muted);
-  --color-text-soft: var(--text-soft);
   --color-border: var(--border);
-  --color-border-soft: var(--border-soft);
-  --color-success: var(--success);
   --font-sans: var(--font-geist-sans-custom), Arial, Helvetica, sans-serif;
   --font-mono: "Courier New", Courier, monospace;
   --font-serif: var(--font-cormorant-garamond-custom), Georgia, serif;
@@ -153,9 +218,127 @@
   }
 }
 
-/* Custom Double-Range Slider CSS */
+/* ==========================================================================
+   ZenVoraa utilities
+   ========================================================================== */
+
+/* Signature leaf corner: 20px on top-left + bottom-right only.
+   Buttons, product cards, review cards. */
+@utility rounded-leaf {
+  border-radius: var(--radius-zv-leaf) 0 var(--radius-zv-leaf) 0;
+}
+/* Mirrored leaf (top-right + bottom-left): Sort dropdown, header actions,
+   shipping notice, alternating Home nav buttons. */
+@utility rounded-leaf-mirror {
+  border-radius: 0 var(--radius-zv-leaf) 0 var(--radius-zv-leaf);
+}
+/* Large leaf (40px) on the Home category banners. */
+@utility rounded-leaf-lg {
+  border-radius: 40px 0 40px 0;
+}
+@utility rounded-leaf-lg-mirror {
+  border-radius: 0 40px 0 40px;
+}
+
+/* Type scale - Cormorant Garamond (titles, headings, buttons) */
+@utility type-display {
+  font-family: var(--font-zv-display);
+  font-size: 48px;
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.4;
+}
+@utility type-h1 {
+  font-family: var(--font-zv-display);
+  font-size: 36px;
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.06;
+}
+@utility type-h2 {
+  font-family: var(--font-zv-display);
+  font-size: 30px;
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.1;
+}
+@utility type-h3 {
+  font-family: var(--font-zv-display);
+  font-size: 28px;
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.4;
+}
+@utility type-h4 {
+  font-family: var(--font-zv-display);
+  font-size: 24px;
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.4;
+}
+@utility type-button {
+  font-family: var(--font-zv-display);
+  font-size: 18px;
+  font-weight: 700;
+  font-style: italic;
+  line-height: 1.4;
+}
+@utility type-signature {
+  font-family: var(--font-zv-display);
+  font-size: 18px;
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.4;
+}
+@utility type-serif-sm {
+  font-family: var(--font-zv-display);
+  font-size: 14px;
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.4;
+}
+
+/* Type scale - Geist (descriptions, filters, links, prices, captions) */
+@utility type-body-lg {
+  font-family: var(--font-zv-body);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.05;
+}
+@utility type-body {
+  font-family: var(--font-zv-body);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+@utility type-body-sm {
+  font-family: var(--font-zv-body);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+@utility type-price-lg {
+  font-family: var(--font-zv-body);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+@utility type-price {
+  font-family: var(--font-zv-body);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+@utility type-caption {
+  font-family: var(--font-zv-body);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+/* Custom Double-Range Slider CSS (Shop sidebar price filter) */
 .thumb::-webkit-slider-thumb {
-  background-color: #c29958;
+  background-color: var(--zv-primary);
   border: 2px solid #ffffff;
   border-radius: 50%;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
@@ -168,11 +351,11 @@
 }
 .thumb::-webkit-slider-thumb:hover {
   transform: scale(1.2);
-  background-color: #222222;
+  background-color: var(--zv-hover);
 }
 
 .thumb::-moz-range-thumb {
-  background-color: #c29958;
+  background-color: var(--zv-primary);
   border: 2px solid #ffffff;
   border-radius: 50%;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
@@ -184,5 +367,5 @@
 }
 .thumb::-moz-range-thumb:hover {
   transform: scale(1.2);
-  background-color: #222222;
+  background-color: var(--zv-hover);
 }
