@@ -1,10 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { Eye, EyeOff, RefreshCw, KeyRound } from "lucide-react";
-import React, { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import React, { useEffect, useState } from "react";
 import {
   useRegisterMutation,
   useVerifyEmailOtpMutation,
@@ -12,253 +10,208 @@ import {
 } from "@/services/api/auth/auth-api";
 import { useAppDispatch } from "@/store/hooks";
 import { setCredentials } from "@/store/features/auth/auth.slice";
+import {
+  AuthAlert,
+  AuthButton,
+  AuthField,
+  AuthShell,
+  OtpField,
+  PasswordField,
+  TextButton,
+  safeRedirect,
+  withRedirect,
+} from "./auth-ui";
+
+type Status = { type: "success" | "error"; text: string } | null;
+const RESEND_SECONDS = 60;
+const errorText = (error: unknown, fallback: string) =>
+  (error as { data?: { message?: string } })?.data?.message || fallback;
 
 export default function SignupForm() {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const [showPass, setShowPass] = useState(false);
+  const redirect = safeRedirect(useSearchParams().get("redirect"));
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  
-  // OTP Flow state
+
   const [isRegistered, setIsRegistered] = useState(false);
   const [otp, setOtp] = useState("");
-  const [statusMessage, setStatusMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [status, setStatus] = useState<Status>(null);
+  const [cooldown, setCooldown] = useState(0);
 
-  // Mutations
   const [register, { isLoading: isRegistering }] = useRegisterMutation();
   const [verifyEmail, { isLoading: isVerifying }] = useVerifyEmailOtpMutation();
   const [requestOtp, { isLoading: isResending }] = useRequestEmailOtpMutation();
 
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const t = setTimeout(() => setCooldown((c) => c - 1), 1000);
+    return () => clearTimeout(t);
+  }, [cooldown]);
+
   const onRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    setStatusMessage(null);
+    setStatus(null);
 
-    if (!name || !email || !password) {
-      setStatusMessage({ type: "error", text: "Please fill in all registration fields" });
+    if (!name.trim() || !email.trim() || !password) {
+      setStatus({ type: "error", text: "Please fill in your name, email and a password." });
+      return;
+    }
+    if (password.length < 8) {
+      setStatus({ type: "error", text: "Your password needs at least 8 characters." });
       return;
     }
 
     try {
-      const payload = { name, email, password };
-      const res = await register(payload).unwrap();
-
+      const res = await register({ name: name.trim(), email: email.trim(), password }).unwrap();
       if (res.success) {
         setIsRegistered(true);
-        setStatusMessage({ type: "success", text: "Registration successful! Verification code sent." });
+        setCooldown(RESEND_SECONDS);
+        setStatus({ type: "success", text: `We’ve sent a 6-digit code to ${email.trim()}.` });
       } else {
-        setStatusMessage({ type: "error", text: res.message || "Failed to create account" });
+        setStatus({ type: "error", text: res.message || "Failed to create account." });
       }
     } catch (error: unknown) {
-      const err = error as { data?: { message?: string } };
-      const msg = err?.data?.message || "Failed to create account. Please check your credentials.";
-      setStatusMessage({ type: "error", text: msg });
+      setStatus({ type: "error", text: errorText(error, "Failed to create account. Please try again.") });
     }
   };
 
   const onVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault();
-    setStatusMessage(null);
+    setStatus(null);
 
-    if (!otp || otp.length !== 6) {
-      setStatusMessage({ type: "error", text: "Please enter a valid 6-digit code" });
+    if (otp.length !== 6) {
+      setStatus({ type: "error", text: "Please enter the 6-digit code from your email." });
       return;
     }
 
     try {
-      const res = await verifyEmail({ email, otp }).unwrap();
-
+      const res = await verifyEmail({ email: email.trim(), otp }).unwrap();
       if (res.success && res.data) {
-        const userData = res.data;
-        dispatch(setCredentials(userData));
-        setStatusMessage({ type: "success", text: "Email verified successfully! Logging you in..." });
-        setTimeout(() => {
-          if (userData.role === "ADMIN") {
-            router.push("/dashboard");
-          } else {
-            router.push("/");
-          }
-        }, 2000);
+        const user = res.data;
+        dispatch(setCredentials(user));
+        setStatus({ type: "success", text: "Email verified! Signing you in…" });
+        setTimeout(() => router.push(user.role === "ADMIN" ? "/dashboard" : (redirect ?? "/")), 1200);
       } else {
-        setStatusMessage({ type: "error", text: res.message || "Invalid or expired code" });
+        setStatus({ type: "error", text: res.message || "Invalid or expired code." });
       }
     } catch (error: unknown) {
-      const err = error as { data?: { message?: string } };
-      const msg = err?.data?.message || "Invalid code. Please try again.";
-      setStatusMessage({ type: "error", text: msg });
+      setStatus({ type: "error", text: errorText(error, "Invalid code. Please try again.") });
     }
   };
 
   const onResendOtp = async () => {
-    setStatusMessage(null);
+    if (cooldown > 0) return;
+    setStatus(null);
     try {
-      const res = await requestOtp({ email }).unwrap();
+      const res = await requestOtp({ email: email.trim() }).unwrap();
       if (res.success) {
-        setStatusMessage({ type: "success", text: "A new verification code has been dispatched." });
+        setCooldown(RESEND_SECONDS);
+        setStatus({ type: "success", text: "A new code is on its way." });
       }
     } catch (error: unknown) {
-      const err = error as { data?: { message?: string } };
-      const msg = err?.data?.message || "Failed to send code. Try again later.";
-      setStatusMessage({ type: "error", text: msg });
+      setStatus({ type: "error", text: errorText(error, "Failed to send the code. Try again later.") });
     }
   };
 
-  return (
-    <section className="flex min-h-screen items-center justify-center bg-stone-50 px-4 py-12">
-      <div className="w-full max-w-md bg-white border border-stone-200 p-8 shadow-sm">
-        
-        {/* LOGO INDICATOR */}
-        <div className="flex justify-center mb-6">
-          <Link href="/" className="inline-flex items-center gap-2">
-            <Image
-              src="/nav-logo.png"
-              alt="ZenVora Logo"
-              width={160}
-              height={66}
-              className="h-10 w-auto object-contain"
-              priority
-            />
-          </Link>
-        </div>
+  const signInLink = (
+    <>
+      Already have an account?{" "}
+      <Link href={withRedirect("/login", redirect)} className="text-zv-primary underline-offset-4 hover:underline">
+        Sign in
+      </Link>
+    </>
+  );
 
-        {statusMessage && (
-          <div
-            className={`p-4 text-xs font-semibold mb-6 flex items-start gap-2 ${
-              statusMessage.type === "success"
-                ? "bg-emerald-50 border border-emerald-200 text-emerald-800"
-                : "bg-rose-50 border border-rose-200 text-rose-800"
-            }`}
+  if (isRegistered) {
+    return (
+      <AuthShell
+        eyebrow="Almost there"
+        title="Verify Your Email"
+        intro={
+          <>
+            Enter the code we sent to <span className="text-zv-ink">{email.trim()}</span>. It may take a minute to arrive.
+          </>
+        }
+        footer={signInLink}
+      >
+        {status && <AuthAlert tone={status.type}>{status.text}</AuthAlert>}
+        <form onSubmit={onVerifyOtp} className="flex flex-col gap-zv-20" noValidate>
+          <OtpField value={otp} onChange={setOtp} />
+          <AuthButton loading={isVerifying}>{isVerifying ? "Verifying…" : "Verify & Continue"}</AuthButton>
+        </form>
+        <div className="flex flex-wrap items-center justify-between gap-zv-10">
+          <TextButton
+            onClick={() => {
+              setIsRegistered(false);
+              setOtp("");
+              setStatus(null);
+            }}
           >
-            <span className="shrink-0 mt-0.5">ℹ</span>
-            <p>{statusMessage.text}</p>
-          </div>
-        )}
+            Change email
+          </TextButton>
+          <TextButton onClick={onResendOtp} disabled={isResending || cooldown > 0}>
+            {isResending ? "Sending…" : cooldown > 0 ? `Resend code in ${cooldown}s` : "Resend code"}
+          </TextButton>
+        </div>
+      </AuthShell>
+    );
+  }
 
-        {!isRegistered ? (
-          /* REGISTRATION SCREEN */
-          <div>
-            <div className="mb-6 text-center">
-              <h1 className="text-2xl font-semibold text-stone-900">Create Account</h1>
-              <p className="mt-1.5 text-xs text-stone-500">
-                Join ZenVora to explore premium handcrafted jewelry
-              </p>
-            </div>
-
-            <form onSubmit={onRegister} className="space-y-4">
-              <div className="flex flex-col gap-1">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-stone-500">Full Name</label>
-                <input
-                  type="text"
-                  required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="e.g. John Doe"
-                  className="w-full border border-stone-300 px-4 py-3 rounded-none outline-none text-sm text-stone-800 bg-stone-50 focus:border-amber-500"
-                />
-              </div>
-
-              <div className="flex flex-col gap-1">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-stone-500">Email Address</label>
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="e.g. john@example.com"
-                  className="w-full border border-stone-300 px-4 py-3 rounded-none outline-none text-sm text-stone-800 bg-stone-50 focus:border-amber-500"
-                />
-              </div>
-
-              <div className="flex flex-col gap-1">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-stone-500">Password</label>
-                <div className="relative">
-                  <input
-                    type={showPass ? "text" : "password"}
-                    required
-                    placeholder="Min 6 characters"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full border border-stone-300 px-4 py-3 pr-12 rounded-none outline-none text-sm text-stone-800 bg-stone-50 focus:border-amber-500"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPass(!showPass)}
-                    className="absolute right-3 top-3 text-stone-400 hover:text-stone-600"
-                  >
-                    {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                disabled={isRegistering}
-                className="w-full bg-stone-900 text-white font-bold py-4 text-xs uppercase tracking-widest hover:bg-amber-500 hover:text-stone-950 transition-colors duration-200 mt-2 disabled:opacity-50"
-              >
-                {isRegistering ? "Creating Account..." : "Create Account"}
-              </button>
-
-              <p className="text-center text-xs text-stone-500 mt-6 border-t border-stone-100 pt-6">
-                Already have an account?
-                <Link href="/login" className="ml-1.5 font-bold text-amber-600 hover:text-amber-700">
-                  Login
-                </Link>
-              </p>
-            </form>
-          </div>
-        ) : (
-          /* OTP VERIFICATION SCREEN */
-          <div>
-            <div className="mb-6 text-center">
-              <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 text-amber-700 mb-3">
-                <KeyRound className="h-6 w-6" />
-              </div>
-              <h1 className="text-2xl font-semibold text-stone-900">Verify Your Email</h1>
-              <p className="mt-2 text-xs text-stone-500 leading-relaxed">
-                We have dispatched a 6-digit verification code to <span className="font-semibold text-stone-800">{email}</span>.
-                Please check your inbox (and spam folder) and input it below.
-              </p>
-            </div>
-
-            <form onSubmit={onVerifyOtp} className="space-y-4">
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-stone-500 text-center">Verification Code</label>
-                <input
-                  type="text"
-                  maxLength={6}
-                  required
-                  placeholder="0 0 0 0 0 0"
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
-                  className="w-full border border-stone-300 px-4 py-3.5 tracking-[0.6em] text-center font-bold text-lg rounded-none outline-none text-stone-800 bg-stone-50 focus:border-amber-500 placeholder:tracking-normal placeholder:font-normal placeholder:text-stone-300"
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={isVerifying}
-                className="w-full bg-stone-900 text-white font-bold py-4 text-xs uppercase tracking-widest hover:bg-amber-500 hover:text-stone-950 transition-colors duration-200 mt-2 disabled:opacity-50"
-              >
-                {isVerifying ? "Verifying..." : "Verify & Activate"}
-              </button>
-
-              <div className="flex flex-col gap-2 items-center text-xs mt-6 border-t border-stone-100 pt-6">
-                <span className="text-stone-500">Didn&apos;t receive the code?</span>
-                <button
-                  type="button"
-                  onClick={onResendOtp}
-                  disabled={isResending}
-                  className="font-bold text-amber-600 hover:text-amber-700 inline-flex items-center gap-1.5 disabled:opacity-50"
-                >
-                  <RefreshCw size={12} className={isResending ? "animate-spin" : ""} />
-                  {isResending ? "Resending Code..." : "Resend Verification Code"}
-                </button>
-              </div>
-            </form>
-          </div>
-        )}
-      </div>
-    </section>
+  return (
+    <AuthShell
+      eyebrow="Join ZenVoraa"
+      title="Create Account"
+      intro="Save your favourites, check out faster and follow every order."
+      footer={signInLink}
+    >
+      {status && <AuthAlert tone={status.type}>{status.text}</AuthAlert>}
+      <form onSubmit={onRegister} className="flex flex-col gap-zv-20" noValidate>
+        <AuthField
+          id="name"
+          label="Full name"
+          autoComplete="name"
+          required
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Your name"
+        />
+        <AuthField
+          id="email"
+          label="Email"
+          type="email"
+          autoComplete="email"
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="you@example.com"
+        />
+        <PasswordField
+          id="password"
+          label="Password"
+          autoComplete="new-password"
+          required
+          minLength={8}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          hint="At least 8 characters."
+        />
+        <AuthButton loading={isRegistering} className="mt-zv-10">
+          {isRegistering ? "Creating Account…" : "Create Account"}
+        </AuthButton>
+        <p className="type-caption text-center text-zv-bg2">
+          By creating an account you agree to our{" "}
+          <Link href="/terms-conditions" className="underline underline-offset-2 hover:text-zv-primary">
+            Terms
+          </Link>{" "}
+          and{" "}
+          <Link href="/privacy-policy" className="underline underline-offset-2 hover:text-zv-primary">
+            Privacy Policy
+          </Link>
+          .
+        </p>
+      </form>
+    </AuthShell>
   );
 }

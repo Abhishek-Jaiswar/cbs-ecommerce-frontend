@@ -7,9 +7,14 @@ import WhatsAppButton from "./whatsapp-button";
 import React from "react";
 import { Toaster } from "sonner";
 
-/** Pages whose first section is a full-bleed image the header floats over. */
+/** Pages whose first section is a full-bleed image the header floats over (auth pages: the left photo). */
 function hasHeroOverlay(pathname: string) {
-  return pathname === "/" || pathname === "/shop" || pathname.startsWith("/shop/");
+  return (
+    pathname === "/" ||
+    pathname === "/shop" ||
+    pathname.startsWith("/shop/") ||
+    ["/login", "/signup", "/forgot-password"].includes(pathname)
+  );
 }
 
 export default function HeaderFooterWrapper({

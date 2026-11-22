@@ -3,7 +3,7 @@ import ForgotPasswordForm from "@/components/auth/ForgotPasswordForm";
 
 export const metadata: Metadata = {
   title: "Reset Password",
-  description: "Recover and reset your ZenVora account password securely.",
+  description: "Reset your ZenVoraa account password.",
 };
 
 export default function ForgotPasswordPage() {
