@@ -3,7 +3,11 @@
 import React, { useEffect } from "react";
 import { useMeQuery } from "@/services/api/auth/auth-api";
 import { useAppDispatch } from "@/store/hooks";
-import { setCredentials, setLoading, logout } from "@/store/features/auth/auth.slice";
+import {
+  setCredentials,
+  setLoading,
+  logout,
+} from "@/store/features/auth/auth.slice";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const dispatch = useAppDispatch();

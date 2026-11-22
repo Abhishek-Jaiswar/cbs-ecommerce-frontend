@@ -48,6 +48,9 @@ export interface ProductListing {
 export interface ProductListingParams {
   page?: number;
   limit?: number;
+  /** storefront listing only: category slug (includes subcategories) */
+  category?: string;
+  sort?: ShopSortParam;
 }
 
 /** Server-side filtered listing used by the Shop (GET /products). */

@@ -1,17 +1,35 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, KeyRound, RefreshCw, ArrowLeft } from "lucide-react";
-import React, { useState, useEffect } from "react";
+import { ArrowLeft } from "lucide-react";
+import React, { useEffect, useState } from "react";
 import {
   useRequestPasswordResetOtpMutation,
   useVerifyPasswordResetOtpMutation,
   useResetPasswordMutation,
 } from "@/services/api/auth/auth-api";
+import {
+  AuthAlert,
+  AuthButton,
+  AuthField,
+  AuthShell,
+  OtpField,
+  PasswordField,
+  TextButton,
+} from "./auth-ui";
 
 type ResetStep = "EMAIL" | "OTP" | "RESET";
+type Status = { type: "success" | "error"; text: string } | null;
+const RESEND_SECONDS = 60;
+const errorText = (error: unknown, fallback: string) =>
+  (error as { data?: { message?: string } })?.data?.message || fallback;
+
+const STEP_COPY: Record<ResetStep, { eyebrow: string; title: string }> = {
+  EMAIL: { eyebrow: "Step 1 of 3", title: "Forgot Password" },
+  OTP: { eyebrow: "Step 2 of 3", title: "Check Your Email" },
+  RESET: { eyebrow: "Step 3 of 3", title: "New Password" },
+};
 
 export default function ForgotPasswordForm() {
   const router = useRouter();
@@ -20,311 +38,259 @@ export default function ForgotPasswordForm() {
   const [otp, setOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [showNewPass, setShowNewPass] = useState(false);
-  const [showConfirmPass, setShowConfirmPass] = useState(false);
-  
-  const [statusMessage, setStatusMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
-  
-  // Timer for OTP resend cooldown
-  const [resendCooldown, setResendCooldown] = useState(0);
+  const [status, setStatus] = useState<Status>(null);
+  const [cooldown, setCooldown] = useState(0);
 
-  // Mutations
-  const [requestResetOtp, { isLoading: isRequesting }] = useRequestPasswordResetOtpMutation();
-  const [verifyOtp, { isLoading: isVerifying }] = useVerifyPasswordResetOtpMutation();
-  const [resetPassword, { isLoading: isResetting }] = useResetPasswordMutation();
+  const [requestResetOtp, { isLoading: isRequesting }] =
+    useRequestPasswordResetOtpMutation();
+  const [verifyOtp, { isLoading: isVerifying }] =
+    useVerifyPasswordResetOtpMutation();
+  const [resetPassword, { isLoading: isResetting }] =
+    useResetPasswordMutation();
 
   useEffect(() => {
-    if (resendCooldown <= 0) return;
-    const timer = setTimeout(() => setResendCooldown(resendCooldown - 1), 1000);
-    return () => clearTimeout(timer);
-  }, [resendCooldown]);
+    if (cooldown <= 0) return;
+    const t = setTimeout(() => setCooldown((c) => c - 1), 1000);
+    return () => clearTimeout(t);
+  }, [cooldown]);
 
   const onRequestOtp = async (e: React.FormEvent) => {
     e.preventDefault();
-    setStatusMessage(null);
-
-    if (!email) {
-      setStatusMessage({ type: "error", text: "Please enter your email address" });
+    setStatus(null);
+    if (!email.trim()) {
+      setStatus({ type: "error", text: "Please enter your email address." });
       return;
     }
-
     try {
-      const res = await requestResetOtp({ email }).unwrap();
+      const res = await requestResetOtp({ email: email.trim() }).unwrap();
       if (res.success) {
-        setStatusMessage({ type: "success", text: "Password reset OTP sent to your email!" });
+        setStatus({
+          type: "success",
+          text: `We’ve sent a 6-digit code to ${email.trim()}.`,
+        });
         setStep("OTP");
-        setResendCooldown(60); // 60 seconds cooldown
+        setCooldown(RESEND_SECONDS);
       } else {
-        setStatusMessage({ type: "error", text: res.message || "Failed to send reset code" });
+        setStatus({
+          type: "error",
+          text: res.message || "Failed to send the reset code.",
+        });
       }
     } catch (error: unknown) {
-      const err = error as { data?: { message?: string } };
-      const msg = err?.data?.message || "Failed to request reset OTP. Please check your connection.";
-      setStatusMessage({ type: "error", text: msg });
+      setStatus({
+        type: "error",
+        text: errorText(
+          error,
+          "Failed to send the reset code. Please check your connection.",
+        ),
+      });
     }
   };
 
   const onResendOtp = async () => {
-    if (resendCooldown > 0) return;
-    setStatusMessage(null);
-
+    if (cooldown > 0) return;
+    setStatus(null);
     try {
-      const res = await requestResetOtp({ email }).unwrap();
+      const res = await requestResetOtp({ email: email.trim() }).unwrap();
       if (res.success) {
-        setStatusMessage({ type: "success", text: "A fresh reset OTP has been sent!" });
-        setResendCooldown(60);
+        setStatus({ type: "success", text: "A new code is on its way." });
+        setCooldown(RESEND_SECONDS);
       }
     } catch (error: unknown) {
-      const err = error as { data?: { message?: string } };
-      const msg = err?.data?.message || "Failed to send code. Try again later.";
-      setStatusMessage({ type: "error", text: msg });
+      setStatus({
+        type: "error",
+        text: errorText(error, "Failed to send the code. Try again later."),
+      });
     }
   };
 
   const onVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault();
-    setStatusMessage(null);
-
-    if (!otp || otp.length !== 6) {
-      setStatusMessage({ type: "error", text: "Please enter a valid 6-digit code" });
+    setStatus(null);
+    if (otp.length !== 6) {
+      setStatus({
+        type: "error",
+        text: "Please enter the 6-digit code from your email.",
+      });
       return;
     }
-
     try {
-      const res = await verifyOtp({ email, otp }).unwrap();
+      const res = await verifyOtp({ email: email.trim(), otp }).unwrap();
       if (res.success || res.data?.verified) {
-        setStatusMessage({ type: "success", text: "OTP verified! Please configure a new password." });
+        setStatus(null);
         setStep("RESET");
       } else {
-        setStatusMessage({ type: "error", text: res.message || "Invalid or expired OTP" });
+        setStatus({
+          type: "error",
+          text: res.message || "Invalid or expired code.",
+        });
       }
     } catch (error: unknown) {
-      const err = error as { data?: { message?: string } };
-      const msg = err?.data?.message || "Incorrect code. Please try again.";
-      setStatusMessage({ type: "error", text: msg });
+      setStatus({
+        type: "error",
+        text: errorText(error, "Incorrect code. Please try again."),
+      });
     }
   };
 
   const onResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    setStatusMessage(null);
-
-    if (!newPassword || newPassword.length < 8) {
-      setStatusMessage({ type: "error", text: "Password must be at least 8 characters long" });
+    setStatus(null);
+    if (newPassword.length < 8) {
+      setStatus({
+        type: "error",
+        text: "Your password needs at least 8 characters.",
+      });
       return;
     }
-
     if (newPassword !== confirmPassword) {
-      setStatusMessage({ type: "error", text: "Passwords do not match" });
+      setStatus({ type: "error", text: "The two passwords don’t match." });
       return;
     }
-
     try {
-      const res = await resetPassword({ email, newPassword }).unwrap();
+      const res = await resetPassword({
+        email: email.trim(),
+        newPassword,
+      }).unwrap();
       if (res.success) {
-        setStatusMessage({ type: "success", text: "Password changed successfully! Redirecting to login..." });
-        setTimeout(() => {
-          router.push("/login");
-        }, 2000);
+        setStatus({
+          type: "success",
+          text: "Password changed! Taking you to sign in…",
+        });
+        setTimeout(() => router.push("/login"), 1500);
       } else {
-        setStatusMessage({ type: "error", text: res.message || "Failed to reset password" });
+        setStatus({
+          type: "error",
+          text: res.message || "Failed to reset password.",
+        });
       }
     } catch (error: unknown) {
-      const err = error as { data?: { message?: string } };
-      const msg = err?.data?.message || "Failed to change password. Please request a new OTP.";
-      setStatusMessage({ type: "error", text: msg });
+      setStatus({
+        type: "error",
+        text: errorText(
+          error,
+          "Failed to change password. Please request a new code.",
+        ),
+      });
     }
   };
 
+  const copy = STEP_COPY[step];
+
   return (
-    <section className="flex min-h-screen items-center justify-center bg-stone-50 px-4 py-12">
-      <div className="w-full max-w-md bg-white border border-stone-200 p-8 shadow-sm">
-        
-        {/* LOGO INDICATOR */}
-        <div className="flex justify-center mb-6">
-          <Link href="/" className="inline-flex items-center gap-2">
-            <Image
-              src="/nav-logo.png"
-              alt="ZenVora Logo"
-              width={160}
-              height={66}
-              className="h-10 w-auto object-contain"
-              priority
-            />
-          </Link>
-        </div>
+    <AuthShell
+      eyebrow={copy.eyebrow}
+      title={copy.title}
+      intro={
+        step === "EMAIL" ? (
+          "Enter the email you signed up with and we’ll send you a code to reset your password."
+        ) : step === "OTP" ? (
+          <>
+            Enter the code we sent to{" "}
+            <span className="text-zv-ink">{email.trim()}</span>.
+          </>
+        ) : (
+          "Choose a new password for your account."
+        )
+      }
+      footer={
+        <Link
+          href="/login"
+          className="inline-flex items-center gap-1.5 text-zv-primary underline-offset-4 hover:underline"
+        >
+          <ArrowLeft className="size-4" /> Back to sign in
+        </Link>
+      }
+    >
+      {status && <AuthAlert tone={status.type}>{status.text}</AuthAlert>}
 
-        {statusMessage && (
-          <div
-            className={`p-4 text-xs font-semibold mb-6 flex items-start gap-2 ${
-              statusMessage.type === "success"
-                ? "bg-emerald-50 border border-emerald-200 text-emerald-800"
-                : "bg-rose-50 border border-rose-200 text-rose-800"
-            }`}
+      {step === "EMAIL" && (
+        <form
+          onSubmit={onRequestOtp}
+          className="flex flex-col gap-zv-20"
+          noValidate
+        >
+          <AuthField
+            id="email"
+            label="Email"
+            type="email"
+            autoComplete="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@example.com"
+          />
+          <AuthButton loading={isRequesting}>
+            {isRequesting ? "Sending…" : "Send Code"}
+          </AuthButton>
+        </form>
+      )}
+
+      {step === "OTP" && (
+        <>
+          <form
+            onSubmit={onVerifyOtp}
+            className="flex flex-col gap-zv-20"
+            noValidate
           >
-            <span className="shrink-0 mt-0.5">ℹ</span>
-            <p>{statusMessage.text}</p>
+            <OtpField value={otp} onChange={setOtp} />
+            <AuthButton loading={isVerifying}>
+              {isVerifying ? "Verifying…" : "Verify Code"}
+            </AuthButton>
+          </form>
+          <div className="flex flex-wrap items-center justify-between gap-zv-10">
+            <TextButton
+              onClick={() => {
+                setStep("EMAIL");
+                setOtp("");
+                setStatus(null);
+              }}
+            >
+              Change email
+            </TextButton>
+            <TextButton
+              onClick={onResendOtp}
+              disabled={isRequesting || cooldown > 0}
+            >
+              {isRequesting
+                ? "Sending…"
+                : cooldown > 0
+                  ? `Resend code in ${cooldown}s`
+                  : "Resend code"}
+            </TextButton>
           </div>
-        )}
+        </>
+      )}
 
-        {/* STEP 1: EMAIL REQUEST */}
-        {step === "EMAIL" && (
-          <div>
-            <div className="mb-6 text-center">
-              <h1 className="text-2xl font-semibold text-stone-900">Forgot Password</h1>
-              <p className="mt-1.5 text-xs text-stone-500 leading-relaxed">
-                Enter your email address and we&apos;ll send you a 6-digit code to verify your identity and reset your password.
-              </p>
-            </div>
-
-            <form onSubmit={onRequestOtp} className="space-y-4">
-              <div className="flex flex-col gap-1">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-stone-500">Email Address</label>
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="e.g. john@example.com"
-                  className="w-full border border-stone-300 px-4 py-3 rounded-none outline-none text-sm text-stone-800 bg-stone-50 focus:border-amber-500"
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={isRequesting}
-                className="w-full bg-stone-900 text-white font-bold py-4 text-xs uppercase tracking-widest hover:bg-amber-500 hover:text-stone-950 transition-colors duration-200 mt-2 disabled:opacity-50"
-              >
-                {isRequesting ? "Sending Reset Code..." : "Send Reset Code"}
-              </button>
-
-              <p className="text-center text-xs text-stone-500 mt-6 border-t border-stone-100 pt-6">
-                <Link href="/login" className="font-bold text-stone-700 hover:text-amber-600 inline-flex items-center gap-1.5">
-                  <ArrowLeft size={14} /> Back to Login
-                </Link>
-              </p>
-            </form>
-          </div>
-        )}
-
-        {/* STEP 2: OTP VERIFICATION */}
-        {step === "OTP" && (
-          <div>
-            <div className="mb-6 text-center">
-              <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 text-amber-700 mb-3">
-                <KeyRound className="h-6 w-6" />
-              </div>
-              <h1 className="text-2xl font-semibold text-stone-900">Verify Reset Code</h1>
-              <p className="mt-2 text-xs text-stone-500 leading-relaxed">
-                We have dispatched a 6-digit reset code to <span className="font-semibold text-stone-800">{email}</span>.
-                Input the code below to authorize your password change.
-              </p>
-            </div>
-
-            <form onSubmit={onVerifyOtp} className="space-y-4">
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-stone-500 text-center">Reset Code</label>
-                <input
-                  type="text"
-                  maxLength={6}
-                  required
-                  placeholder="0 0 0 0 0 0"
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
-                  className="w-full border border-stone-300 px-4 py-3.5 tracking-[0.6em] text-center font-bold text-lg rounded-none outline-none text-stone-800 bg-stone-50 focus:border-amber-500 placeholder:tracking-normal placeholder:font-normal placeholder:text-stone-300"
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={isVerifying}
-                className="w-full bg-stone-900 text-white font-bold py-4 text-xs uppercase tracking-widest hover:bg-amber-500 hover:text-stone-950 transition-colors duration-200 mt-2 disabled:opacity-50"
-              >
-                {isVerifying ? "Verifying..." : "Verify Code"}
-              </button>
-
-              <div className="flex flex-col gap-2 items-center text-xs mt-6 border-t border-stone-100 pt-6">
-                <span className="text-stone-500">Didn&apos;t receive the code?</span>
-                <button
-                  type="button"
-                  onClick={onResendOtp}
-                  disabled={resendCooldown > 0}
-                  className="font-bold text-amber-600 hover:text-amber-700 inline-flex items-center gap-1.5 disabled:opacity-50"
-                >
-                  <RefreshCw size={12} className={resendCooldown > 0 ? "animate-spin" : ""} />
-                  {resendCooldown > 0 ? `Resend Code in ${resendCooldown}s` : "Resend Reset Code"}
-                </button>
-              </div>
-            </form>
-          </div>
-        )}
-
-        {/* STEP 3: NEW PASSWORD RESET */}
-        {step === "RESET" && (
-          <div>
-            <div className="mb-6 text-center">
-              <h1 className="text-2xl font-semibold text-stone-900">Configure New Password</h1>
-              <p className="mt-1.5 text-xs text-stone-500">
-                Please set a secure, unique password for <span className="font-semibold text-stone-855">{email}</span>.
-              </p>
-            </div>
-
-            <form onSubmit={onResetPassword} className="space-y-4">
-              {/* NEW PASSWORD */}
-              <div className="flex flex-col gap-1">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-stone-500">New Password</label>
-                <div className="relative">
-                  <input
-                    type={showNewPass ? "text" : "password"}
-                    required
-                    placeholder="Min 8 characters"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    className="w-full border border-stone-300 px-4 py-3 pr-12 rounded-none outline-none text-sm text-stone-800 bg-stone-50 focus:border-amber-500"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowNewPass(!showNewPass)}
-                    className="absolute right-3 top-3 text-stone-400 hover:text-stone-600"
-                  >
-                    {showNewPass ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
-                </div>
-              </div>
-
-              {/* CONFIRM PASSWORD */}
-              <div className="flex flex-col gap-1">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-stone-500">Confirm Password</label>
-                <div className="relative">
-                  <input
-                    type={showConfirmPass ? "text" : "password"}
-                    required
-                    placeholder="Repeat new password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full border border-stone-300 px-4 py-3 pr-12 rounded-none outline-none text-sm text-stone-800 bg-stone-50 focus:border-amber-500"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPass(!showConfirmPass)}
-                    className="absolute right-3 top-3 text-stone-400 hover:text-stone-600"
-                  >
-                    {showConfirmPass ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                disabled={isResetting}
-                className="w-full bg-stone-900 text-white font-bold py-4 text-xs uppercase tracking-widest hover:bg-amber-500 hover:text-stone-950 transition-colors duration-200 mt-2 disabled:opacity-50"
-              >
-                {isResetting ? "Changing Password..." : "Change Password"}
-              </button>
-            </form>
-          </div>
-        )}
-      </div>
-    </section>
+      {step === "RESET" && (
+        <form
+          onSubmit={onResetPassword}
+          className="flex flex-col gap-zv-20"
+          noValidate
+        >
+          <PasswordField
+            id="new-password"
+            label="New password"
+            autoComplete="new-password"
+            required
+            minLength={8}
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            hint="At least 8 characters."
+          />
+          <PasswordField
+            id="confirm-password"
+            label="Confirm new password"
+            autoComplete="new-password"
+            required
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+          />
+          <AuthButton loading={isResetting}>
+            {isResetting ? "Saving…" : "Save Password"}
+          </AuthButton>
+        </form>
+      )}
+    </AuthShell>
   );
 }

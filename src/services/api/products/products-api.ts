@@ -13,8 +13,12 @@ import {
 export const productApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getProductListing: builder.query<ProductApiResponse, ProductListingParams>({
-      query: ({ page = 1, limit = 10 }) =>
-        `/products?page=${page}&limit=${limit}`,
+      query: ({ page = 1, limit = 10, category, sort }) => {
+        const q = new URLSearchParams({ page: String(page), limit: String(limit) });
+        if (category) q.set("category", category);
+        if (sort) q.set("sort", sort);
+        return `/products?${q.toString()}`;
+      },
       providesTags: ["Products"],
     }),
 

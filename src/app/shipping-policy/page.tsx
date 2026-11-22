@@ -9,6 +9,7 @@ import {
   ShieldCheck,
   Truck,
 } from "lucide-react";
+import { FREE_SHIPPING_THRESHOLD, SHIPPING_FEE } from "@/lib/store-policy";
 import { PolicyPageNav } from "@/components/common/policy-page-nav";
 
 const shippingHighlights = [
@@ -50,11 +51,14 @@ const deliveryTimelines = [
   },
 ];
 
+const freeShippingFrom = `₹${FREE_SHIPPING_THRESHOLD.toLocaleString("en-IN")}`;
+const shippingFee = `₹${SHIPPING_FEE}`;
+
 const shippingDetails = [
   {
     title: "Shipping charges",
     description:
-      "Free shipping is available on orders above Rs. 999. Shipping charges may apply for orders below Rs. 999 and will be shown at checkout.",
+      `Free shipping on orders of ${freeShippingFrom} or more. Orders below ${freeShippingFrom} have a flat ${shippingFee} delivery charge, shown at checkout.`,
     icon: CreditCard,
   },
   {
@@ -108,7 +112,7 @@ export default function ShippingPolicyPage() {
               Fast, secure delivery across India for your favourite jewellery.
             </p>
             <p className="mt-4 text-sm leading-7 text-white/65">
-              Free shipping on eligible orders above Rs. 999.
+              Free shipping on orders of {freeShippingFrom} or more.
             </p>
             <div className="mt-6 grid grid-cols-2 gap-3 border-t border-white/10 pt-6">
               {["Secure packing", "Live tracking", "India-wide", "Easy support"].map(

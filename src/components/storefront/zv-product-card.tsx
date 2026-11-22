@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { useState } from "react";
 
 import { cn, getProductImage } from "@/lib/utils";
@@ -23,6 +24,7 @@ export function formatInr(value: string | number) {
  */
 export function ZvProductCard({ product, className }: { product: ProductListing; className?: string }) {
   const router = useRouter();
+  const pathname = usePathname();
   const { isAuthenticated } = useAppSelector((s) => s.auth);
   const [addToCart, { isLoading: isAdding }] = useAddToCartMutation();
   const [toggleWishlist, { isLoading: isWishing }] = useToggleWishlistItemMutation();
@@ -37,7 +39,7 @@ export function ZvProductCard({ product, className }: { product: ProductListing;
 
   const requireAuth = () => {
     if (!isAuthenticated) {
-      router.push("/login");
+      router.push(`/login?redirect=${encodeURIComponent(pathname)}`);
       return false;
     }
     return true;
@@ -75,7 +77,15 @@ export function ZvProductCard({ product, className }: { product: ProductListing;
             type="button"
             aria-label={`Save ${product.name} to wishlist`}
             disabled={isWishing}
-            onClick={() => requireAuth() && toggleWishlist({ productId: product.id })}
+            onClick={async () => {
+              if (!requireAuth()) return;
+              try {
+                const res = await toggleWishlist({ productId: product.id }).unwrap();
+                toast.success(res.data?.liked ? "Saved to favourites" : "Removed from favourites");
+              } catch {
+                toast.error("Couldn’t update favourites. Please try again.");
+              }
+            }}
             className="absolute bottom-zv-10 right-zv-10 transition-transform hover:scale-110 disabled:opacity-50"
           >
             <img src="/zenvoraa/icons/card-wishlist-overlay.svg" alt="" width={24} height={24} className="size-6" />
@@ -129,8 +139,11 @@ export function ZvProductCard({ product, className }: { product: ProductListing;
               if (!requireAuth()) return;
               try {
                 await addToCart({ variantId: variant.id, quantity: 1 }).unwrap();
+                toast.success(`${product.name} added to cart`, {
+                  action: { label: "View cart", onClick: () => router.push("/cart") },
+                });
               } catch (err) {
-                console.error("Failed to add to cart", err);
+                toast.error((err as { data?: { message?: string } })?.data?.message || "Couldn’t add to cart. Please try again.");
               }
             }}
             className="shrink-0 transition-transform hover:scale-110 disabled:opacity-50"
