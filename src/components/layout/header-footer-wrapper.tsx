@@ -5,6 +5,7 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import WhatsAppButton from "./whatsapp-button";
 import React from "react";
+import { Toaster } from "sonner";
 
 /** Pages whose first section is a full-bleed image the header floats over. */
 function hasHeroOverlay(pathname: string) {
@@ -30,6 +31,15 @@ export default function HeaderFooterWrapper({
       {children}
       <Footer />
       <WhatsAppButton />
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          classNames: {
+            toast: "!rounded-leaf !border-zv-bg !bg-white !font-zv-body !text-zv-ink !shadow-lg",
+            actionButton: "!rounded-leaf-mirror !bg-zv-primary !text-white",
+          },
+        }}
+      />
     </div>
   );
 }

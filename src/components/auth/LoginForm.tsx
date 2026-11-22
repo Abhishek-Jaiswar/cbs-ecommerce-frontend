@@ -39,7 +39,11 @@ export default function LoginForm() {
         if (res.data.role === "ADMIN") {
           router.push("/dashboard");
         } else {
-          router.push("/");
+          // ?redirect=/shop/some-product brings shoppers back where they were.
+          // Only same-site paths are allowed (no "//host" or absolute URLs).
+          const next = new URLSearchParams(window.location.search).get("redirect");
+          const safe = !!next && next.startsWith("/") && !next.startsWith("//") && !next.startsWith("/\\");
+          router.push(safe ? next : "/");
         }
       } else {
         setErrorMessage(res.message || "Failed to log in.");

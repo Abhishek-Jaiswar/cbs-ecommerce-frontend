@@ -46,7 +46,7 @@ export interface CreateReviewPayload {
 
 export const reviewsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getProductReviews: builder.query<BaseResponse<PaginatedResponse<Review>>, { productId: string; page?: number; limit?: number }>({
+    getProductReviews: builder.query<BaseResponse<PaginatedResponse<Review> & { averageRating?: number | null }>, { productId: string; page?: number; limit?: number }>({
       query: ({ productId, page = 1, limit = 10 }) => `/reviews/product/${productId}?page=${page}&limit=${limit}`,
       providesTags: ["Reviews"],
     }),
