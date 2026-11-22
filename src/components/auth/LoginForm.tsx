@@ -6,7 +6,16 @@ import React, { useState } from "react";
 import { useLoginMutation } from "@/services/api/auth/auth-api";
 import { useAppDispatch } from "@/store/hooks";
 import { setCredentials } from "@/store/features/auth/auth.slice";
-import { AuthAlert, AuthButton, AuthField, AuthShell, PasswordField, safeRedirect, withRedirect } from "./auth-ui";
+import {
+  AuthAlert,
+  AuthButton,
+  AuthField,
+  AuthShell,
+  PasswordField,
+  safeRedirect,
+  useRedirectIfSignedIn,
+  withRedirect,
+} from "./auth-ui";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -18,6 +27,8 @@ export default function LoginForm() {
   const [errorMessage, setErrorMessage] = useState("");
 
   const [login, { isLoading }] = useLoginMutation();
+  const [signingIn, setSigningIn] = useState(false);
+  const leaving = useRedirectIfSignedIn(redirect, signingIn);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,24 +39,36 @@ export default function LoginForm() {
       return;
     }
 
+    setSigningIn(true);
     try {
       const res = await login({ email: email.trim(), password }).unwrap();
 
       if (res.success && res.data) {
         dispatch(setCredentials(res.data));
-        router.push(res.data.role === "ADMIN" ? "/dashboard" : (redirect ?? "/"));
+        router.push(
+          res.data.role === "ADMIN" ? "/dashboard" : (redirect ?? "/"),
+        );
       } else {
+        setSigningIn(false);
         setErrorMessage(res.message || "Failed to log in.");
       }
     } catch (error: unknown) {
-      const err = error as { status?: number | string; data?: { message?: string } };
+      setSigningIn(false);
+      const err = error as {
+        status?: number | string;
+        data?: { message?: string };
+      };
       setErrorMessage(
         err?.status === "FETCH_ERROR"
           ? "We couldn’t reach the server. Please check your connection and try again."
-          : err?.data?.message || "Failed to log in. Please check your email and password.",
+          : err?.data?.message ||
+              "Failed to log in. Please check your email and password.",
       );
     }
   };
+
+  // already signed in: show nothing while we send them on
+  if (leaving) return <main className="min-h-svh flex-1 bg-white" />;
 
   return (
     <AuthShell
@@ -55,7 +78,10 @@ export default function LoginForm() {
       footer={
         <>
           New to ZenVoraa?{" "}
-          <Link href={withRedirect("/signup", redirect)} className="text-zv-primary underline-offset-4 hover:underline">
+          <Link
+            href={withRedirect("/signup", redirect)}
+            className="text-zv-primary underline-offset-4 hover:underline"
+          >
             Create an account
           </Link>
         </>
@@ -82,7 +108,10 @@ export default function LoginForm() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           labelAside={
-            <Link href="/forgot-password" className="type-caption text-zv-primary underline-offset-4 hover:underline">
+            <Link
+              href="/forgot-password"
+              className="type-caption text-zv-primary underline-offset-4 hover:underline"
+            >
               Forgot password?
             </Link>
           }

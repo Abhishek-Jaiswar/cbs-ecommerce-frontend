@@ -9,7 +9,15 @@ import {
   useVerifyPasswordResetOtpMutation,
   useResetPasswordMutation,
 } from "@/services/api/auth/auth-api";
-import { AuthAlert, AuthButton, AuthField, AuthShell, OtpField, PasswordField, TextButton } from "./auth-ui";
+import {
+  AuthAlert,
+  AuthButton,
+  AuthField,
+  AuthShell,
+  OtpField,
+  PasswordField,
+  TextButton,
+} from "./auth-ui";
 
 type ResetStep = "EMAIL" | "OTP" | "RESET";
 type Status = { type: "success" | "error"; text: string } | null;
@@ -33,9 +41,12 @@ export default function ForgotPasswordForm() {
   const [status, setStatus] = useState<Status>(null);
   const [cooldown, setCooldown] = useState(0);
 
-  const [requestResetOtp, { isLoading: isRequesting }] = useRequestPasswordResetOtpMutation();
-  const [verifyOtp, { isLoading: isVerifying }] = useVerifyPasswordResetOtpMutation();
-  const [resetPassword, { isLoading: isResetting }] = useResetPasswordMutation();
+  const [requestResetOtp, { isLoading: isRequesting }] =
+    useRequestPasswordResetOtpMutation();
+  const [verifyOtp, { isLoading: isVerifying }] =
+    useVerifyPasswordResetOtpMutation();
+  const [resetPassword, { isLoading: isResetting }] =
+    useResetPasswordMutation();
 
   useEffect(() => {
     if (cooldown <= 0) return;
@@ -53,14 +64,26 @@ export default function ForgotPasswordForm() {
     try {
       const res = await requestResetOtp({ email: email.trim() }).unwrap();
       if (res.success) {
-        setStatus({ type: "success", text: `We’ve sent a 6-digit code to ${email.trim()}.` });
+        setStatus({
+          type: "success",
+          text: `We’ve sent a 6-digit code to ${email.trim()}.`,
+        });
         setStep("OTP");
         setCooldown(RESEND_SECONDS);
       } else {
-        setStatus({ type: "error", text: res.message || "Failed to send the reset code." });
+        setStatus({
+          type: "error",
+          text: res.message || "Failed to send the reset code.",
+        });
       }
     } catch (error: unknown) {
-      setStatus({ type: "error", text: errorText(error, "Failed to send the reset code. Please check your connection.") });
+      setStatus({
+        type: "error",
+        text: errorText(
+          error,
+          "Failed to send the reset code. Please check your connection.",
+        ),
+      });
     }
   };
 
@@ -74,7 +97,10 @@ export default function ForgotPasswordForm() {
         setCooldown(RESEND_SECONDS);
       }
     } catch (error: unknown) {
-      setStatus({ type: "error", text: errorText(error, "Failed to send the code. Try again later.") });
+      setStatus({
+        type: "error",
+        text: errorText(error, "Failed to send the code. Try again later."),
+      });
     }
   };
 
@@ -82,7 +108,10 @@ export default function ForgotPasswordForm() {
     e.preventDefault();
     setStatus(null);
     if (otp.length !== 6) {
-      setStatus({ type: "error", text: "Please enter the 6-digit code from your email." });
+      setStatus({
+        type: "error",
+        text: "Please enter the 6-digit code from your email.",
+      });
       return;
     }
     try {
@@ -91,10 +120,16 @@ export default function ForgotPasswordForm() {
         setStatus(null);
         setStep("RESET");
       } else {
-        setStatus({ type: "error", text: res.message || "Invalid or expired code." });
+        setStatus({
+          type: "error",
+          text: res.message || "Invalid or expired code.",
+        });
       }
     } catch (error: unknown) {
-      setStatus({ type: "error", text: errorText(error, "Incorrect code. Please try again.") });
+      setStatus({
+        type: "error",
+        text: errorText(error, "Incorrect code. Please try again."),
+      });
     }
   };
 
@@ -102,7 +137,10 @@ export default function ForgotPasswordForm() {
     e.preventDefault();
     setStatus(null);
     if (newPassword.length < 8) {
-      setStatus({ type: "error", text: "Your password needs at least 8 characters." });
+      setStatus({
+        type: "error",
+        text: "Your password needs at least 8 characters.",
+      });
       return;
     }
     if (newPassword !== confirmPassword) {
@@ -110,15 +148,30 @@ export default function ForgotPasswordForm() {
       return;
     }
     try {
-      const res = await resetPassword({ email: email.trim(), newPassword }).unwrap();
+      const res = await resetPassword({
+        email: email.trim(),
+        newPassword,
+      }).unwrap();
       if (res.success) {
-        setStatus({ type: "success", text: "Password changed! Taking you to sign in…" });
+        setStatus({
+          type: "success",
+          text: "Password changed! Taking you to sign in…",
+        });
         setTimeout(() => router.push("/login"), 1500);
       } else {
-        setStatus({ type: "error", text: res.message || "Failed to reset password." });
+        setStatus({
+          type: "error",
+          text: res.message || "Failed to reset password.",
+        });
       }
     } catch (error: unknown) {
-      setStatus({ type: "error", text: errorText(error, "Failed to change password. Please request a new code.") });
+      setStatus({
+        type: "error",
+        text: errorText(
+          error,
+          "Failed to change password. Please request a new code.",
+        ),
+      });
     }
   };
 
@@ -133,14 +186,18 @@ export default function ForgotPasswordForm() {
           "Enter the email you signed up with and we’ll send you a code to reset your password."
         ) : step === "OTP" ? (
           <>
-            Enter the code we sent to <span className="text-zv-ink">{email.trim()}</span>.
+            Enter the code we sent to{" "}
+            <span className="text-zv-ink">{email.trim()}</span>.
           </>
         ) : (
           "Choose a new password for your account."
         )
       }
       footer={
-        <Link href="/login" className="inline-flex items-center gap-1.5 text-zv-primary underline-offset-4 hover:underline">
+        <Link
+          href="/login"
+          className="inline-flex items-center gap-1.5 text-zv-primary underline-offset-4 hover:underline"
+        >
           <ArrowLeft className="size-4" /> Back to sign in
         </Link>
       }
@@ -148,7 +205,11 @@ export default function ForgotPasswordForm() {
       {status && <AuthAlert tone={status.type}>{status.text}</AuthAlert>}
 
       {step === "EMAIL" && (
-        <form onSubmit={onRequestOtp} className="flex flex-col gap-zv-20" noValidate>
+        <form
+          onSubmit={onRequestOtp}
+          className="flex flex-col gap-zv-20"
+          noValidate
+        >
           <AuthField
             id="email"
             label="Email"
@@ -159,15 +220,23 @@ export default function ForgotPasswordForm() {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
           />
-          <AuthButton loading={isRequesting}>{isRequesting ? "Sending…" : "Send Code"}</AuthButton>
+          <AuthButton loading={isRequesting}>
+            {isRequesting ? "Sending…" : "Send Code"}
+          </AuthButton>
         </form>
       )}
 
       {step === "OTP" && (
         <>
-          <form onSubmit={onVerifyOtp} className="flex flex-col gap-zv-20" noValidate>
+          <form
+            onSubmit={onVerifyOtp}
+            className="flex flex-col gap-zv-20"
+            noValidate
+          >
             <OtpField value={otp} onChange={setOtp} />
-            <AuthButton loading={isVerifying}>{isVerifying ? "Verifying…" : "Verify Code"}</AuthButton>
+            <AuthButton loading={isVerifying}>
+              {isVerifying ? "Verifying…" : "Verify Code"}
+            </AuthButton>
           </form>
           <div className="flex flex-wrap items-center justify-between gap-zv-10">
             <TextButton
@@ -179,15 +248,26 @@ export default function ForgotPasswordForm() {
             >
               Change email
             </TextButton>
-            <TextButton onClick={onResendOtp} disabled={isRequesting || cooldown > 0}>
-              {isRequesting ? "Sending…" : cooldown > 0 ? `Resend code in ${cooldown}s` : "Resend code"}
+            <TextButton
+              onClick={onResendOtp}
+              disabled={isRequesting || cooldown > 0}
+            >
+              {isRequesting
+                ? "Sending…"
+                : cooldown > 0
+                  ? `Resend code in ${cooldown}s`
+                  : "Resend code"}
             </TextButton>
           </div>
         </>
       )}
 
       {step === "RESET" && (
-        <form onSubmit={onResetPassword} className="flex flex-col gap-zv-20" noValidate>
+        <form
+          onSubmit={onResetPassword}
+          className="flex flex-col gap-zv-20"
+          noValidate
+        >
           <PasswordField
             id="new-password"
             label="New password"
@@ -206,7 +286,9 @@ export default function ForgotPasswordForm() {
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
-          <AuthButton loading={isResetting}>{isResetting ? "Saving…" : "Save Password"}</AuthButton>
+          <AuthButton loading={isResetting}>
+            {isResetting ? "Saving…" : "Save Password"}
+          </AuthButton>
         </form>
       )}
     </AuthShell>

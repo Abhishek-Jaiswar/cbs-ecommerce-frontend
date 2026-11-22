@@ -19,6 +19,7 @@ import {
   PasswordField,
   TextButton,
   safeRedirect,
+  useRedirectIfSignedIn,
   withRedirect,
 } from "./auth-ui";
 
@@ -43,6 +44,8 @@ export default function SignupForm() {
   const [register, { isLoading: isRegistering }] = useRegisterMutation();
   const [verifyEmail, { isLoading: isVerifying }] = useVerifyEmailOtpMutation();
   const [requestOtp, { isLoading: isResending }] = useRequestEmailOtpMutation();
+  // paused once an account is created, so verifying the code keeps its own redirect
+  const leaving = useRedirectIfSignedIn(redirect, isRegistered);
 
   useEffect(() => {
     if (cooldown <= 0) return;
@@ -55,25 +58,44 @@ export default function SignupForm() {
     setStatus(null);
 
     if (!name.trim() || !email.trim() || !password) {
-      setStatus({ type: "error", text: "Please fill in your name, email and a password." });
+      setStatus({
+        type: "error",
+        text: "Please fill in your name, email and a password.",
+      });
       return;
     }
     if (password.length < 8) {
-      setStatus({ type: "error", text: "Your password needs at least 8 characters." });
+      setStatus({
+        type: "error",
+        text: "Your password needs at least 8 characters.",
+      });
       return;
     }
 
     try {
-      const res = await register({ name: name.trim(), email: email.trim(), password }).unwrap();
+      const res = await register({
+        name: name.trim(),
+        email: email.trim(),
+        password,
+      }).unwrap();
       if (res.success) {
         setIsRegistered(true);
         setCooldown(RESEND_SECONDS);
-        setStatus({ type: "success", text: `We’ve sent a 6-digit code to ${email.trim()}.` });
+        setStatus({
+          type: "success",
+          text: `We’ve sent a 6-digit code to ${email.trim()}.`,
+        });
       } else {
-        setStatus({ type: "error", text: res.message || "Failed to create account." });
+        setStatus({
+          type: "error",
+          text: res.message || "Failed to create account.",
+        });
       }
     } catch (error: unknown) {
-      setStatus({ type: "error", text: errorText(error, "Failed to create account. Please try again.") });
+      setStatus({
+        type: "error",
+        text: errorText(error, "Failed to create account. Please try again."),
+      });
     }
   };
 
@@ -82,7 +104,10 @@ export default function SignupForm() {
     setStatus(null);
 
     if (otp.length !== 6) {
-      setStatus({ type: "error", text: "Please enter the 6-digit code from your email." });
+      setStatus({
+        type: "error",
+        text: "Please enter the 6-digit code from your email.",
+      });
       return;
     }
 
@@ -92,12 +117,24 @@ export default function SignupForm() {
         const user = res.data;
         dispatch(setCredentials(user));
         setStatus({ type: "success", text: "Email verified! Signing you in…" });
-        setTimeout(() => router.push(user.role === "ADMIN" ? "/dashboard" : (redirect ?? "/")), 1200);
+        setTimeout(
+          () =>
+            router.push(
+              user.role === "ADMIN" ? "/dashboard" : (redirect ?? "/"),
+            ),
+          1200,
+        );
       } else {
-        setStatus({ type: "error", text: res.message || "Invalid or expired code." });
+        setStatus({
+          type: "error",
+          text: res.message || "Invalid or expired code.",
+        });
       }
     } catch (error: unknown) {
-      setStatus({ type: "error", text: errorText(error, "Invalid code. Please try again.") });
+      setStatus({
+        type: "error",
+        text: errorText(error, "Invalid code. Please try again."),
+      });
     }
   };
 
@@ -111,18 +148,26 @@ export default function SignupForm() {
         setStatus({ type: "success", text: "A new code is on its way." });
       }
     } catch (error: unknown) {
-      setStatus({ type: "error", text: errorText(error, "Failed to send the code. Try again later.") });
+      setStatus({
+        type: "error",
+        text: errorText(error, "Failed to send the code. Try again later."),
+      });
     }
   };
 
   const signInLink = (
     <>
       Already have an account?{" "}
-      <Link href={withRedirect("/login", redirect)} className="text-zv-primary underline-offset-4 hover:underline">
+      <Link
+        href={withRedirect("/login", redirect)}
+        className="text-zv-primary underline-offset-4 hover:underline"
+      >
         Sign in
       </Link>
     </>
   );
+
+  if (leaving) return <main className="min-h-svh flex-1 bg-white" />;
 
   if (isRegistered) {
     return (
@@ -131,15 +176,23 @@ export default function SignupForm() {
         title="Verify Your Email"
         intro={
           <>
-            Enter the code we sent to <span className="text-zv-ink">{email.trim()}</span>. It may take a minute to arrive.
+            Enter the code we sent to{" "}
+            <span className="text-zv-ink">{email.trim()}</span>. It may take a
+            minute to arrive.
           </>
         }
         footer={signInLink}
       >
         {status && <AuthAlert tone={status.type}>{status.text}</AuthAlert>}
-        <form onSubmit={onVerifyOtp} className="flex flex-col gap-zv-20" noValidate>
+        <form
+          onSubmit={onVerifyOtp}
+          className="flex flex-col gap-zv-20"
+          noValidate
+        >
           <OtpField value={otp} onChange={setOtp} />
-          <AuthButton loading={isVerifying}>{isVerifying ? "Verifying…" : "Verify & Continue"}</AuthButton>
+          <AuthButton loading={isVerifying}>
+            {isVerifying ? "Verifying…" : "Verify & Continue"}
+          </AuthButton>
         </form>
         <div className="flex flex-wrap items-center justify-between gap-zv-10">
           <TextButton
@@ -151,8 +204,15 @@ export default function SignupForm() {
           >
             Change email
           </TextButton>
-          <TextButton onClick={onResendOtp} disabled={isResending || cooldown > 0}>
-            {isResending ? "Sending…" : cooldown > 0 ? `Resend code in ${cooldown}s` : "Resend code"}
+          <TextButton
+            onClick={onResendOtp}
+            disabled={isResending || cooldown > 0}
+          >
+            {isResending
+              ? "Sending…"
+              : cooldown > 0
+                ? `Resend code in ${cooldown}s`
+                : "Resend code"}
           </TextButton>
         </div>
       </AuthShell>
@@ -167,7 +227,11 @@ export default function SignupForm() {
       footer={signInLink}
     >
       {status && <AuthAlert tone={status.type}>{status.text}</AuthAlert>}
-      <form onSubmit={onRegister} className="flex flex-col gap-zv-20" noValidate>
+      <form
+        onSubmit={onRegister}
+        className="flex flex-col gap-zv-20"
+        noValidate
+      >
         <AuthField
           id="name"
           label="Full name"
@@ -202,11 +266,17 @@ export default function SignupForm() {
         </AuthButton>
         <p className="type-caption text-center text-zv-bg2">
           By creating an account you agree to our{" "}
-          <Link href="/terms-conditions" className="underline underline-offset-2 hover:text-zv-primary">
+          <Link
+            href="/terms-conditions"
+            className="underline underline-offset-2 hover:text-zv-primary"
+          >
             Terms
           </Link>{" "}
           and{" "}
-          <Link href="/privacy-policy" className="underline underline-offset-2 hover:text-zv-primary">
+          <Link
+            href="/privacy-policy"
+            className="underline underline-offset-2 hover:text-zv-primary"
+          >
             Privacy Policy
           </Link>
           .
