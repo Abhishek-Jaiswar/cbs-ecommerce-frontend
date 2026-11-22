@@ -54,9 +54,14 @@ export function ZvProductCard({ product, className }: { product: ProductListing;
       <div className="relative aspect-square overflow-hidden rounded-tl-[20px] bg-zv-image-well">
         <Link href={href} className="block size-full" aria-label={product.name}>
           <img
-            src={getProductImage(product.slug)}
-            alt={product.name}
+            src={product.image?.url || getProductImage(product.slug)}
+            alt={product.image?.alt || product.name}
             loading="lazy"
+            decoding="async"
+            onError={(e) => {
+              const fallback = getProductImage(product.slug);
+              if (!e.currentTarget.src.endsWith(fallback)) e.currentTarget.src = fallback;
+            }}
             className="size-full object-cover transition-transform duration-700 group-hover:scale-105"
           />
         </Link>
@@ -84,7 +89,7 @@ export function ZvProductCard({ product, className }: { product: ProductListing;
           <Link href={href} className="line-clamp-2 text-sm text-zv-ink lg:line-clamp-1 lg:text-base">
             {product.name}
           </Link>
-          <div className="flex items-center justify-between gap-zv-10">
+          <div className="flex flex-wrap items-center justify-between gap-x-zv-10 gap-y-1">
             {product.colors && product.colors.length > 0 ? (
               <div className="flex items-center gap-zv-10" role="radiogroup" aria-label="Finish">
                 {product.colors.slice(0, 3).map((c) => (
@@ -107,7 +112,7 @@ export function ZvProductCard({ product, className }: { product: ProductListing;
             ) : (
               <span />
             )}
-            <p className="type-price whitespace-nowrap text-zv-ink">
+            <p className="type-price ml-auto whitespace-nowrap text-zv-ink">
               {discount > 0 && (
                 <span className="mr-1.5 font-normal text-zv-ink/60 line-through">{formatInr(original)}</span>
               )}

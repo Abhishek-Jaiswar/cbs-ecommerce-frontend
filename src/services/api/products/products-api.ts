@@ -6,6 +6,8 @@ import {
   ICategoriesApiResponse,
   IBrandsApiResponse,
   ITagsApiResponse,
+  ShopListingFilters,
+  ShopListingResponse,
 } from "./products-api.types";
 
 export const productApi = baseApi.injectEndpoints({
@@ -13,6 +15,30 @@ export const productApi = baseApi.injectEndpoints({
     getProductListing: builder.query<ProductApiResponse, ProductListingParams>({
       query: ({ page = 1, limit = 10 }) =>
         `/products?page=${page}&limit=${limit}`,
+      providesTags: ["Products"],
+    }),
+
+    /** Shop: filtered listing loaded in chunks (page 1 also carries facets). */
+    getShopListing: builder.infiniteQuery<ShopListingResponse, ShopListingFilters, number>({
+      infiniteQueryOptions: {
+        initialPageParam: 1,
+        getNextPageParam: (lastPage, _all, lastPageParam) =>
+          lastPage.data.page < lastPage.data.totalPages ? lastPageParam + 1 : undefined,
+      },
+      query: ({ queryArg, pageParam }) => {
+        const q = new URLSearchParams({ page: String(pageParam), limit: String(queryArg.limit ?? 20) });
+        if (queryArg.category) q.set("category", queryArg.category);
+        if (queryArg.tags?.length) q.set("tags", queryArg.tags.join(","));
+        if (queryArg.search) q.set("search", queryArg.search);
+        if (queryArg.minPrice !== undefined) q.set("minPrice", String(queryArg.minPrice));
+        if (queryArg.maxPrice !== undefined) q.set("maxPrice", String(queryArg.maxPrice));
+        if (queryArg.sale) q.set("sale", "true");
+        if (queryArg.isNew) q.set("new", "true");
+        if (queryArg.featured) q.set("featured", "true");
+        if (queryArg.sort) q.set("sort", queryArg.sort);
+        if (pageParam === 1) q.set("facets", "true");
+        return `/products?${q.toString()}`;
+      },
       providesTags: ["Products"],
     }),
 
@@ -358,6 +384,7 @@ export const productApi = baseApi.injectEndpoints({
 
 export const {
   useGetProductListingQuery,
+  useGetShopListingInfiniteQuery,
   useGetAdminProductListingQuery,
   useGetProductDetailsQuery,
   useGetProductByIdQuery,

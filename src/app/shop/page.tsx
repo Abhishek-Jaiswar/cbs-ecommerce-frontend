@@ -1,5 +1,5 @@
-import { ShopBreadcrumb } from "./_components/shop-breadcrumb";
-import { ShopCatalog } from "./_components/shop-catalog";
+import { Suspense } from "react";
+import { ZvShop } from "./_components/zv-shop";
 import { Metadata } from "next";
 import { getApiUrl, fetchWithTimeout } from "@/lib/utils";
 
@@ -91,20 +91,13 @@ export async function generateMetadata({
   }
 }
 
-export default async function ShopPage({ searchParams }: ShopPageProps) {
-  const params = await searchParams;
-
+export default function ShopPage() {
+  // Filters live in the URL and are read client-side by ZvShop (useSearchParams).
   return (
-    <main className="min-h-screen bg-white">
-      <ShopBreadcrumb />
-      <ShopCatalog
-        initialSearch={params?.search ?? ""}
-        initialCategory={params?.category ?? ""}
-        initialTag={params?.tag ?? ""}
-        initialFeatured={params?.featured === "true"}
-        initialSale={params?.sale === "true"}
-        initialBrand={params?.brand ?? ""}
-      />
+    <main className="flex-1 bg-white font-zv-body">
+      <Suspense fallback={<div className="h-[320px] bg-zv-ink-brown lg:h-[520px]" />}>
+        <ZvShop />
+      </Suspense>
     </main>
   );
 }

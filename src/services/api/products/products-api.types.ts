@@ -34,6 +34,8 @@ export interface ProductListing {
     preferredReorderQty?: number;
   }[];
   colors?: IProductColors[];
+  /** primary product photo (storefront listing) */
+  image?: { url: string; alt: string } | null;
   basePrice?: number | string;
   appliedOffer?: {
     id: string;
@@ -46,6 +48,42 @@ export interface ProductListing {
 export interface ProductListingParams {
   page?: number;
   limit?: number;
+}
+
+/** Server-side filtered listing used by the Shop (GET /products). */
+export type ShopSortParam = "newest" | "featured" | "price-asc" | "price-desc" | "name-asc" | "name-desc";
+
+export interface ShopListingFilters {
+  category?: string;
+  tags?: string[];
+  search?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  sale?: boolean;
+  isNew?: boolean;
+  featured?: boolean;
+  sort?: ShopSortParam;
+  limit?: number;
+}
+
+export interface ShopTagGroup {
+  group: string;
+  tags: { slug: string; label: string }[];
+}
+
+export interface ShopListingPage extends PaginatedResponse<ProductListing> {
+  category: { slug: string; name: string; excerpt: string | null; image: string; altText: string } | null;
+  facets?: {
+    categories: { slug: string; name: string; count: number }[];
+    priceRange: { min: number; max: number };
+    tagGroups: ShopTagGroup[];
+  };
+}
+
+export interface ShopListingResponse {
+  success: boolean;
+  message: string;
+  data: ShopListingPage;
 }
 
 export interface ProductApiResponse {
