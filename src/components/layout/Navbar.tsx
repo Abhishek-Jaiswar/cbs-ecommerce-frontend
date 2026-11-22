@@ -170,10 +170,14 @@ const Navbar = ({ overlay = false }: { overlay?: boolean }) => {
               <DropdownMenuTrigger asChild>
                 <button
                   type="button"
-                  aria-label="Account menu"
-                  className="hidden transition-opacity hover:opacity-70 lg:block"
+                  aria-label={`Account menu, signed in as ${user.name}`}
+                  className="hidden items-center gap-1.5 transition-opacity hover:opacity-70 lg:flex"
                 >
                   <Icon name="account" />
+                  {/* first name at a glance, so it's obvious you're signed in */}
+                  <span aria-hidden className="max-w-[10ch] truncate text-sm leading-none text-zv-primary">
+                    {user.name.trim().split(/\s+/)[0]}
+                  </span>
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent
