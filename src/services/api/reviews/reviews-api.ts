@@ -38,6 +38,8 @@ export interface Review {
   product?: ReviewProduct;
 }
 
+export type ReviewSort = "newest" | "highest" | "lowest";
+
 export interface CreateReviewPayload {
   productId: string;
   rating: number;
@@ -46,8 +48,9 @@ export interface CreateReviewPayload {
 
 export const reviewsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getProductReviews: builder.query<BaseResponse<PaginatedResponse<Review> & { averageRating?: number | null }>, { productId: string; page?: number; limit?: number }>({
-      query: ({ productId, page = 1, limit = 10 }) => `/reviews/product/${productId}?page=${page}&limit=${limit}`,
+    getProductReviews: builder.query<BaseResponse<PaginatedResponse<Review> & { averageRating?: number | null }>, { productId: string; page?: number; limit?: number; sort?: ReviewSort }>({
+      query: ({ productId, page = 1, limit = 10, sort = "newest" }) =>
+        `/reviews/product/${productId}?page=${page}&limit=${limit}&sort=${sort}`,
       providesTags: ["Reviews"],
     }),
     createReview: builder.mutation<BaseResponse<Review>, CreateReviewPayload>({

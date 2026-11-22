@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export type GalleryImage = { url: string; alt: string; colorId: string | null };
@@ -13,13 +14,16 @@ interface Props {
 }
 
 /**
- * Figma Product > Images. Desktop: the left half of the page, sticky, with a
- * thumbnail rail and hover zoom. Mobile: a swipeable full-width slider.
- * The site header floats over the top of it.
+ * Figma Product > Images. Desktop: the left half of the page, sticky, with
+ * prev/next chevrons at mid-height and 100×133 thumbnails centred at the
+ * bottom. Mobile: a swipeable slider with 15×26 chevrons and 64×85
+ * thumbnails. The site header floats over the top of it.
  */
 export function ZvProductGallery({ images, index, onIndexChange, badges }: Props) {
   const current = images[index] ?? images[0];
+  const many = images.length > 1;
   const sliderRef = useRef<HTMLDivElement>(null);
+  const go = (d: 1 | -1) => onIndexChange((index + d + images.length) % images.length);
 
   // keep the mobile slider in step when the index changes from outside (finish picked, thumb tapped)
   useEffect(() => {
@@ -68,22 +72,12 @@ export function ZvProductGallery({ images, index, onIndexChange, badges }: Props
             </div>
           ))}
         </div>
-        {images.length > 1 && (
-          <div className="absolute inset-x-0 bottom-zv-20 flex justify-center gap-1.5">
-            {images.map((_, i) => (
-              <button
-                key={i}
-                type="button"
-                onClick={() => onIndexChange(i)}
-                aria-label={`Show photo ${i + 1}`}
-                aria-current={i === index}
-                className={cn(
-                  "h-1.5 rounded-full bg-white shadow transition-all",
-                  i === index ? "w-5" : "w-1.5 opacity-60",
-                )}
-              />
-            ))}
-          </div>
+        {many && (
+          <>
+            <Arrow dir={-1} onClick={() => go(-1)} className="left-zv-10" iconClass="h-[26px] w-[15px]" />
+            <Arrow dir={1} onClick={() => go(1)} className="right-zv-10" iconClass="h-[26px] w-[15px]" />
+            <Thumbs images={images} index={index} onPick={onIndexChange} className="bottom-zv-20 gap-3" thumbClass="h-[85px] w-16" />
+          </>
         )}
         {badges && <div className="pointer-events-none absolute left-zv-20 top-[100px] flex flex-col items-start gap-1.5">{badges}</div>}
       </div>
@@ -92,26 +86,72 @@ export function ZvProductGallery({ images, index, onIndexChange, badges }: Props
       <div className="relative hidden h-svh max-h-[1121px] min-h-[640px] lg:sticky lg:top-0 lg:block">
         <ZoomImage key={current?.url} src={current?.url ?? ""} alt={current?.alt ?? ""} />
         {badges && <div className="pointer-events-none absolute left-zv-40 top-[140px] flex flex-col items-start gap-1.5">{badges}</div>}
-        {images.length > 1 && (
-          <div className="absolute bottom-zv-40 left-zv-40 flex max-h-[60%] flex-col gap-zv-10 overflow-y-auto p-1 [scrollbar-width:none]">
-            {images.map((img, i) => (
-              <button
-                key={img.url + i}
-                type="button"
-                onClick={() => onIndexChange(i)}
-                aria-label={`Show photo ${i + 1}`}
-                aria-current={i === index}
-                className={cn(
-                  "size-16 shrink-0 overflow-hidden rounded-zv-xs bg-zv-image-well shadow-sm ring-offset-2 transition",
-                  i === index ? "ring-2 ring-zv-primary" : "opacity-80 hover:opacity-100",
-                )}
-              >
-                <img src={img.url} alt="" loading="lazy" decoding="async" className="size-full object-cover" />
-              </button>
-            ))}
-          </div>
+        {many && (
+          <>
+            <Arrow dir={-1} onClick={() => go(-1)} className="left-zv-20 size-10" iconClass="size-10" />
+            <Arrow dir={1} onClick={() => go(1)} className="right-zv-20 size-10" iconClass="size-10" />
+            <Thumbs images={images} index={index} onPick={onIndexChange} className="bottom-zv-20 gap-zv-20" thumbClass="h-[133px] w-[100px]" />
+          </>
         )}
       </div>
+    </div>
+  );
+}
+
+function Arrow({ dir, onClick, className, iconClass }: { dir: 1 | -1; onClick: () => void; className: string; iconClass: string }) {
+  const Icon = dir < 0 ? ChevronLeft : ChevronRight;
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={dir < 0 ? "Previous photo" : "Next photo"}
+      className={cn(
+        "absolute top-1/2 z-10 grid -translate-y-1/2 place-items-center text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.55)] transition-transform hover:scale-110 focus-visible:outline-2 focus-visible:outline-white",
+        className,
+      )}
+    >
+      <Icon className={iconClass} strokeWidth={1.25} preserveAspectRatio="none" />
+    </button>
+  );
+}
+
+function Thumbs({
+  images,
+  index,
+  onPick,
+  className,
+  thumbClass,
+}: {
+  images: GalleryImage[];
+  index: number;
+  onPick: (i: number) => void;
+  className: string;
+  thumbClass: string;
+}) {
+  return (
+    // auto margins centre the row but still let it scroll from the first thumb when it overflows
+    <div
+      className={cn(
+        "absolute inset-x-0 z-10 flex overflow-x-auto px-zv-20 py-1 [scrollbar-width:none] [&>:first-child]:ml-auto [&>:last-child]:mr-auto",
+        className,
+      )}
+    >
+      {images.map((img, i) => (
+        <button
+          key={img.url + i}
+          type="button"
+          onClick={() => onPick(i)}
+          aria-label={`Show photo ${i + 1}`}
+          aria-current={i === index}
+          className={cn(
+            "shrink-0 overflow-hidden rounded-zv-xs bg-zv-image-well shadow-md transition",
+            thumbClass,
+            i === index ? "ring-2 ring-white" : "opacity-75 hover:opacity-100",
+          )}
+        >
+          <img src={img.url} alt="" loading="lazy" decoding="async" className="size-full object-cover" />
+        </button>
+      ))}
     </div>
   );
 }

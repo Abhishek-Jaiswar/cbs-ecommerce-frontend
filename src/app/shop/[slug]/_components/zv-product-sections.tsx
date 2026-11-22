@@ -2,13 +2,20 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Accordion as AccordionPrimitive } from "radix-ui";
-import { Minus, Plus, Star } from "lucide-react";
+import { ChevronDown, Minus, Plus, Star } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useAppSelector } from "@/store/hooks";
-import { useCreateReviewMutation, useGetProductReviewsQuery } from "@/services/api/reviews/reviews-api";
+import { useCreateReviewMutation, useGetProductReviewsQuery, type ReviewSort } from "@/services/api/reviews/reviews-api";
 import type { ISpecifications } from "@/services/api/products/products-api.types";
 import {
   CARE_SPEC_KEY,
@@ -73,15 +80,7 @@ export function ZvProductSections({ productId, description, specifications, open
       </Section>
 
       <Section value="care" title="Care Instructions">
-        {care ? (
-          <p className="whitespace-pre-line">{care.value}</p>
-        ) : (
-          <ul className="list-disc space-y-2 pl-5 marker:text-zv-gold">
-            {DEFAULT_CARE_INSTRUCTIONS.map((line) => (
-              <li key={line}>{line}</li>
-            ))}
-          </ul>
-        )}
+        <p className="whitespace-pre-line">{care?.value || DEFAULT_CARE_INSTRUCTIONS}</p>
       </Section>
 
       <ReviewsSection productId={productId} />
@@ -132,16 +131,30 @@ export function Stars({ value, className }: { value: number; className?: string 
   );
 }
 
-const PAGE = 5;
+const PAGE = 6;
+const REVIEW_SORT_OPTIONS: { value: ReviewSort; label: string }[] = [
+  { value: "newest", label: "Newest" },
+  { value: "highest", label: "Highest rated" },
+  { value: "lowest", label: "Lowest rated" },
+];
 
 function ReviewsSection({ productId }: { productId: string }) {
   const pathname = usePathname();
+  const router = useRouter();
   const { isAuthenticated } = useAppSelector((s) => s.auth);
   const [limit, setLimit] = useState(PAGE);
-  const { data, isLoading, isFetching } = useGetProductReviewsQuery({ productId, limit });
+  const [sort, setSort] = useState<ReviewSort>("newest");
+  const [writing, setWriting] = useState(false);
+  const { data, isLoading, isFetching } = useGetProductReviewsQuery({ productId, limit, sort });
   const reviews = data?.data?.items ?? [];
   const total = data?.data?.total ?? 0;
   const average = data?.data?.averageRating ?? null;
+  const sortLabel = REVIEW_SORT_OPTIONS.find((o) => o.value === sort)?.label ?? "Newest";
+
+  const startReview = () => {
+    if (!isAuthenticated) return router.push(`/login?redirect=${encodeURIComponent(pathname)}`);
+    setWriting((w) => !w);
+  };
 
   return (
     <Section
@@ -157,58 +170,99 @@ function ReviewsSection({ productId }: { productId: string }) {
         ) : null
       }
     >
+      {/* Figma: "Write A Review" on the left, Sort dropdown on the right */}
+      <div className="flex min-h-[38px] items-center justify-between gap-zv-10">
+        <button
+          type="button"
+          onClick={startReview}
+          aria-expanded={writing}
+          className="text-sm text-zv-ink underline-offset-4 transition-colors hover:text-zv-primary hover:underline"
+        >
+          {writing ? "Close" : "Write A Review"}
+        </button>
+        {total > 1 && (
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger
+              className="inline-flex h-[38px] w-[150px] items-center justify-between gap-2 rounded-leaf-mirror border border-zv-primary bg-white px-zv-10 outline-none focus-visible:ring-2 focus-visible:ring-zv-primary/40"
+              aria-label={`Sort reviews: ${sortLabel}`}
+            >
+              <span className="type-serif-sm text-zv-ink-brown">{sort === "newest" ? "Sort By" : sortLabel}</span>
+              <ChevronDown className="size-5 text-zv-primary" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="min-w-[180px] font-zv-body">
+              <DropdownMenuRadioGroup
+                value={sort}
+                onValueChange={(v) => {
+                  setSort(v as ReviewSort);
+                  setLimit(PAGE);
+                }}
+              >
+                {REVIEW_SORT_OPTIONS.map((o) => (
+                  <DropdownMenuRadioItem key={o.value} value={o.value} className="text-sm">
+                    {o.label}
+                  </DropdownMenuRadioItem>
+                ))}
+              </DropdownMenuRadioGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+      </div>
+
+      {writing && isAuthenticated && <ReviewForm productId={productId} onDone={() => setWriting(false)} />}
+
       {isLoading ? (
-        <div className="space-y-3">
+        <div className="flex gap-zv-20 overflow-hidden">
           {[0, 1].map((i) => (
-            <div key={i} className="h-14 animate-pulse rounded-leaf bg-zv-bg" />
+            <div key={i} className="h-[171px] w-[322px] shrink-0 animate-pulse rounded-leaf bg-zv-bg" />
           ))}
         </div>
       ) : reviews.length === 0 ? (
         <p className="text-zv-bg2">No reviews yet. Be the first to share how you styled it.</p>
       ) : (
-        <ul className="flex flex-col gap-zv-20">
+        <ul
+          className={cn(
+            "-mx-zv-20 flex snap-x snap-mandatory scroll-px-zv-20 gap-zv-20 overflow-x-auto px-zv-20 pb-2 [scrollbar-width:thin] lg:mx-0 lg:scroll-px-0 lg:px-0",
+            isFetching && "opacity-60 transition-opacity",
+          )}
+          aria-label="Customer reviews"
+        >
           {reviews.map((r) => (
-            <li key={r.id} className="flex flex-col gap-1 border-b border-zv-bg pb-zv-20 last:border-b-0 last:pb-0">
-              <div className="flex flex-wrap items-center gap-x-zv-10 gap-y-1">
-                <span className="type-signature text-zv-ink-brown">{r.user?.name || "ZenVoraa customer"}</span>
-                <Stars value={r.rating} />
+            <li
+              key={r.id}
+              className="flex min-h-[171px] w-[322px] max-w-[85vw] shrink-0 snap-start flex-col gap-zv-10 rounded-leaf bg-zv-bg-soft p-zv-20"
+            >
+              <div className="flex items-center justify-between gap-zv-10">
+                <Stars value={r.rating} className="[&>svg]:size-4" />
                 <span className="sr-only">{r.rating} out of 5</span>
                 <time dateTime={r.createdAt} className="text-xs text-zv-bg2">
                   {new Date(r.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
                 </time>
               </div>
-              <p className="whitespace-pre-line">{r.comment}</p>
+              <p className="line-clamp-4 flex-1 whitespace-pre-line text-sm leading-[1.5] text-zv-ink" title={r.comment}>
+                {r.comment}
+              </p>
+              <p className="type-signature text-zv-ink-brown">-{r.user?.name || "ZenVoraa customer"}</p>
             </li>
           ))}
+          {reviews.length < total && (
+            <li className="flex shrink-0 items-center">
+              <button
+                type="button"
+                onClick={() => setLimit((l) => l + PAGE)}
+                disabled={isFetching}
+                className="h-11 w-[150px] rounded-leaf-mirror border border-zv-primary bg-white type-button text-zv-primary transition-colors hover:bg-zv-primary hover:text-white disabled:opacity-60"
+              >
+                {isFetching ? "Loading…" : "More reviews"}
+              </button>
+            </li>
+          )}
         </ul>
-      )}
-
-      {reviews.length < total && (
-        <button
-          type="button"
-          onClick={() => setLimit((l) => l + PAGE)}
-          disabled={isFetching}
-          className="self-start text-sm text-zv-primary underline-offset-4 hover:underline disabled:opacity-60"
-        >
-          {isFetching ? "Loading…" : `Show more reviews (${total - reviews.length})`}
-        </button>
-      )}
-
-      {isAuthenticated ? (
-        <ReviewForm productId={productId} />
-      ) : (
-        <p className="text-zv-bg2">
-          <Link href={`/login?redirect=${encodeURIComponent(pathname)}`} className="text-zv-primary underline-offset-4 hover:underline">
-            Sign in
-          </Link>{" "}
-          to write a review.
-        </p>
       )}
     </Section>
   );
 }
 
-function ReviewForm({ productId }: { productId: string }) {
+function ReviewForm({ productId, onDone }: { productId: string; onDone: () => void }) {
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
   const [comment, setComment] = useState("");
@@ -225,6 +279,7 @@ function ReviewForm({ productId }: { productId: string }) {
       setRating(0);
       setComment("");
       toast.success("Thank you! Your review is live.");
+      onDone();
     } catch (err) {
       const msg = (err as { data?: { message?: string } })?.data?.message;
       setError(msg || "Couldn’t post your review. You may have already reviewed this piece.");
