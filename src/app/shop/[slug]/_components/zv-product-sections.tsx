@@ -55,7 +55,7 @@ export function ZvProductSections({ productId, description, specifications, open
 
       <Section value="delivery" title="Delivery and Return">
         <p className="rounded-leaf-mirror bg-zv-bg p-zv-10 text-center text-zv-ink">
-          Free shipping on orders above {formatInr(FREE_SHIPPING_THRESHOLD)}
+          Free shipping on orders of {formatInr(FREE_SHIPPING_THRESHOLD)} or more
         </p>
         <p>
           Dispatched within {DISPATCH_TIME}. Orders below {formatInr(FREE_SHIPPING_THRESHOLD)} have a{" "}
