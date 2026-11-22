@@ -37,7 +37,9 @@ export function ZvProductGallery({ images, index, onIndexChange, badges }: Props
   };
 
   return (
-    <div className="relative bg-zv-image-well">
+    // lg:h-full: fill the whole left column (as tall as the info column) so the
+    // sticky photo below has room to stay pinned while the right side scrolls
+    <div className="relative bg-zv-image-well lg:h-full">
       {/* Mobile slider */}
       <div className="relative lg:hidden">
         <div

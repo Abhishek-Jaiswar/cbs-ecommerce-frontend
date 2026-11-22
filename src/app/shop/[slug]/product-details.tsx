@@ -152,7 +152,7 @@ function ProductView({ product }: { product: IProductDetails }) {
   return (
     <main className="flex-1 bg-white font-zv-body">
       <div className="grid lg:grid-cols-2">
-        <div className="lg:relative">
+        <div className="lg:relative lg:h-full">
           <ZvProductGallery images={images} index={imageIndex} onIndexChange={setImageIndex} badges={badgeEls} />
         </div>
 
