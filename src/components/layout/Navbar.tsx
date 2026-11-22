@@ -1,9 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { LayoutDashboard, LogOut, Settings, User as UserIcon, X } from "lucide-react";
+import {
+  LayoutDashboard,
+  LogOut,
+  Settings,
+  User as UserIcon,
+  X,
+} from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -47,8 +53,13 @@ const menuCategories = [
 /* Figma icons (20px, primary). Plain <img> keeps the exported vectors intact. */
 function Icon({ name, label }: { name: string; label?: string }) {
   return (
-     
-    <img src={`/zenvoraa/icons/${name}.svg`} alt={label ?? ""} width={20} height={20} className="size-5" />
+    <img
+      src={`/zenvoraa/icons/${name}.svg`}
+      alt={label ?? ""}
+      width={20}
+      height={20}
+      className="size-5"
+    />
   );
 }
 
@@ -59,6 +70,14 @@ function Icon({ name, label }: { name: string; label?: string }) {
  */
 const Navbar = ({ overlay = false }: { overlay?: boolean }) => {
   const router = useRouter();
+  const pathname = usePathname();
+  // one door in: everyone signs in first; new customers pick "Create an account" from there.
+  // Come back to this page afterwards (not when already on an auth page).
+  const loginHref = ["/", "/login", "/signup", "/forgot-password"].includes(
+    pathname,
+  )
+    ? "/login"
+    : `/login?redirect=${encodeURIComponent(pathname)}`;
   const dispatch = useAppDispatch();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -76,8 +95,12 @@ const Navbar = ({ overlay = false }: { overlay?: boolean }) => {
 
   const { user, isAuthenticated } = useAppSelector((state) => state.auth);
   const [logoutApi] = useLogoutMutation();
-  const { data: cartRes } = useGetCartQuery(undefined, { skip: !isAuthenticated });
-  const { data: wishlistRes } = useGetWishlistQuery(undefined, { skip: !isAuthenticated });
+  const { data: cartRes } = useGetCartQuery(undefined, {
+    skip: !isAuthenticated,
+  });
+  const { data: wishlistRes } = useGetWishlistQuery(undefined, {
+    skip: !isAuthenticated,
+  });
   const cartCount = cartRes?.data?.items?.length ?? 0;
   const wishlistCount = wishlistRes?.data?.items?.length ?? 0;
 
@@ -95,14 +118,20 @@ const Navbar = ({ overlay = false }: { overlay?: boolean }) => {
     <header
       className={cn(
         "z-40 w-full font-zv-body",
-        overlay ? "absolute inset-x-0 top-0" : "relative border-b border-zv-bg bg-white",
+        overlay
+          ? "absolute inset-x-0 top-0"
+          : "relative border-b border-zv-bg bg-white",
       )}
     >
       <div className="flex items-center justify-between px-zv-20 py-4 lg:h-[114px] lg:py-0">
         {/* Logo + menu */}
         <div className="flex items-center gap-zv-20 lg:gap-[10px]">
           <Link href="/" aria-label="ZenVoraa home">
-            <ZvLogo variant="monogram" className="size-[60px] lg:size-20" alt="ZenVoraa" />
+            <ZvLogo
+              variant="monogram"
+              className="size-[60px] lg:size-20"
+              alt="ZenVoraa"
+            />
           </Link>
           <button
             type="button"
@@ -110,7 +139,13 @@ const Navbar = ({ overlay = false }: { overlay?: boolean }) => {
             aria-label="Open menu"
             className="transition-opacity hover:opacity-80"
           >
-            <img src="/zenvoraa/icons/menu.svg" alt="" width={61} height={34} className="h-[34px] w-[61px]" />
+            <img
+              src="/zenvoraa/icons/menu.svg"
+              alt=""
+              width={61}
+              height={34}
+              className="h-[34px] w-[61px]"
+            />
           </button>
         </div>
 
@@ -130,21 +165,21 @@ const Navbar = ({ overlay = false }: { overlay?: boolean }) => {
             <Icon name="search" />
           </button>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button
-                type="button"
-                aria-label="Account menu"
-                className="hidden transition-opacity hover:opacity-70 lg:block"
+          {isAuthenticated && user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  type="button"
+                  aria-label="Account menu"
+                  className="hidden transition-opacity hover:opacity-70 lg:block"
+                >
+                  <Icon name="account" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                className="w-56 rounded-leaf-mirror border border-zv-primary bg-white p-2 font-zv-body text-zv-ink"
               >
-                <Icon name="account" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              className="w-56 rounded-leaf-mirror border border-zv-primary bg-white p-2 font-zv-body text-zv-ink"
-            >
-              {isAuthenticated && user ? (
                 <>
                   <DropdownMenuLabel className="type-serif-sm px-2 py-1.5 text-base text-zv-primary">
                     {user.name}
@@ -161,29 +196,35 @@ const Navbar = ({ overlay = false }: { overlay?: boolean }) => {
                     </Link>
                   </DropdownMenuItem>
                   {user.role === "ADMIN" && (
-                    <DropdownMenuItem asChild className="cursor-pointer text-sm text-zv-primary">
+                    <DropdownMenuItem
+                      asChild
+                      className="cursor-pointer text-sm text-zv-primary"
+                    >
                       <Link href="/dashboard">
-                        <LayoutDashboard className="mr-2 size-4" /> Admin Dashboard
+                        <LayoutDashboard className="mr-2 size-4" /> Admin
+                        Dashboard
                       </Link>
                     </DropdownMenuItem>
                   )}
                   <DropdownMenuSeparator className="bg-zv-bg" />
-                  <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-sm text-rose-700">
+                  <DropdownMenuItem
+                    onClick={handleLogout}
+                    className="cursor-pointer text-sm text-rose-700"
+                  >
                     <LogOut className="mr-2 size-4" /> Logout
                   </DropdownMenuItem>
                 </>
-              ) : (
-                <>
-                  <DropdownMenuItem asChild className="cursor-pointer text-sm">
-                    <Link href="/login">Login</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="cursor-pointer text-sm">
-                    <Link href="/signup">Register</Link>
-                  </DropdownMenuItem>
-                </>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Link
+              href={loginHref}
+              aria-label="Sign in"
+              className="hidden transition-opacity hover:opacity-70 lg:block"
+            >
+              <Icon name="account" />
+            </Link>
+          )}
 
           <Link
             href="/wishlist"
@@ -194,7 +235,11 @@ const Navbar = ({ overlay = false }: { overlay?: boolean }) => {
             <CountBadge count={wishlistCount} />
           </Link>
 
-          <Link href="/cart" aria-label="Cart" className="relative transition-opacity hover:opacity-70">
+          <Link
+            href="/cart"
+            aria-label="Cart"
+            className="relative transition-opacity hover:opacity-70"
+          >
             <Icon name="cart" />
             <CountBadge count={cartCount} />
           </Link>
@@ -216,7 +261,11 @@ const Navbar = ({ overlay = false }: { overlay?: boolean }) => {
               <span className="sr-only">ZenVoraa menu</span>
             </SheetTitle>
             <SheetClose asChild>
-              <button type="button" aria-label="Close menu" className="text-zv-primary">
+              <button
+                type="button"
+                aria-label="Close menu"
+                className="text-zv-primary"
+              >
                 <X className="size-6" />
               </button>
             </SheetClose>
@@ -268,14 +317,26 @@ const Navbar = ({ overlay = false }: { overlay?: boolean }) => {
               {isAuthenticated && user ? (
                 <>
                   <p className="type-signature text-zv-primary">{user.name}</p>
-                  <Link href="/account" onClick={() => setIsMenuOpen(false)} className="type-body hover:text-zv-primary">
+                  <Link
+                    href="/account"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="type-body hover:text-zv-primary"
+                  >
                     My Account
                   </Link>
-                  <Link href="/wishlist" onClick={() => setIsMenuOpen(false)} className="type-body hover:text-zv-primary">
+                  <Link
+                    href="/wishlist"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="type-body hover:text-zv-primary"
+                  >
                     Wishlist{wishlistCount > 0 ? ` (${wishlistCount})` : ""}
                   </Link>
                   {user.role === "ADMIN" && (
-                    <Link href="/dashboard" onClick={() => setIsMenuOpen(false)} className="type-body text-zv-primary">
+                    <Link
+                      href="/dashboard"
+                      onClick={() => setIsMenuOpen(false)}
+                      className="type-body text-zv-primary"
+                    >
                       Admin Dashboard
                     </Link>
                   )}
@@ -291,22 +352,13 @@ const Navbar = ({ overlay = false }: { overlay?: boolean }) => {
                   </button>
                 </>
               ) : (
-                <div className="flex gap-zv-10">
-                  <Link
-                    href="/login"
-                    onClick={() => setIsMenuOpen(false)}
-                    className="type-button flex-1 rounded-leaf border border-zv-primary bg-zv-primary px-zv-20 py-zv-10 text-center text-white hover:bg-zv-hover"
-                  >
-                    Login
-                  </Link>
-                  <Link
-                    href="/signup"
-                    onClick={() => setIsMenuOpen(false)}
-                    className="type-button flex-1 rounded-leaf border border-zv-primary bg-white px-zv-20 py-zv-10 text-center text-zv-primary"
-                  >
-                    Register
-                  </Link>
-                </div>
+                <Link
+                  href={loginHref}
+                  onClick={() => setIsMenuOpen(false)}
+                  className="type-button flex-1 rounded-leaf border border-zv-primary bg-zv-primary px-zv-20 py-zv-10 text-center text-white hover:bg-zv-hover"
+                >
+                  Sign In
+                </Link>
               )}
             </div>
           </div>
